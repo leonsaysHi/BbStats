@@ -840,7 +840,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bbstats', [ 'ngRoute','indexedDB','main', 'sheetconfig','templates'])
+	angular.module('bbstats', [ 'ngRoute','indexedDB','main', 'sheetconfig', 'game', 'templates'])
 	.config(function ($routeProvider,$indexedDBProvider) {
 		$routeProvider
 			.otherwise({
@@ -859,7 +859,39 @@
 
 })();
 'app controller goes here';
-'common service goes here';
+(function(){
+  'use strict';
+
+
+  angular.module('game',['ngRoute'])
+  .config(function ($routeProvider) {
+    $routeProvider
+      .when('/game/:sheetId', {
+        templateUrl: 'game/game.html',
+        controller: 'Game'
+      })
+    ;
+  })
+
+  .controller('Game', function ($scope, $routeParams, $indexedDB) {
+    $scope.sheetdatas = {
+      id:parseInt($routeParams.sheetId)
+    };
+
+    // get from indexedDB
+    $indexedDB.openStore('statsheets', function(store) {
+      store.find($scope.sheetdatas.id).then(function(sheetdatas) {  
+        $scope.sheetdatas = sheetdatas;
+      });
+    });
+
+  })
+
+  .controller('gameTimer', function ($scope, $routeParams, $indexedDB ) {
+    $scope.chrono = "xx:xx:xx";
+  })
+
+})();
 (function(){
   'use strict';
 
@@ -876,6 +908,7 @@
   .controller('MainCtrl', function ($scope, $indexedDB) {
     
     $scope.statsheets = [];
+    
     // get from indexedDB
     $indexedDB.openStore('statsheets', function(store) {
       store.getAll().then(function(statsheets) {
@@ -915,6 +948,12 @@
       });
     }
 
+    // default sheet
+    else {
+      $scope.sheetdatas.nb_periods = 4;
+      $scope.sheetdatas.periods_time = 10;
+    }
+
     $scope.save = function() {
       $indexedDB.openStore('statsheets', function(store) {
         if ($routeParams.sheetId !== 'new') {
@@ -926,7 +965,7 @@
       });
     };
 
-    })
-  ;
+  });
 
 })();
+'common service goes here';

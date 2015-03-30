@@ -1,7 +1,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bbstats', [ 'ngRoute','indexedDB','main', 'sheetconfig','templates'])
+	angular.module('bbstats', [ 'ngRoute','indexedDB','main', 'sheetconfig', 'game', 'templates'])
 	.config(function ($routeProvider,$indexedDBProvider) {
 		$routeProvider
 			.otherwise({

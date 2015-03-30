@@ -27,6 +27,12 @@
       });
     }
 
+    // default sheet
+    else {
+      $scope.sheetdatas.nb_periods = 4;
+      $scope.sheetdatas.periods_time = 10;
+    }
+
     $scope.save = function() {
       $indexedDB.openStore('statsheets', function(store) {
         if ($routeParams.sheetId !== 'new') {
@@ -38,7 +44,6 @@
       });
     };
 
-    })
-  ;
+  });
 
 })();

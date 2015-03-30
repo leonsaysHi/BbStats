@@ -14,6 +14,7 @@
   .controller('MainCtrl', function ($scope, $indexedDB) {
     
     $scope.statsheets = [];
+    
     // get from indexedDB
     $indexedDB.openStore('statsheets', function(store) {
       store.getAll().then(function(statsheets) {
