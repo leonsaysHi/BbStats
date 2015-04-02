@@ -5,10 +5,10 @@
   angular.module('sheetconfig',['ngRoute'])
   .config(function ($routeProvider) {
     $routeProvider
-    .when('/sheetconfig/:sheetId', {
-      templateUrl: 'sheetconfig/sheetconfig.html',
-      controller: 'SheetConfig'
-    })
+      .when('/sheetconfig/:sheetId', {
+        templateUrl: 'sheetconfig/sheetconfig.html',
+        controller: 'SheetConfig'
+      })
     ;
   })
   .controller('SheetConfig', function ($scope, $routeParams, $indexedDB) {
@@ -18,12 +18,10 @@
     // get from indexedDB
     if ($routeParams.sheetId !== 'new') {
       $indexedDB.openStore('statsheets', function(store) {
-
         store.find($scope.sheetdatas.id).then(function(sheetdatas) {  
           // Update scope
           $scope.sheetdatas = sheetdatas;
         });
-
       });
     }
 

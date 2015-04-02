@@ -3,26 +3,33 @@
 
 
   angular.module('game',['ngRoute'])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/game/:sheetId', {
-        templateUrl: 'game/game.html',
-        controller: 'Game'
-      })
-    ;
-  })
+    .config(function ($routeProvider) {
+      $routeProvider
+        .when('/game/:sheetId', {
+          templateUrl: 'game/game.html',
+          controller: 'Game',
+          resolve: {
+            statSheetDatas : function ($route, $q, $indexedDB) {
+              var deferred = $q.defer(),
+              id = parseInt($route.current.params.sheetId);
 
-  .controller('Game', function ($scope, $routeParams, $indexedDB) {
-    $scope.sheetdatas = {
-      id:parseInt($routeParams.sheetId)
-    };
+              $indexedDB.openStore('statsheets', function(store) {
+                store.find(id).then(function(data) {
+                  deferred.resolve(data);
+                });
+              });
 
-    // get from indexedDB
-    $indexedDB.openStore('statsheets', function(store) {
-      store.find($scope.sheetdatas.id).then(function(sheetdatas) {  
-        $scope.sheetdatas = sheetdatas;
-      });
-    });
+              return deferred.promise;
+            }
+          }
+        })
+      ;
+    }
+  )
+
+  .controller('Game', function ($scope, $routeParams, statSheetDatas) {
+
+    $scope.sheetdatas = statSheetDatas;
 
   })
 

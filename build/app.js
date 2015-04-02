@@ -840,50 +840,91 @@
 (function(){
 	'use strict';
 
-	angular.module('bbstats', [ 'ngRoute','indexedDB','main', 'sheetconfig', 'game', 'templates'])
-	.config(function ($routeProvider,$indexedDBProvider) {
-		$routeProvider
-			.otherwise({
-				redirectTo: '/'
-			})
-		;
-		$indexedDBProvider 
-		.connection('BbStats')
-		.upgradeDatabase(1, function(event, db, tx){
-			var objStore = db.createObjectStore('statsheets', {keyPath: 'id'});
-			objStore.createIndex('name', 'name', {unique: false});
-			objStore.createIndex('date', 'date', {unique: false});
-		});
-	});
+	var app = angular.module(
+		'bbstats',
+		['ngRoute','indexedDB','main', 'sheetconfig', 'game', 'templates'],
+		function ($routeProvider,$indexedDBProvider) {
+			// Routes
+			$routeProvider
+				.otherwise({
+					redirectTo: '/'
+				})
+			;
+			// IndexedDB
+			$indexedDBProvider 
+				.connection('BbStats')
+				.upgradeDatabase(1, function(event, db, tx){
+					var objStore = db.createObjectStore('statsheets', {keyPath: 'id'});
+					objStore.createIndex('name', 'name', {unique: false});
+					objStore.createIndex('date', 'date', {unique: false});
+				})
+			;
+		}
+	);
 
+	/*app.factory('DataSheetService', function($indexedDB){
+		return {
+			getItems: function() {
+				return function() {
+					if ($routeParams.sheetId !== 'new') {
+						$indexedDB.openStore('statsheets', function(store) {
+							store.getAll().then(function(sheetdatas) {  
+								return sheetdatas;
+							});
+						});
+					}
+				}
+			},
+			getItem: function(id){
+				return function(id) {
+					var id = parseInt(id);
+					console.log(id);
+					$indexedDB.openStore('statsheets', function(store) {
+						store.find(id).then(function(response) {  
+							console.log('response', response);
+							return response;
+						});
+					});
+				}
+			}
+		};
+	});*/
 
 })();
 'app controller goes here';
+'common service goes here';
 (function(){
   'use strict';
 
 
   angular.module('game',['ngRoute'])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/game/:sheetId', {
-        templateUrl: 'game/game.html',
-        controller: 'Game'
-      })
-    ;
-  })
+    .config(function ($routeProvider) {
+      $routeProvider
+        .when('/game/:sheetId', {
+          templateUrl: 'game/game.html',
+          controller: 'Game',
+          resolve: {
+            statSheetDatas : function ($route, $q, $indexedDB) {
+              var deferred = $q.defer(),
+              id = parseInt($route.current.params.sheetId);
 
-  .controller('Game', function ($scope, $routeParams, $indexedDB) {
-    $scope.sheetdatas = {
-      id:parseInt($routeParams.sheetId)
-    };
+              $indexedDB.openStore('statsheets', function(store) {
+                store.find(id).then(function(data) {
+                  deferred.resolve(data);
+                });
+              });
 
-    // get from indexedDB
-    $indexedDB.openStore('statsheets', function(store) {
-      store.find($scope.sheetdatas.id).then(function(sheetdatas) {  
-        $scope.sheetdatas = sheetdatas;
-      });
-    });
+              return deferred.promise;
+            }
+          }
+        })
+      ;
+    }
+  )
+
+  .controller('Game', function ($scope, $routeParams, statSheetDatas) {
+
+    $scope.sheetdatas = statSheetDatas;
 
   })
 
@@ -926,10 +967,10 @@
   angular.module('sheetconfig',['ngRoute'])
   .config(function ($routeProvider) {
     $routeProvider
-    .when('/sheetconfig/:sheetId', {
-      templateUrl: 'sheetconfig/sheetconfig.html',
-      controller: 'SheetConfig'
-    })
+      .when('/sheetconfig/:sheetId', {
+        templateUrl: 'sheetconfig/sheetconfig.html',
+        controller: 'SheetConfig'
+      })
     ;
   })
   .controller('SheetConfig', function ($scope, $routeParams, $indexedDB) {
@@ -939,12 +980,10 @@
     // get from indexedDB
     if ($routeParams.sheetId !== 'new') {
       $indexedDB.openStore('statsheets', function(store) {
-
         store.find($scope.sheetdatas.id).then(function(sheetdatas) {  
           // Update scope
           $scope.sheetdatas = sheetdatas;
         });
-
       });
     }
 
@@ -968,4 +1007,3 @@
   });
 
 })();
-'common service goes here';
