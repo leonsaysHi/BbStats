@@ -838,9 +838,9 @@
 //# sourceMappingURL=angular-indexed-db.js.map
 
 (function(){
-	'use strict';
+	'use strict'; 
 
-	var app = angular.module(
+	var app = angular.module( 
 		'bbstats',
 		['ngRoute','indexedDB','main', 'sheetconfig', 'game', 'templates'],
 		function ($routeProvider,$indexedDBProvider) {
@@ -910,7 +910,7 @@
       $routeProvider
       .when('/game/:sheetId', {
         templateUrl: 'game/game.html',
-        controller: 'Game',
+        controller:  'Game',
         resolve: {
           statSheetDatas : function ($route, $q, $indexedDB) {
             var deferred = $q.defer(),
@@ -995,10 +995,10 @@
   angular.module('sheetconfig',['ngRoute'])
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/sheetconfig/:sheetId', {
-        templateUrl: 'sheetconfig/sheetconfig.html',
-        controller: 'SheetConfig'
-      })
+    .when('/sheetconfig/:sheetId', {
+      templateUrl: 'sheetconfig/sheetconfig.html',
+      controller: 'SheetConfig'
+    })
     ;
   })
   .controller('SheetConfig', function ($scope, $routeParams, $indexedDB) {
@@ -1008,10 +1008,12 @@
     // get from indexedDB
     if ($routeParams.sheetId !== 'new') {
       $indexedDB.openStore('statsheets', function(store) {
+
         store.find($scope.sheetdatas.id).then(function(sheetdatas) {  
           // Update scope
           $scope.sheetdatas = sheetdatas;
         });
+
       });
     }
 

@@ -8,7 +8,7 @@
       $routeProvider
       .when('/game/:sheetId', {
         templateUrl: 'game/game.html',
-        controller: 'Game',
+        controller:  'Game',
         resolve: {
           statSheetDatas : function ($route, $q, $indexedDB) {
             var deferred = $q.defer(),

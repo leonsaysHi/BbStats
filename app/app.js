@@ -1,7 +1,7 @@
 (function(){
-	'use strict';
+	'use strict'; 
 
-	var app = angular.module(
+	var app = angular.module( 
 		'bbstats',
 		['ngRoute','indexedDB','main', 'sheetconfig', 'game', 'templates'],
 		function ($routeProvider,$indexedDBProvider) {
