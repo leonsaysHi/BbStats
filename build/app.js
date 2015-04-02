@@ -862,33 +862,40 @@
 		}
 	);
 
-	/*app.factory('DataSheetService', function($indexedDB){
-		return {
-			getItems: function() {
-				return function() {
-					if ($routeParams.sheetId !== 'new') {
-						$indexedDB.openStore('statsheets', function(store) {
-							store.getAll().then(function(sheetdatas) {  
-								return sheetdatas;
-							});
-						});
-					}
-				}
+	app.factory('ChronoFact', function($q, $indexedDB) {
+	    return {
+	    	quarter : 0,
+	    	time : 0, // in minutes
+	    	readabletime : "00:00:00",
+			play : function() {
+				this.time -= 1;
+				this.updateReadableTime();
 			},
-			getItem: function(id){
-				return function(id) {
-					var id = parseInt(id);
-					console.log(id);
-					$indexedDB.openStore('statsheets', function(store) {
-						store.find(id).then(function(response) {  
-							console.log('response', response);
-							return response;
-						});
-					});
-				}
-			}
-		};
-	});*/
+			stop : function() {
+				this.updateReadableTime();
+			},
+			setTime : function(t) {
+				this.time = t;
+				this.updateReadableTime();
+			},
+			changeTime : function(t) {
+				this.time += t;
+				this.updateReadableTime();
+			},
+			setQuarter : function(n) {
+				this.quarter = n;
+			},
+			changeQuarter : function(n) {
+				this.quarter += n;
+			},
+			updateReadableTime : function() {
+				var t = this.time;
+				var m = Math.floor(t);
+				var s = Math.floor((t % 1)*10);
+				this.readabletime = m + ':' + s;
+			} 
+	    }; 
+	});
 
 })();
 'app controller goes here';
@@ -897,40 +904,61 @@
   'use strict';
 
 
-  angular.module('game',['ngRoute'])
+  angular
+    .module('game', ['ngRoute'])
     .config(function ($routeProvider) {
       $routeProvider
-        .when('/game/:sheetId', {
-          templateUrl: 'game/game.html',
-          controller: 'Game',
-          resolve: {
-            statSheetDatas : function ($route, $q, $indexedDB) {
-              var deferred = $q.defer(),
-              id = parseInt($route.current.params.sheetId);
+      .when('/game/:sheetId', {
+        templateUrl: 'game/game.html',
+        controller: 'Game',
+        resolve: {
+          statSheetDatas : function ($route, $q, $indexedDB) {
+            var deferred = $q.defer(),
+            id = parseInt($route.current.params.sheetId);
 
-              $indexedDB.openStore('statsheets', function(store) {
-                store.find(id).then(function(data) {
-                  deferred.resolve(data);
-                });
+            $indexedDB.openStore('statsheets', function(store) {
+              store.find(id).then(function(data) {
+                deferred.resolve(data);
               });
+            });
 
-              return deferred.promise;
-            }
+            return deferred.promise;
           }
-        })
+        }
+      })
       ;
-    }
-  )
+    })
 
-  .controller('Game', function ($scope, $routeParams, statSheetDatas) {
+    .controller('Game', function ($scope, $routeParams, statSheetDatas, ChronoFact) {
+      $scope.sheetdatas = statSheetDatas;
+      ChronoFact.setTime(45);
+      ChronoFact.setQuarter(4);
+    })
 
-    $scope.sheetdatas = statSheetDatas;
+    .controller('Chrono', function ($scope, $routeParams, ChronoFact ) {
+      
+      $scope.$watch(function () { return ChronoFact.readabletime }, function (newVal, oldVal) {
+        if (typeof newVal !== 'undefined') {
+          $scope.chrono = ChronoFact.readabletime;
+        }
+      });
 
-  })
+      $scope.$watch(function () { return ChronoFact.quarter }, function (newVal, oldVal) {
+        if (typeof newVal !== 'undefined') {
+          $scope.qt = ChronoFact.quarter;
+        }
+      });
 
-  .controller('gameTimer', function ($scope, $routeParams, $indexedDB ) {
-    $scope.chrono = "xx:xx:xx";
-  })
+      $scope.play = function() {
+        ChronoFact.play();
+      };
+
+      $scope.stop = function() {
+        ChronoFact.stop();
+      };
+    })
+
+  ;
 
 })();
 (function(){

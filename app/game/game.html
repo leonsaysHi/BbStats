@@ -1,4 +1,6 @@
 	<h1>{{sheetdatas.name}} <span class="small">({{sheetdatas.id}})</span></h1>
-	<div ng-controller="gameTimer">
-		{{chrono}}
+	<div ng-controller="Chrono">
+		<span class="muted">{{qt}}</span> : <strong>{{chrono}}</strong>
+		<br><a ng-click="play()">Play</a>
+		<br><a ng-click="stop()">Stop</a>
 	</div>
