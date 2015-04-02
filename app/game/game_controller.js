@@ -31,10 +31,13 @@
       $scope.sheetdatas = statSheetDatas;
       ChronoFact.setTime(45);
       ChronoFact.setQuarter(4);
+      // current time : ChronoFact.time;
     })
 
     .controller('Chrono', function ($scope, $routeParams, ChronoFact ) {
-      
+            
+      $scope.isplaying = false;
+
       $scope.$watch(function () { return ChronoFact.readabletime }, function (newVal, oldVal) {
         if (typeof newVal !== 'undefined') {
           $scope.chrono = ChronoFact.readabletime;
@@ -48,10 +51,12 @@
       });
 
       $scope.play = function() {
+        $scope.isplaying = true;
         ChronoFact.play();
       };
 
       $scope.stop = function() {
+        $scope.isplaying = false;
         ChronoFact.stop();
       };
     })

@@ -862,17 +862,25 @@
 		}
 	);
 
-	app.factory('ChronoFact', function($q, $indexedDB) {
+	app.factory('ChronoFact', function($q, $indexedDB, $interval) {
 	    return {
 	    	quarter : 0,
-	    	time : 0, // in minutes
+	    	time : 0, // in secondes
 	    	readabletime : "00:00:00",
+	    	timer : null,
 			play : function() {
-				this.time -= 1;
-				this.updateReadableTime();
+				console.log(typeof this.timer);
+				var self = this;
+				this.timer = $interval(
+					function(){
+						self.time -= 0.1;
+						self.updateReadableTime();
+					},
+					100
+				);
 			},
 			stop : function() {
-				this.updateReadableTime();
+				$interval.cancel(this.timer);
 			},
 			setTime : function(t) {
 				this.time = t;
@@ -890,9 +898,10 @@
 			},
 			updateReadableTime : function() {
 				var t = this.time;
-				var m = Math.floor(t);
-				var s = Math.floor((t % 1)*10);
-				this.readabletime = m + ':' + s;
+				var m = Math.floor(t/60);
+				var s = Math.floor(t-m*60);
+				var ts = Math.floor((t-s-m*60)*10);
+				this.readabletime = m + ':' + s + ':' + ts;
 			} 
 	    }; 
 	});
@@ -933,10 +942,13 @@
       $scope.sheetdatas = statSheetDatas;
       ChronoFact.setTime(45);
       ChronoFact.setQuarter(4);
+      // current time : ChronoFact.time;
     })
 
     .controller('Chrono', function ($scope, $routeParams, ChronoFact ) {
-      
+            
+      $scope.isplaying = false;
+
       $scope.$watch(function () { return ChronoFact.readabletime }, function (newVal, oldVal) {
         if (typeof newVal !== 'undefined') {
           $scope.chrono = ChronoFact.readabletime;
@@ -950,10 +962,12 @@
       });
 
       $scope.play = function() {
+        $scope.isplaying = true;
         ChronoFact.play();
       };
 
       $scope.stop = function() {
+        $scope.isplaying = false;
         ChronoFact.stop();
       };
     })
