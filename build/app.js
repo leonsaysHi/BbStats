@@ -859,7 +859,6 @@
 				})
 			;
 			// IndexedDB
-			console.log(config);
 			$indexedDBProvider 
 				.connection('BbStats')
 				.upgradeDatabase(1, function(event, db, tx){
@@ -871,60 +870,72 @@
 	);
 	
 
-	app.factory('ChronoFact', function($interval) {
-	    return {
-	    	quarter : 0,
-	    	time : 0, // in secondes
-	    	readabletime : "00:00:00",
-	    	timer : null,
-			play : function() {
-				console.log(typeof this.timer);
-				var self = this;
-				this.timer = $interval(
-					function(){
-						self.time -= 0.1;
-						self.updateReadableTime();
-					},
-					100
-				);
-			},
-			stop : function() {
-				$interval.cancel(this.timer);
-			},
-			setTime : function(t) {
-				this.time = t;
-				this.updateReadableTime();
-			},
-			changeTime : function(t) {
-				this.time += t;
-				this.updateReadableTime();
-			},
-			setQuarter : function(n) {
-				this.quarter = n;
-			},
-			changeQuarter : function(n) {
-				this.quarter += n;
-			},
-			updateReadableTime : function() {
-				var t = this.time;
-				var m = Math.floor(t/60);
-				var s = Math.floor(t-m*60);
-				var ts = Math.floor((t-s-m*60)*10);
-				this.readabletime = m + ':' + s + ':' + ts;
-			} 
-	    }; 
+	app.factory('GameFact', function($interval) {
+	    var o = {ds:{}, fs:{}};
+	    o.ds = {
+    		id : null,
+    		name : '',
+    		teams : [],
+    		chrono : {
+    			nb_periods : 4,
+    			minutes_periods : 10,
+	    		curr_period : 1,
+		    	curr_time : null, // in secondes
+		    	readabletime : null
+		    }
+	    };
+	    o.fs = {
+    		chrono : {
+    			timer : null,
+				play : function() {
+					var self = this;
+					this.timer = $interval(
+						function(){
+							o.ds.chrono.curr_time -= 0.1;
+							o.fs.chrono.updateReadableTime();
+						},
+						100
+					);
+				},
+				stop : function() {
+					$interval.cancel(this.timer);
+				},
+				setTime : function(t) {
+					o.ds.chrono.chrono.curr_time = t;
+					o.fs.chrono.updateReadableTime();
+				},
+				changeTime : function(t) {
+					o.ds.chrono.curr_time += t;
+					o.fs.chrono.updateReadableTime();
+				},
+				setQuarter : function(n) {
+					o.ds.chrono.quarter = n;
+				},
+				changeQuarter : function(n) {
+					o.ds.chrono.quarter += n;
+				},
+				updateReadableTime : function() {
+					if(o.ds.chrono.curr_time === null) {
+						o.ds.chrono.curr_time = 60*o.ds.chrono.minutes_periods;
+					}
+					var t = o.ds.chrono.curr_time;
+					var m = Math.floor(t/60);
+					var s = Math.floor(t-m*60);
+					var ts = Math.floor((t-s-m*60)*10);
+					o.ds.chrono.readabletime = m + ':' + s + ':' + ts;
+				}
+			}
+		};
+
+	    o.setDatas = function(datas) {    		
+    		angular.merge(o.ds, datas);
+    	};
+	    o.getDatas = function() {
+    		return o.ds;
+    	}; 
+
+	    return o;
 	});
-
-
-
-	app.factory('GameFact', function() {
-	    return {
-	    	quarter : 0,
-	    	time : 0, // in secondes
-	    	teams : []
-	    }; 
-	});
-
 
 
 	app.factory('TeamFact', function() {
@@ -951,61 +962,66 @@
 
 
   angular
-    .module('bbstats')
-    .config(function ($routeProvider) {
-      $routeProvider
-      .when('/game/:gameId', {
-        templateUrl: 'game/game.html',
-        controller:  'Game',
-        resolve: {
-          gameDatas : function ($route, config, $q, $indexedDB) {
-            var deferred = $q.defer(),
-            id = parseInt($route.current.params.gameId);
-            $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
-              store.find(id).then(function(data) {
-                deferred.resolve(data);
-              });
+  .module('bbstats')
+  .config(function ($routeProvider) {
+    $routeProvider
+    .when('/game/:gameId', {
+      templateUrl: 'game/game.html',
+      controller:  'Game',
+      resolve: {
+        gameDatas : function ($route, config, $q, $indexedDB) {
+          var deferred = $q.defer(),
+          id = parseInt($route.current.params.gameId);
+          $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+            store.find(id).then(function(data) {
+              deferred.resolve(data);
             });
-            return deferred.promise;
-          }
+          });
+          return deferred.promise;
         }
-      })
-      ;
+      }
     })
+    ;
+  })
 
-    .controller('Game', function ($scope, $routeParams, gameDatas, ChronoFact) {
-      $scope.gamedatas = gameDatas;
-      ChronoFact.setTime(45);
-      ChronoFact.setQuarter(4);
-      // current time : ChronoFact.time;
-    })
+  .controller('Game', function ($scope, $routeParams, gameDatas, GameFact) {
+    GameFact.setDatas(gameDatas);
+    $scope.gamedatas = GameFact.getDatas();
+  })
 
-    .controller('Chrono', function ($scope, $routeParams, ChronoFact ) {
-            
+  .controller('Chrono', function ($scope, config, $routeParams, $indexedDB, GameFact ) {
+
+    // init chrono
+    $scope.isplaying = false;
+    GameFact.fs.chrono.updateReadableTime();
+
+    $scope.$watch(function () { return GameFact.ds.chrono.curr_time }, function (newVal, oldVal) {
+      if (typeof newVal !== 'undefined') {
+        $scope.chrono = GameFact.ds.chrono.readabletime;
+        $scope.qt = GameFact.ds.chrono.curr_period;
+      }
+    });
+
+    $scope.play = function() {
+      $scope.isplaying = true;
+      GameFact.fs.chrono.play();
+    };
+
+    $scope.stop = function() {
       $scope.isplaying = false;
+      GameFact.fs.chrono.stop();
+      $scope.save();
+    };
 
-      $scope.$watch(function () { return ChronoFact.readabletime }, function (newVal, oldVal) {
-        if (typeof newVal !== 'undefined') {
-          $scope.chrono = ChronoFact.readabletime;
-        }
+    $scope.save = function() {
+      var gamedatas = GameFact.getDatas();
+      $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+          store.upsert (gamedatas).then(function(e){console.log('upsert');});
       });
+    };
 
-      $scope.$watch(function () { return ChronoFact.quarter }, function (newVal, oldVal) {
-        if (typeof newVal !== 'undefined') {
-          $scope.qt = ChronoFact.quarter;
-        }
-      });
 
-      $scope.play = function() {
-        $scope.isplaying = true;
-        ChronoFact.play();
-      };
-
-      $scope.stop = function() {
-        $scope.isplaying = false;
-        ChronoFact.stop();
-      };
-    })
+  })
 
   ;
 
@@ -1017,41 +1033,46 @@
   angular.module('bbstats')
   .config(function ($routeProvider) {
     $routeProvider
-    .when('/gameconfig/:sheetId', {
+    .when('/gameconfig/:gameId', {
       templateUrl: 'gameconfig/gameconfig.html',
-      controller: 'gameConfig'
+      controller: 'gameConfig',
+      resolve: {
+        gameDatas : function ($route, config, $q, $indexedDB) {
+          var id = $route.current.params.gameId;
+          if($route.current.params.gameId == 'new') {
+            return {
+              id : new Date().valueOf()
+            };
+          }
+          else {
+            var deferred = $q.defer();
+            $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+              store.find(parseInt(id)).then(function(data) {
+                deferred.resolve(data);
+              });
+            });
+            return deferred.promise;
+          }
+        }
+      }
     })
     ;
   })
-  .controller('gameConfig', function ($scope, config, $routeParams, $indexedDB, GameFact) {
-    $scope.gamedatas = {};
-    $scope.gamedatas.id = $routeParams.sheetId === 'new' ? (new Date()).valueOf() : parseInt($routeParams.sheetId);
+  .controller('gameConfig', function ($scope, config, $routeParams, $indexedDB, gameDatas, GameFact) {
+    GameFact.setDatas(gameDatas);
     
-    // get from indexedDB
-    if ($routeParams.sheetId !== 'new') {
-      $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
-
-        store.find($scope.gamedatas.id).then(function(gamedatas) {  
-          // Update scope
-          $scope.gamedatas = gamedatas;
-        });
-
-      });
-    }
-
-    // default sheet
-    else {
-      $scope.gamedatas.nb_periods = 4;
-      $scope.gamedatas.periods_time = 10;
-    }
+    $scope.gamedatas = GameFact.getDatas();    
+    console.log($scope.gamedatas);
 
     $scope.save = function() {
+      var gamedatas = GameFact.getDatas();
+
       $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
         if ($routeParams.sheetId !== 'new') {
-          store.upsert ($scope.gamedatas).then(function(e){console.log(e);});
+          store.upsert (gamedatas).then(function(e){console.log(e);});
         }
         else {
-          store.insert ($scope.gamedatas).then(function(e){console.log(e);});
+          store.insert (gamedatas).then(function(e){console.log(e);});
         }
       });
     };

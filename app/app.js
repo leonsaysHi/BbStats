@@ -20,7 +20,6 @@
 				})
 			;
 			// IndexedDB
-			console.log(config);
 			$indexedDBProvider 
 				.connection('BbStats')
 				.upgradeDatabase(1, function(event, db, tx){
@@ -32,60 +31,72 @@
 	);
 	
 
-	app.factory('ChronoFact', function($interval) {
-	    return {
-	    	quarter : 0,
-	    	time : 0, // in secondes
-	    	readabletime : "00:00:00",
-	    	timer : null,
-			play : function() {
-				console.log(typeof this.timer);
-				var self = this;
-				this.timer = $interval(
-					function(){
-						self.time -= 0.1;
-						self.updateReadableTime();
-					},
-					100
-				);
-			},
-			stop : function() {
-				$interval.cancel(this.timer);
-			},
-			setTime : function(t) {
-				this.time = t;
-				this.updateReadableTime();
-			},
-			changeTime : function(t) {
-				this.time += t;
-				this.updateReadableTime();
-			},
-			setQuarter : function(n) {
-				this.quarter = n;
-			},
-			changeQuarter : function(n) {
-				this.quarter += n;
-			},
-			updateReadableTime : function() {
-				var t = this.time;
-				var m = Math.floor(t/60);
-				var s = Math.floor(t-m*60);
-				var ts = Math.floor((t-s-m*60)*10);
-				this.readabletime = m + ':' + s + ':' + ts;
-			} 
-	    }; 
+	app.factory('GameFact', function($interval) {
+	    var o = {ds:{}, fs:{}};
+	    o.ds = {
+    		id : null,
+    		name : '',
+    		teams : [],
+    		chrono : {
+    			nb_periods : 4,
+    			minutes_periods : 10,
+	    		curr_period : 1,
+		    	curr_time : null, // in secondes
+		    	readabletime : null
+		    }
+	    };
+	    o.fs = {
+    		chrono : {
+    			timer : null,
+				play : function() {
+					var self = this;
+					this.timer = $interval(
+						function(){
+							o.ds.chrono.curr_time -= 0.1;
+							o.fs.chrono.updateReadableTime();
+						},
+						100
+					);
+				},
+				stop : function() {
+					$interval.cancel(this.timer);
+				},
+				setTime : function(t) {
+					o.ds.chrono.chrono.curr_time = t;
+					o.fs.chrono.updateReadableTime();
+				},
+				changeTime : function(t) {
+					o.ds.chrono.curr_time += t;
+					o.fs.chrono.updateReadableTime();
+				},
+				setQuarter : function(n) {
+					o.ds.chrono.quarter = n;
+				},
+				changeQuarter : function(n) {
+					o.ds.chrono.quarter += n;
+				},
+				updateReadableTime : function() {
+					if(o.ds.chrono.curr_time === null) {
+						o.ds.chrono.curr_time = 60*o.ds.chrono.minutes_periods;
+					}
+					var t = o.ds.chrono.curr_time;
+					var m = Math.floor(t/60);
+					var s = Math.floor(t-m*60);
+					var ts = Math.floor((t-s-m*60)*10);
+					o.ds.chrono.readabletime = m + ':' + s + ':' + ts;
+				}
+			}
+		};
+
+	    o.setDatas = function(datas) {    		
+    		angular.merge(o.ds, datas);
+    	};
+	    o.getDatas = function() {
+    		return o.ds;
+    	}; 
+
+	    return o;
 	});
-
-
-
-	app.factory('GameFact', function() {
-	    return {
-	    	quarter : 0,
-	    	time : 0, // in secondes
-	    	teams : []
-	    }; 
-	});
-
 
 
 	app.factory('TeamFact', function() {
