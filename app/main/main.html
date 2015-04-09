@@ -1,7 +1,7 @@
-<p><a href="#/sheetconfig/new">New stats</a></p>
-<p>List of Stats :</p>
+<p><a href="#/gameconfig/new">New game</a></p>
+<p>List of games :</p>
 <ul>
-    <li ng-repeat="statsheet in statsheets">
-    {{statsheet.id}}-<a href="#/game/{{statsheet.id}}">{{statsheet.name}}</a> - <a href="#/sheetconfig/{{statsheet.id}}">Edit</a>
+    <li ng-repeat="game in gamesdatas">
+    {{game.id}}-<a href="#/game/{{game.id}}">{{game.name}}</a> - <a href="#/gameconfig/{{game.id}}">Edit</a>
     </li>
 </ul>

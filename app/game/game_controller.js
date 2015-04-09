@@ -3,23 +3,21 @@
 
 
   angular
-    .module('game', ['ngRoute'])
+    .module('bbstats')
     .config(function ($routeProvider) {
       $routeProvider
-      .when('/game/:sheetId', {
+      .when('/game/:gameId', {
         templateUrl: 'game/game.html',
         controller:  'Game',
         resolve: {
-          statSheetDatas : function ($route, $q, $indexedDB) {
+          gameDatas : function ($route, config, $q, $indexedDB) {
             var deferred = $q.defer(),
-            id = parseInt($route.current.params.sheetId);
-
-            $indexedDB.openStore('statsheets', function(store) {
+            id = parseInt($route.current.params.gameId);
+            $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
               store.find(id).then(function(data) {
                 deferred.resolve(data);
               });
             });
-
             return deferred.promise;
           }
         }
@@ -27,8 +25,8 @@
       ;
     })
 
-    .controller('Game', function ($scope, $routeParams, statSheetDatas, ChronoFact) {
-      $scope.sheetdatas = statSheetDatas;
+    .controller('Game', function ($scope, $routeParams, gameDatas, ChronoFact) {
+      $scope.gamedatas = gameDatas;
       ChronoFact.setTime(45);
       ChronoFact.setQuarter(4);
       // current time : ChronoFact.time;

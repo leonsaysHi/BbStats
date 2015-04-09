@@ -842,27 +842,36 @@
 
 	var app = angular.module( 
 		'bbstats',
-		['ngRoute','indexedDB','main', 'sheetconfig', 'game', 'templates'],
-		function ($routeProvider,$indexedDBProvider) {
-			// Routes
+		['ngRoute','indexedDB', 'templates']
+	);
+
+    app.constant('config', {
+      	indexedDb : {
+			gameStore : 'games'
+		}
+    });
+			
+
+	app.config(function (config, $routeProvider,$indexedDBProvider) {// Routes
 			$routeProvider
 				.otherwise({
 					redirectTo: '/'
 				})
 			;
 			// IndexedDB
+			console.log(config);
 			$indexedDBProvider 
 				.connection('BbStats')
 				.upgradeDatabase(1, function(event, db, tx){
-					var objStore = db.createObjectStore('statsheets', {keyPath: 'id'});
-					objStore.createIndex('name', 'name', {unique: false});
-					objStore.createIndex('date', 'date', {unique: false});
+					var objStore = db.createObjectStore(config.indexedDb.gameStore, {keyPath: 'id', autoIncrement:true});
+					objStore.createIndex('id', 'id', {unique: true});
 				})
 			;
 		}
 	);
+	
 
-	app.factory('ChronoFact', function($q, $indexedDB, $interval) {
+	app.factory('ChronoFact', function($interval) {
 	    return {
 	    	quarter : 0,
 	    	time : 0, // in secondes
@@ -906,6 +915,34 @@
 	    }; 
 	});
 
+
+
+	app.factory('GameFact', function() {
+	    return {
+	    	quarter : 0,
+	    	time : 0, // in secondes
+	    	teams : []
+	    }; 
+	});
+
+
+
+	app.factory('TeamFact', function() {
+	    return {
+	    	players : [],
+	    	players_oncourt : [],
+	    	plays : [],
+			addplay : function(play) {
+				this.plays.push(play);
+			},
+			removeplay : function(id) {
+				this.plays.splice(id, 1);
+			}
+	    }; 
+	});
+
+
+
 })();
 'app controller goes here';
 'common service goes here';
@@ -914,23 +951,21 @@
 
 
   angular
-    .module('game', ['ngRoute'])
+    .module('bbstats')
     .config(function ($routeProvider) {
       $routeProvider
-      .when('/game/:sheetId', {
+      .when('/game/:gameId', {
         templateUrl: 'game/game.html',
         controller:  'Game',
         resolve: {
-          statSheetDatas : function ($route, $q, $indexedDB) {
+          gameDatas : function ($route, config, $q, $indexedDB) {
             var deferred = $q.defer(),
-            id = parseInt($route.current.params.sheetId);
-
-            $indexedDB.openStore('statsheets', function(store) {
+            id = parseInt($route.current.params.gameId);
+            $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
               store.find(id).then(function(data) {
                 deferred.resolve(data);
               });
             });
-
             return deferred.promise;
           }
         }
@@ -938,8 +973,8 @@
       ;
     })
 
-    .controller('Game', function ($scope, $routeParams, statSheetDatas, ChronoFact) {
-      $scope.sheetdatas = statSheetDatas;
+    .controller('Game', function ($scope, $routeParams, gameDatas, ChronoFact) {
+      $scope.gamedatas = gameDatas;
       ChronoFact.setTime(45);
       ChronoFact.setQuarter(4);
       // current time : ChronoFact.time;
@@ -979,25 +1014,47 @@
   'use strict';
 
 
-  angular.module('main',['ngRoute'])
+  angular.module('bbstats')
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/', {
-        templateUrl: 'main/main.html',
-        controller: 'MainCtrl'
-      })
+    .when('/gameconfig/:sheetId', {
+      templateUrl: 'gameconfig/gameconfig.html',
+      controller: 'gameConfig'
+    })
     ;
   })
-  .controller('MainCtrl', function ($scope, $indexedDB) {
-    
-    $scope.statsheets = [];
+  .controller('gameConfig', function ($scope, config, $routeParams, $indexedDB, GameFact) {
+    $scope.gamedatas = {};
+    $scope.gamedatas.id = $routeParams.sheetId === 'new' ? (new Date()).valueOf() : parseInt($routeParams.sheetId);
     
     // get from indexedDB
-    $indexedDB.openStore('statsheets', function(store) {
-      store.getAll().then(function(statsheets) {
-        $scope.statsheets = statsheets;
+    if ($routeParams.sheetId !== 'new') {
+      $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+
+        store.find($scope.gamedatas.id).then(function(gamedatas) {  
+          // Update scope
+          $scope.gamedatas = gamedatas;
+        });
+
       });
-    });
+    }
+
+    // default sheet
+    else {
+      $scope.gamedatas.nb_periods = 4;
+      $scope.gamedatas.periods_time = 10;
+    }
+
+    $scope.save = function() {
+      $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+        if ($routeParams.sheetId !== 'new') {
+          store.upsert ($scope.gamedatas).then(function(e){console.log(e);});
+        }
+        else {
+          store.insert ($scope.gamedatas).then(function(e){console.log(e);});
+        }
+      });
+    };
 
   });
 
@@ -1006,47 +1063,26 @@
   'use strict';
 
 
-  angular.module('sheetconfig',['ngRoute'])
+  angular.module('bbstats')
   .config(function ($routeProvider) {
     $routeProvider
-    .when('/sheetconfig/:sheetId', {
-      templateUrl: 'sheetconfig/sheetconfig.html',
-      controller: 'SheetConfig'
-    })
+      .when('/', {
+        templateUrl: 'main/main.html',
+        controller: 'MainCtrl'
+      })
     ;
   })
-  .controller('SheetConfig', function ($scope, $routeParams, $indexedDB) {
-    $scope.sheetdatas = {};
-    $scope.sheetdatas.id = $routeParams.sheetId === 'new' ? (new Date()).valueOf() : parseInt($routeParams.sheetId);
+  .controller('MainCtrl', function ($scope, config, $indexedDB) {
+    
+    $scope.statsheets = [];
     
     // get from indexedDB
-    if ($routeParams.sheetId !== 'new') {
-      $indexedDB.openStore('statsheets', function(store) {
-
-        store.find($scope.sheetdatas.id).then(function(sheetdatas) {  
-          // Update scope
-          $scope.sheetdatas = sheetdatas;
-        });
-
+    $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+      store.getAll().then(function(gamesdatas) {
+        console.log(gamesdatas);
+        $scope.gamesdatas = gamesdatas;
       });
-    }
-
-    // default sheet
-    else {
-      $scope.sheetdatas.nb_periods = 4;
-      $scope.sheetdatas.periods_time = 10;
-    }
-
-    $scope.save = function() {
-      $indexedDB.openStore('statsheets', function(store) {
-        if ($routeParams.sheetId !== 'new') {
-          store.upsert ($scope.sheetdatas).then(function(e){console.log(e);});
-        }
-        else {
-          store.insert ($scope.sheetdatas).then(function(e){console.log(e);});
-        }
-      });
-    };
+    });
 
   });
 

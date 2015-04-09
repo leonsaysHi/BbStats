@@ -3,27 +3,36 @@
 
 	var app = angular.module( 
 		'bbstats',
-		['ngRoute','indexedDB','main', 'sheetconfig', 'game', 'templates'],
-		function ($routeProvider,$indexedDBProvider) {
-			// Routes
+		['ngRoute','indexedDB', 'templates']
+	);
+
+    app.constant('config', {
+      	indexedDb : {
+			gameStore : 'games'
+		}
+    });
+			
+
+	app.config(function (config, $routeProvider,$indexedDBProvider) {// Routes
 			$routeProvider
 				.otherwise({
 					redirectTo: '/'
 				})
 			;
 			// IndexedDB
+			console.log(config);
 			$indexedDBProvider 
 				.connection('BbStats')
 				.upgradeDatabase(1, function(event, db, tx){
-					var objStore = db.createObjectStore('statsheets', {keyPath: 'id'});
-					objStore.createIndex('name', 'name', {unique: false});
-					objStore.createIndex('date', 'date', {unique: false});
+					var objStore = db.createObjectStore(config.indexedDb.gameStore, {keyPath: 'id', autoIncrement:true});
+					objStore.createIndex('id', 'id', {unique: true});
 				})
 			;
 		}
 	);
+	
 
-	app.factory('ChronoFact', function($q, $indexedDB, $interval) {
+	app.factory('ChronoFact', function($interval) {
 	    return {
 	    	quarter : 0,
 	    	time : 0, // in secondes
@@ -66,5 +75,33 @@
 			} 
 	    }; 
 	});
+
+
+
+	app.factory('GameFact', function() {
+	    return {
+	    	quarter : 0,
+	    	time : 0, // in secondes
+	    	teams : []
+	    }; 
+	});
+
+
+
+	app.factory('TeamFact', function() {
+	    return {
+	    	players : [],
+	    	players_oncourt : [],
+	    	plays : [],
+			addplay : function(play) {
+				this.plays.push(play);
+			},
+			removeplay : function(id) {
+				this.plays.splice(id, 1);
+			}
+	    }; 
+	});
+
+
 
 })();

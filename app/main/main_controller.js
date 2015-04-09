@@ -2,7 +2,7 @@
   'use strict';
 
 
-  angular.module('main',['ngRoute'])
+  angular.module('bbstats')
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
@@ -11,14 +11,15 @@
       })
     ;
   })
-  .controller('MainCtrl', function ($scope, $indexedDB) {
+  .controller('MainCtrl', function ($scope, config, $indexedDB) {
     
     $scope.statsheets = [];
     
     // get from indexedDB
-    $indexedDB.openStore('statsheets', function(store) {
-      store.getAll().then(function(statsheets) {
-        $scope.statsheets = statsheets;
+    $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+      store.getAll().then(function(gamesdatas) {
+        console.log(gamesdatas);
+        $scope.gamesdatas = gamesdatas;
       });
     });
 
