@@ -8,6 +8,7 @@
   "dependencies": {
     "angular-route": "~1.2.14",
     "bootstrap-sass-official": "~3.3.4",
-    "angular-indexedDB": "https://github.com/bramski/angular-indexedDB.git#~1.1.2"
+    "angular-indexedDB": "https://github.com/bramski/angular-indexedDB.git#~1.1.2",
+    "angular": "1.4.0-beta.6"
   }
 }
