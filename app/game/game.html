@@ -1,5 +1,13 @@
 	<h1>{{gamedatas.name}} <span class="small">({{gamedatas.id}})</span></h1>
 	<div ng-controller="Chrono">
-		<span class="muted">{{qt}}</span> : <strong>{{chrono}}</strong>
-		<br><a ng-click="play()" ng-hide="isplaying">Play</a><a ng-click="stop()" ng-show="isplaying">Stop</a>
+		<span class="muted">{{chronodatas.curr_period | chronoPeriod}}</span> : <strong>{{chronodatas.curr_time | chronoTime}}</strong>
+		<div>
+		<a class="btn btn-default btn-sm" ng-click="play()" ng-show="periodisrunning && !clockisrunning">Play</a>
+		<a class="btn btn-default btn-sm" ng-click="stop()" ng-show="periodisrunning && clockisrunning ">Stop</a>
+		<a class="btn btn-default btn-sm" ng-click="nextPeriod()" ng-show="!gameisover && !periodisrunning">Go to next period</a>
+		<a class="btn btn-default btn-sm" ng-show="gameisover && !periodisrunning" ng-click="nextPeriod()">Go to overtime</a>
+		</div>
+		<br>clockisrunning : {{clockisrunning}}
+		<br>periodisrunning : {{periodisrunning}}
+		<br>gameisover : {{gameisover}}
 	</div>

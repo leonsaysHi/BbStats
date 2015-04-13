@@ -30,40 +30,61 @@
     $scope.gamedatas = GameFact.getDatas();
   })
 
-  .controller('Chrono', function ($scope, config, $routeParams, $indexedDB, GameFact ) {
+  .controller('Chrono', function ($scope, $interval, config, $routeParams, $indexedDB, GameFact ) {
 
-    // init chrono
-    $scope.isplaying = false;
-    GameFact.fs.chrono.updateReadableTime();
+    $scope.timer = null;
+    $scope.clockisrunning = false;
+    $scope.periodisrunning = (GameFact.ds.chrono.curr_time >0);
+    $scope.gameisover = (GameFact.ds.chrono.curr_period >= GameFact.ds.chrono.nb_periods);
+    $scope.chronodatas = GameFact.ds.chrono;
 
-    $scope.$watch(function () { return GameFact.ds.chrono.curr_time }, function (newVal, oldVal) {
-      if (typeof newVal !== 'undefined') {
-        $scope.chrono = GameFact.ds.chrono.readabletime;
-        $scope.qt = GameFact.ds.chrono.curr_period;
-      }
-    });
+    $scope.nextPeriod = function() {
+      GameFact.ds.chrono.curr_period += 1;
+      GameFact.ds.chrono.curr_time = 60 * GameFact.ds.chrono.minutes_periods;
+      $scope.periodisrunning = true;
+    };
 
     $scope.play = function() {
-      $scope.isplaying = true;
-      GameFact.fs.chrono.play();
+      $scope.clockisrunning = true;
+      $scope.timer = $interval(
+        function(){
+          GameFact.ds.chrono.curr_time -= 0.1;
+          if (GameFact.ds.chrono.curr_time <=0) {
+            GameFact.ds.chrono.curr_time = 0;
+            $scope.periodisrunning = false;
+            if (GameFact.ds.chrono.curr_period >= GameFact.ds.chrono.nb_periods) {
+              $scope.gameisover = true;
+            }
+            $scope.stop();
+          }
+        },
+        100
+        );
     };
 
     $scope.stop = function() {
-      $scope.isplaying = false;
-      GameFact.fs.chrono.stop();
+      $interval.cancel($scope.timer);
+      $scope.timer = null;
+      $scope.clockisrunning = false;
       $scope.save();
     };
 
     $scope.save = function() {
       var gamedatas = GameFact.getDatas();
       $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
-          store.upsert (gamedatas).then(function(e){console.log('upsert');});
+        store.upsert (gamedatas).then(function(e){console.log('upsert');});
       });
     };
+
+    // init chrono
+    $scope.$watch(
+      function() { return GameFact.ds.chrono.curr_time; }, 
+      function(value) { GameFact.fs.chrono.updateReadables(); }
+    );
 
 
   })
 
-  ;
+;
 
 })();
