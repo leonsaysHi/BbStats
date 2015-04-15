@@ -32,7 +32,7 @@
 	
 
 	app.factory('GameFact', function() {
-		var o = {
+		return {
 			id : null,
 			name : '',
 			teams : [],
@@ -43,15 +43,6 @@
 		    	curr_time : 0, // in secondes
 		    }
 		};
-
-		/*o.setDatas = function(datas) {    		
-			angular.merge(o, datas);
-		};
-		o.getDatas = function() {
-			return o;
-		}; */
-
-		return o;
 	});
 
 
