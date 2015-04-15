@@ -871,8 +871,7 @@
 	
 
 	app.factory('GameFact', function() {
-		var o = {ds:{}, fs:{}};
-		o.ds = {
+		var o = {
 			id : null,
 			name : '',
 			teams : [],
@@ -883,43 +882,13 @@
 		    	curr_time : 0, // in secondes
 		    }
 		};
-		o.fs = {
-			chrono : {  
-				updateReadables : function() {
-					// time					
-					
 
-					// period
-					console.log();
-					var 
-					p_ot = (o.ds.chrono.curr_period > o.ds.chrono.nb_periods),
-					p_n = (p_ot) ? (o.ds.chrono.curr_period - o.ds.chrono.nb_periods) : o.ds.chrono.curr_period
-					;
-					switch (p_n) {
-						case 1:
-						p_n += 'st';
-						break;
-						case 2:
-						p_n += 'nd';
-						break;
-						case 3:
-						p_n += 'rd';
-						break;
-						default:
-						p_n += 'th';
-						break;
-					}
-					o.ds.chrono.readableperiod = (!p_ot) ? p_n : p_n + ' OT';
-				}
-			}
-		};
-
-		o.setDatas = function(datas) {    		
-			angular.merge(o.ds, datas);
+		/*o.setDatas = function(datas) {    		
+			angular.merge(o, datas);
 		};
 		o.getDatas = function() {
-			return o.ds;
-		}; 
+			return o;
+		}; */
 
 		return o;
 	});
@@ -960,8 +929,8 @@
 	app.filter('chronoPeriod', function (GameFact) {
 		return function (period) {
 			var 
-				ot = (period > GameFact.ds.chrono.nb_periods),
-				output = (ot) ? (period - GameFact.ds.chrono.nb_periods) : period
+				ot = (period > GameFact.chrono.nb_periods),
+				output = (ot) ? (period - GameFact.chrono.nb_periods) : period
 			;
 			switch (output) {
 				case 1:
@@ -1015,21 +984,21 @@
   })
 
   .controller('Game', function ($scope, $routeParams, gameDatas, GameFact) {
-    GameFact.setDatas(gameDatas);
-    $scope.gamedatas = GameFact.getDatas();
+    angular.merge(GameFact, gameDatas);
+    $scope.gamedatas = GameFact;
   })
 
   .controller('Chrono', function ($scope, $interval, config, $routeParams, $indexedDB, GameFact ) {
 
     $scope.timer = null;
     $scope.clockisrunning = false;
-    $scope.periodisrunning = (GameFact.ds.chrono.curr_time >0);
-    $scope.gameisover = (GameFact.ds.chrono.curr_period >= GameFact.ds.chrono.nb_periods);
-    $scope.chronodatas = GameFact.ds.chrono;
+    $scope.periodisrunning = (GameFact.chrono.curr_time >0);
+    $scope.gameisover = (GameFact.chrono.curr_period >= GameFact.chrono.nb_periods);
+    $scope.chronodatas = GameFact.chrono;
 
     $scope.nextPeriod = function() {
-      GameFact.ds.chrono.curr_period += 1;
-      GameFact.ds.chrono.curr_time = 60 * GameFact.ds.chrono.minutes_periods;
+      GameFact.chrono.curr_period += 1;
+      GameFact.chrono.curr_time = 60 * GameFact.chrono.minutes_periods;
       $scope.periodisrunning = true;
     };
 
@@ -1037,11 +1006,11 @@
       $scope.clockisrunning = true;
       $scope.timer = $interval(
         function(){
-          GameFact.ds.chrono.curr_time -= 0.1;
-          if (GameFact.ds.chrono.curr_time <=0) {
-            GameFact.ds.chrono.curr_time = 0;
+          GameFact.chrono.curr_time -= 0.1;
+          if (GameFact.chrono.curr_time <=0) {
+            GameFact.chrono.curr_time = 0;
             $scope.periodisrunning = false;
-            if (GameFact.ds.chrono.curr_period >= GameFact.ds.chrono.nb_periods) {
+            if (GameFact.chrono.curr_period >= GameFact.chrono.nb_periods) {
               $scope.gameisover = true;
             }
             $scope.stop();
@@ -1059,17 +1028,11 @@
     };
 
     $scope.save = function() {
-      var gamedatas = GameFact.getDatas();
+      var gamedatas = GameFact;
       $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
         store.upsert (gamedatas).then(function(e){console.log('upsert');});
       });
     };
-
-    // init chrono
-    $scope.$watch(
-      function() { return GameFact.ds.chrono.curr_time; }, 
-      function(value) { GameFact.fs.chrono.updateReadables(); }
-    );
 
 
   })
@@ -1110,20 +1073,18 @@
     ;
   })
   .controller('gameConfig', function ($scope, config, $routeParams, $indexedDB, gameDatas, GameFact) {
-    GameFact.setDatas(gameDatas);
+    angular.merge(GameFact, gameDatas);
     
-    $scope.gamedatas = GameFact.getDatas();    
-    console.log($scope.gamedatas);
+    $scope.gamedatas = GameFact;
 
     $scope.save = function() {
-      var gamedatas = GameFact.getDatas();
 
       $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
         if ($routeParams.sheetId !== 'new') {
-          store.upsert (gamedatas).then(function(e){console.log(e);});
+          store.upsert (GameFact).then(function(e){console.log(e);});
         }
         else {
-          store.insert (gamedatas).then(function(e){console.log(e);});
+          store.insert (GameFact).then(function(e){console.log(e);});
         }
       });
     };

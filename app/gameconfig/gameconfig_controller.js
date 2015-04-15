@@ -31,20 +31,18 @@
     ;
   })
   .controller('gameConfig', function ($scope, config, $routeParams, $indexedDB, gameDatas, GameFact) {
-    GameFact.setDatas(gameDatas);
+    angular.merge(GameFact, gameDatas);
     
-    $scope.gamedatas = GameFact.getDatas();    
-    console.log($scope.gamedatas);
+    $scope.gamedatas = GameFact;
 
     $scope.save = function() {
-      var gamedatas = GameFact.getDatas();
 
       $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
         if ($routeParams.sheetId !== 'new') {
-          store.upsert (gamedatas).then(function(e){console.log(e);});
+          store.upsert (GameFact).then(function(e){console.log(e);});
         }
         else {
-          store.insert (gamedatas).then(function(e){console.log(e);});
+          store.insert (GameFact).then(function(e){console.log(e);});
         }
       });
     };

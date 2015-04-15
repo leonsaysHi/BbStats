@@ -32,8 +32,7 @@
 	
 
 	app.factory('GameFact', function() {
-		var o = {ds:{}, fs:{}};
-		o.ds = {
+		var o = {
 			id : null,
 			name : '',
 			teams : [],
@@ -44,43 +43,13 @@
 		    	curr_time : 0, // in secondes
 		    }
 		};
-		o.fs = {
-			chrono : {  
-				updateReadables : function() {
-					// time					
-					
 
-					// period
-					console.log();
-					var 
-					p_ot = (o.ds.chrono.curr_period > o.ds.chrono.nb_periods),
-					p_n = (p_ot) ? (o.ds.chrono.curr_period - o.ds.chrono.nb_periods) : o.ds.chrono.curr_period
-					;
-					switch (p_n) {
-						case 1:
-						p_n += 'st';
-						break;
-						case 2:
-						p_n += 'nd';
-						break;
-						case 3:
-						p_n += 'rd';
-						break;
-						default:
-						p_n += 'th';
-						break;
-					}
-					o.ds.chrono.readableperiod = (!p_ot) ? p_n : p_n + ' OT';
-				}
-			}
-		};
-
-		o.setDatas = function(datas) {    		
-			angular.merge(o.ds, datas);
+		/*o.setDatas = function(datas) {    		
+			angular.merge(o, datas);
 		};
 		o.getDatas = function() {
-			return o.ds;
-		}; 
+			return o;
+		}; */
 
 		return o;
 	});
@@ -121,8 +90,8 @@
 	app.filter('chronoPeriod', function (GameFact) {
 		return function (period) {
 			var 
-				ot = (period > GameFact.ds.chrono.nb_periods),
-				output = (ot) ? (period - GameFact.ds.chrono.nb_periods) : period
+				ot = (period > GameFact.chrono.nb_periods),
+				output = (ot) ? (period - GameFact.chrono.nb_periods) : period
 			;
 			switch (output) {
 				case 1:
