@@ -30,7 +30,7 @@
 		<h4>Team {{teamid}} : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
 		<h4>{{playingplayers.length}} players playing : </h4>
 		<div class="players-list">
-			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | filter: { playing:true })">
+			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)">
 				<strong>{{player.name}}</strong><span>{{player.number}}</span>
 			</a>
 		</div>
@@ -44,9 +44,10 @@
 					</div>
 					<div class="modal-body">
 						<div class="players-list">
-						<a class="player" ng-repeat="(index, player) in team.players | filter: { playing:false }" ng-click="selectPlayerFromBench(player)">
+							<a class="player" ng-repeat="(index, player) in benchplayers = (team.players | getBenchPlayers)" ng-click="selectPlayerFromBench(player)">
 								<strong>{{player.name}}</strong><span>{{player.number}}</span>
 							</a>
+							<p ng-hide="benchplayers.length">No player on the bench</p>
 						</div>
 					</div>
 				</div>

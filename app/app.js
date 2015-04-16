@@ -41,15 +41,41 @@
 					color: '',
 					players : [
 						// {name, number, playing}
-					]
-				}
-			],
-			chrono : {
-				nb_periods : 4,
+						]
+					}
+					],
+					chrono : {
+						nb_periods : 4,
     			minutes_periods : 10, // minutes
     			curr_period : 0,
 		    	curr_time : 0, // in secondes
 		    }
+		};
+	});
+
+	app.filter('getBenchPlayers', function () {
+		return function (players) {
+			var filtered = [];
+			for (var i = 0; i < players.length; i++) {
+				var player = players[i];
+				if (player.playing===false) {
+					filtered.push(player);
+				}
+			}
+			return filtered;
+		};
+	});
+
+	app.filter('getCourtPlayers', function () {
+		return function (players) {
+			var filtered = [];
+			for (var i = 0; i < players.length; i++) {
+				var player = players[i];
+				if (player.playing===true) {
+					filtered.push(player);
+				}
+			}
+			return filtered;
 		};
 	});
 
@@ -61,11 +87,11 @@
 			var s = Math.floor(t-m*60);
 			var ts = Math.floor((t-s-m*60)*10);
 			var output =  
-				((m<10) ? '0' + m : m) 
-				+ ':' 
-				+ ((s<10) ? '0' + s : s) 
-				+ ':' 
-				+ ts
+			((m<10) ? '0' + m : m) 
+			+ ':' 
+			+ ((s<10) ? '0' + s : s) 
+			+ ':' 
+			+ ts
 			;
 			return output;
 		};
@@ -74,8 +100,8 @@
 	app.filter('chronoPeriod', function (GameFact) {
 		return function (period) {
 			var 
-				ot = (period > GameFact.chrono.nb_periods),
-				output = (ot) ? (period - GameFact.chrono.nb_periods) : period
+			ot = (period > GameFact.chrono.nb_periods),
+			output = (ot) ? (period - GameFact.chrono.nb_periods) : period
 			;
 			switch (output) {
 				case 1:

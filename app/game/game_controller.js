@@ -44,15 +44,11 @@
     $scope.$watch(
       function () { return GameFact.teams[0].players; },
       function (newVal, oldVal) {
-        var fp = $filter('filter')(GameFact.teams[0].players, {playing:true});
+        var fp = $filter('getCourtPlayers')(GameFact.teams[0].players);
         $scope.playersready = (fp.length == 5);
       },
       true
-      );
-
-    $scope.test = function(){
-      console.log(GameFact.teams[0].players);
-    };
+    );
 
   })
 
