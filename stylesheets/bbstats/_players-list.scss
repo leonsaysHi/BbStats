@@ -1,0 +1,18 @@
+.players-list {
+	.player {
+		display:inline-block;
+		width:20%;
+		margin:5px;
+		padding:5px;
+		text-align:center;
+		line-height:1;
+		border:solid 1px grey;
+		> strong {
+			font-size:14px;
+		}
+		> span {
+			display:block;
+			font-size:30px;
+		}
+	}
+}
