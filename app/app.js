@@ -40,10 +40,7 @@
 					name : '',
 					color: '',
 					players : [
-						// {name, number}
-					],
-					oncourt : [
-						// id
+						// {name, number, playing}
 					]
 				}
 			],

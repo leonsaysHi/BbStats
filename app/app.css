@@ -4902,3 +4902,17 @@ button.close {
 @media print {
   .hidden-print {
     display: none !important; } }
+
+.players-list .player {
+  display: inline-block;
+  width: 20%;
+  margin: 5px;
+  padding: 5px;
+  text-align: center;
+  line-height: 1;
+  border: solid 1px grey; }
+  .players-list .player > strong {
+    font-size: 14px; }
+  .players-list .player > span {
+    display: block;
+    font-size: 30px; }

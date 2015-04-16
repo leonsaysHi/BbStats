@@ -25,12 +25,36 @@
     ;
   })
 
-  .controller('Game', function ($scope, $routeParams, gameDatas, GameFact) {
+  .controller('Game', function ($scope, config, $indexedDB, gameDatas, GameFact) {
     angular.merge(GameFact, gameDatas);
     $scope.gamedatas = GameFact;
+
+    $scope.saveGameFact = function() {
+      var gamedatas = GameFact;
+      $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+        store.upsert (gamedatas).then(function(e){console.log('upsert');});
+      });
+    };
+
   })
 
-  .controller('Chrono', function ($scope, $interval, config, $routeParams, $indexedDB, GameFact ) {
+  .controller('Team', function ($scope, GameFact) {
+    console.log($scope.teamid);
+    $scope.init = function(teamid) {
+      $scope.teamid = teamid
+      $scope.team = GameFact.teams[teamid];
+    };
+    $scope.showBench = function() {
+      $('#bench').modal('show');
+    };
+    $scope.benchPlayerSelected = function(player) {
+      $('#bench').modal('hide')
+      player.playing = true;
+      $scope.saveGameFact();
+    }
+  })
+
+  .controller('Chrono', function ($scope, $interval, GameFact ) {
 
     $scope.timer = null;
     $scope.clockisrunning = false;
@@ -66,14 +90,7 @@
       $interval.cancel($scope.timer);
       $scope.timer = null;
       $scope.clockisrunning = false;
-      $scope.save();
-    };
-
-    $scope.save = function() {
-      var gamedatas = GameFact;
-      $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
-        store.upsert (gamedatas).then(function(e){console.log('upsert');});
-      });
+      $scope.saveGameFact();
     };
 
 

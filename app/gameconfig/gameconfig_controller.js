@@ -36,7 +36,7 @@
     $scope.gamedatas = GameFact;
 
     $scope.addPayer = function() {
-      $scope.gamedatas.teams[0].players.push({});
+      $scope.gamedatas.teams[0].players.push({playing:false});
     };
     $scope.removePlayer = function(index) {      
       $scope.gamedatas.teams[0].players.splice(index, 1);
