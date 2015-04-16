@@ -13,15 +13,24 @@
   })
   .controller('MainCtrl', function ($scope, config, $indexedDB) {
     
-    $scope.statsheets = [];
-    
-    // get from indexedDB
-    $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
-      store.getAll().then(function(gamesdatas) {
-        console.log(gamesdatas);
-        $scope.gamesdatas = gamesdatas;
+    // get Games list :
+    $scope.getGamesList = function(){
+      $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+        store.getAll().then(function(gamesdatas) {
+          $scope.gamesdatas = gamesdatas;
+        });
       });
-    });
+    };
+    
+
+    $scope.deleteGame = function (id) {
+      $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+        store.delete(id);
+        $scope.getGamesList();
+      });
+    };
+
+    $scope.getGamesList();
 
   });
 

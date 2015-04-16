@@ -2,6 +2,6 @@
 <p>List of games :</p>
 <ul>
     <li ng-repeat="game in gamesdatas">
-    {{game.id}}-<a href="#/game/{{game.id}}">{{game.name}}</a> - <a href="#/gameconfig/{{game.id}}">Edit</a>
+    {{game.id}}-<a href="#/game/{{game.id}}">{{game.name}}</a> - <a href="#/gameconfig/{{game.id}}">Edit</a> - <a ng-click="deleteGame(game.id)">&times;</a>
     </li>
 </ul>
