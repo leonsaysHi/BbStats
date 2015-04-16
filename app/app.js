@@ -35,7 +35,18 @@
 		return {
 			id : null,
 			name : '',
-			teams : [],
+			teams : [
+				{ // 1st team :
+					name : '',
+					color: '',
+					players : [
+						// {name, number}
+					],
+					oncourt : [
+						// id
+					]
+				}
+			],
 			chrono : {
 				nb_periods : 4,
     			minutes_periods : 10, // minutes
@@ -43,21 +54,6 @@
 		    	curr_time : 0, // in secondes
 		    }
 		};
-	});
-
-
-	app.factory('TeamFact', function() {
-		return {
-			players : [],
-			players_oncourt : [],
-			plays : [],
-			addplay : function(play) {
-				this.plays.push(play);
-			},
-			removeplay : function(id) {
-				this.plays.splice(id, 1);
-			}
-		}; 
 	});
 
 

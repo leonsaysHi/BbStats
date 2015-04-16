@@ -35,8 +35,15 @@
     
     $scope.gamedatas = GameFact;
 
-    $scope.save = function() {
+    $scope.addPayer = function() {
+      $scope.gamedatas.teams[0].players.push({});
+    };
+    $scope.removePlayer = function(index) {      
+      $scope.gamedatas.teams[0].players.splice(index, 1);
+    };
 
+    $scope.save = function() {
+      console.log('save', GameFact);
       $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
         if ($routeParams.sheetId !== 'new') {
           store.upsert (GameFact).then(function(e){console.log(e);});
