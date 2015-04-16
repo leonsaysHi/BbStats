@@ -38,8 +38,25 @@
 
   })
 
+  .controller('Starter', function ($scope, $filter, GameFact) {
+    $scope.playersready = false;
+
+    $scope.$watch(
+      function () { return GameFact.teams[0].players; },
+      function (newVal, oldVal) {
+        var fp = $filter('filter')(GameFact.teams[0].players, {playing:true});
+        $scope.playersready = (fp.length == 5);
+      },
+      true
+      );
+
+    $scope.test = function(){
+      console.log(GameFact.teams[0].players);
+    };
+
+  })
+
   .controller('Team', function ($scope, GameFact) {
-    console.log($scope.teamid);
     $scope.init = function(teamid) {
       $scope.teamid = teamid
       $scope.team = GameFact.teams[teamid];
@@ -47,9 +64,10 @@
     $scope.showBench = function() {
       $('#bench').modal('show');
     };
-    $scope.benchPlayerSelected = function(player) {
-      $('#bench').modal('hide')
-      player.playing = true;
+    $scope.selectPlayerFromBench = function(player) {
+      $('#bench').modal('hide');
+      var index = GameFact.teams[$scope.teamid].players.indexOf(player);
+      GameFact.teams[$scope.teamid].players[index].playing = true;
       $scope.saveGameFact();
     }
   })
@@ -58,8 +76,9 @@
 
     $scope.timer = null;
     $scope.clockisrunning = false;
-    $scope.periodisrunning = (GameFact.chrono.curr_time >0);
+    $scope.gamestarted = !(GameFact.chrono.curr_time === 0 && GameFact.chrono.curr_period === 0);
     $scope.gameisover = (GameFact.chrono.curr_period >= GameFact.chrono.nb_periods);
+    $scope.periodisrunning = (GameFact.chrono.curr_time >0);
     $scope.chronodatas = GameFact.chrono;
 
     $scope.nextPeriod = function() {

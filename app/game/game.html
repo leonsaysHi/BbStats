@@ -1,41 +1,55 @@
-	<h1>{{gamedatas.name}} <span class="small">({{gamedatas.id}})</span></h1>
-	<div ng-controller="Chrono">
-		<span class="muted">{{chronodatas.curr_period | chronoPeriod}}</span> : <strong>{{chronodatas.curr_time | chronoTime}}</strong>
-		<div>
-		<a class="btn btn-default btn-sm" ng-click="play()" ng-show="periodisrunning && !clockisrunning">Play</a>
-		<a class="btn btn-default btn-sm" ng-click="stop()" ng-show="periodisrunning && clockisrunning ">Stop</a>
-		<a class="btn btn-default btn-sm" ng-click="nextPeriod()" ng-show="!gameisover && !periodisrunning">Go to next period</a>
-		<a class="btn btn-default btn-sm" ng-show="gameisover && !periodisrunning" ng-click="nextPeriod()">Go to overtime</a>
-		</div>
-		<br>clockisrunning : {{clockisrunning}}
-		<br>periodisrunning : {{periodisrunning}}
-		<br>gameisover : {{gameisover}}
+	<div class="page-header">
+		<h1>{{gamedatas.name}} <span class="small">({{gamedatas.id}})</span></h1>
 	</div>
-	<hr>
+
+	<!-- Game starter -->
+	<div ng-controller="Starter" ng-show="!gamestarted">
+		<div class="alert alert-danger" role="alert" ng-hide="playersready">Select 5 players from the bench</div>
+		<a class="btn btn-primary btn-sm" ng-click="nextPeriod()" ng-disabled="!playersready">Start the game</a>
+	</div>
+
+	<!-- Chrono -->
+	<div class="jumbotron" ng-controller="Chrono"  ng-show="gamestarted">
+		<h2>
+			<span class="muted">{{chronodatas.curr_period | chronoPeriod}}</span> : <strong>{{chronodatas.curr_time | chronoTime}}</strong>
+		</h2>
+		<!-- between periods -->
+		<div ng-show="gamestarted && !periodisrunning">
+			<a class="btn btn-default btn-sm" ng-show="!gameisover" ng-click="nextPeriod()">Go to next period</a>
+			<a class="btn btn-default btn-sm" ng-show="gameisover" ng-click="nextPeriod()">Go to overtime</a>
+		</div>
+		<!-- play / stop -->
+		<div ng-show="periodisrunning">			
+			<a class="btn btn-default btn-sm" ng-show="!clockisrunning" ng-click="play()">Play</a>
+			<a class="btn btn-default btn-sm" ng-show="clockisrunning" ng-click="stop()">Stop</a>
+		</div>
+	</div>
+	
+	<!-- UI -->
 	<div ng-controller="Team" ng-init="init(0)">
 		<h4>Team {{teamid}} : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
-		<h4>Playing : </h4>
+		<h4>{{playingplayers.length}} players playing : </h4>
 		<div class="players-list">
-			<a class="player" ng-repeat="(id, player) in team.players | filter: { playing:true }">
+			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | filter: { playing:true })">
 				<strong>{{player.name}}</strong><span>{{player.number}}</span>
 			</a>
 		</div>
-		<p><a class="btn btn-default" ng-show="team.oncourt < 5" ng-click="showBench()">Add player from the bench</a></p>
+		<p><a class="btn btn-default" ng-click="showBench()">Add player from the bench</a></p>
 		<div class="modal fade" id="bench">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		        <h4 class="modal-title">Banch</h4>
-		      </div>
-		      <div class="modal-body">
-		        <div class="players-list">
-					<a class="player" ng-repeat="(id, player) in team.players | filter: { playing:false }" ng-click="benchPlayerSelected(player)">
-						<strong>{{player.name}}</strong><span>{{player.number}}</span>
-					</a>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Banch</h4>
+					</div>
+					<div class="modal-body">
+						<div class="players-list">
+						<a class="player" ng-repeat="(index, player) in team.players | filter: { playing:false }" ng-click="selectPlayerFromBench(player)">
+								<strong>{{player.name}}</strong><span>{{player.number}}</span>
+							</a>
+						</div>
+					</div>
 				</div>
-		      </div>
-		    </div>
-		  </div>
+			</div>
 		</div>
 	</div>
