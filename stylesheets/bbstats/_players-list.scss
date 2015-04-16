@@ -2,11 +2,11 @@
 	.player {
 		display:inline-block;
 		width:20%;
-		margin:5px;
+		margin:0 5px 5px 0;
 		padding:5px;
 		text-align:center;
 		line-height:1;
-		border:solid 1px grey;
+		border:solid 5px #efefef;
 		> strong {
 			font-size:14px;
 		}
