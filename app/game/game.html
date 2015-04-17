@@ -1,40 +1,49 @@
 	<div class="page-header">
 		<h1>{{gamedatas.name}} <span class="small">({{gamedatas.id}})</span></h1>
+		<span class="muted">
+		playersready : {{gamestatuses.playersready}}
+		<br>gamestarted : {{gamestatuses.gamestarted}}
+		<br>clockisrunning : {{gamestatuses.clockisrunning}}
+		<br>periodisrunning : {{gamestatuses.periodisrunning}}
+		<br>regulationisover : {{gamestatuses.regulationisover}}
+		</span>
 	</div>
 
-	<!-- Game starter -->
-	<div ng-controller="Starter" ng-show="!gamestarted">
-		<div class="alert alert-danger" role="alert" ng-hide="playersready">Select 5 players from the bench</div>
-		<a class="btn btn-primary btn-sm" ng-click="nextPeriod()" ng-disabled="!playersready">Start the game</a>
+	<div class="alert alert-danger" role="alert" ng-show="!gamestatuses.gamestarted && !gamestatuses.playersready">
+		Select 5 players from the bench
 	</div>
 
 	<!-- Chrono -->
-	<div class="jumbotron" ng-controller="Chrono"  ng-show="gamestarted">
-		<h2>
-			<span class="muted">{{chronodatas.curr_period | chronoPeriod}}</span> : <strong>{{chronodatas.curr_time | chronoTime}}</strong>
-		</h2>
-		<!-- between periods -->
-		<div ng-show="gamestarted && !periodisrunning">
-			<a class="btn btn-default btn-sm" ng-show="!gameisover" ng-click="nextPeriod()">Go to next period</a>
-			<a class="btn btn-default btn-sm" ng-show="gameisover" ng-click="nextPeriod()">Go to overtime</a>
-		</div>
-		<!-- play / stop -->
-		<div ng-show="periodisrunning">			
-			<a class="btn btn-default btn-sm" ng-show="!clockisrunning" ng-click="play()">Play</a>
-			<a class="btn btn-default btn-sm" ng-show="clockisrunning" ng-click="stop()">Stop</a>
+	<div class="jumbotron" ng-controller="Chrono" >
+
+		<a class="btn btn-primary btn-sm" ng-click="nextPeriod()" ng-show="!gamestatuses.gamestarted" ng-disabled="!gamestatuses.playersready">Start the game</a>
+		<div ng-show="gamestatuses.gamestarted">
+			<h2>
+				<span class="muted">{{gamedatas.chrono.curr_period | chronoPeriod}}</span> : <strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
+			</h2>
+			<!-- between periods -->
+			<div ng-show="!gamestatuses.periodisrunning">
+				<a class="btn btn-default btn-sm" ng-show="!gamestatuses.regulationisover" ng-click="nextPeriod()">Go to next period</a>
+				<a class="btn btn-default btn-sm" ng-show="gamestatuses.regulationisover" ng-click="nextPeriod()">Go to overtime</a>
+			</div>
+			<!-- play / stop -->
+			<div ng-show="gamestatuses.periodisrunning">			
+				<a class="btn btn-default btn-sm" ng-show="!gamestatuses.clockisrunning" ng-click="play()">Play</a>
+				<a class="btn btn-default btn-sm" ng-show="gamestatuses.clockisrunning" ng-click="stop()">Stop</a>
+			</div>
 		</div>
 	</div>
 	
-	<!-- UI -->
-	<div ng-controller="Team" ng-init="init(0)">
-		<h4>Team {{teamid}} : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
-		<h4>{{playingplayers.length}} players playing : </h4>
+	<!-- Plays -->
+	<div ng-controller="Plays" ng-init="init(0)">
+		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
+		<h4>players playing : </h4>
 		<div class="players-list">
 			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)">
 				<strong>{{player.name}}</strong><span>{{player.number}}</span>
 			</a>
+			<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
 		</div>
-		<p><a class="btn btn-default" ng-click="showBench()">Add player from the bench</a></p>
 		<div class="modal fade" id="bench">
 			<div class="modal-dialog">
 				<div class="modal-content">
