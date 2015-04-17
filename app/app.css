@@ -4903,18 +4903,41 @@ button.close {
   .hidden-print {
     display: none !important; } }
 
-.players-list .player {
-  vertical-align: top;
-  display: inline-block;
-  width: 15%;
-  min-height: 75px;
-  margin: 0 5px 5px 0;
-  padding: 5px;
-  text-align: center;
-  line-height: 1;
-  border: solid 5px #efefef; }
-  .players-list .player > strong {
-    font-size: 14px; }
-  .players-list .player > span {
-    display: block;
-    font-size: 30px; }
+.players-list {
+  margin: 2em -5px; }
+  .players-list .player {
+    vertical-align: top;
+    display: inline-block;
+    width: 15%;
+    min-height: 75px;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+    line-height: 1;
+    border: solid 5px #efefef; }
+    .players-list .player > strong {
+      font-size: 14px; }
+    .players-list .player > span {
+      display: block;
+      font-size: 30px; }
+
+.plays-list {
+  margin: 2em -5px; }
+  .plays-list > a {
+    display: inline-block;
+    width: 15%;
+    height: 100px;
+    margin: 5px;
+    font-size: 16px;
+    text-align: center;
+    padding: 10px;
+    border: solid 5px #efefef; }
+
+.playbyplay {
+  height: 200px;
+  overflow: auto; }
+  .playbyplay ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 11px; }

@@ -1,11 +1,11 @@
 	<div class="page-header">
 		<h1>{{gamedatas.name}} <span class="small">({{gamedatas.id}})</span></h1>
 		<span class="muted">
-		playersready : {{gamestatuses.playersready}}
-		<br>gamestarted : {{gamestatuses.gamestarted}}
-		<br>clockisrunning : {{gamestatuses.clockisrunning}}
-		<br>periodisrunning : {{gamestatuses.periodisrunning}}
-		<br>regulationisover : {{gamestatuses.regulationisover}}
+			playersready : {{gamestatuses.playersready}}
+			<br>gamestarted : {{gamestatuses.gamestarted}}
+			<br>clockisrunning : {{gamestatuses.clockisrunning}}
+			<br>periodisrunning : {{gamestatuses.periodisrunning}}
+			<br>regulationisover : {{gamestatuses.regulationisover}}
 		</span>
 	</div>
 
@@ -35,12 +35,21 @@
 	<div ng-controller="Plays" ng-init="init(0)">
 		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
 		<h4>players playing : </h4>
-		<div class="players-list">
-			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)">
+
+		<!-- players -->
+		<div class="players-list" ng-hide="play.time">
+			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
 				<strong>{{player.name}}</strong><span>{{player.number}}</span>
 			</a>
 			<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
 		</div>
+
+		<!-- play -->
+		<div class="plays-list" ng-show="play.time">
+			<a ng-click="playSubstitution()">Subs</a>
+		</div>
+
+		<!-- bench modal -->
 		<div class="modal fade" id="bench">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -59,4 +68,13 @@
 				</div>
 			</div>
 		</div>
+	</div>
+
+	<!-- Play By Play -->
+	<div ng-controller="PlayByPlay" class="playbyplay">
+		<ul>
+			<li ng-repeat="play in plays | reverse">
+				{{play.time}} - {{play.playerid}} - {{play.action}}
+			</li>
+		</ul>
 	</div>

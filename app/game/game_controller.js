@@ -29,21 +29,21 @@
     return {
       id : null,
       name : '',
+      // team
       teams : [
-        { // 1st team :
-          name : '',
-          color: '',
-          players : [
-            // {name, number, playing}
-            ]
-          }
-          ],
-          chrono : {
-            nb_periods : 4,
-          minutes_periods : 10, // minutes
-          curr_period : 0,
-          curr_time : 0, // in secondes
+      { 
+        name : '',
+        color: '',
+          players : [] // {id, name, number, playing}          
         }
+        ],
+        chrono : {
+          nb_periods : 4,
+        minutes_periods : 10, // minutes
+        curr_period : 0,
+        curr_time : 0, // in secondes
+      },
+      playbyplay : []
     };
   });
   
@@ -64,13 +64,13 @@
   * 
   */
   app
-    .controller('Game', function ($scope, $filter, config, $indexedDB, gameDatas, GameDatasFact, GameStatusesFact) {
-      angular.merge(GameDatasFact, gameDatas);
+  .controller('Game', function ($scope, $filter, config, $indexedDB, gameDatas, GameDatasFact, GameStatusesFact) {
+    angular.merge(GameDatasFact, gameDatas);
 
-      $scope.gamedatas = GameDatasFact;
-      $scope.gamestatuses = GameStatusesFact;
+    $scope.gamedatas = GameDatasFact;
+    $scope.gamestatuses = GameStatusesFact;
 
-      // ready
+      // watch players
       var playersready_watch = $scope.$watch(
         function () { return GameDatasFact.teams[0].players; },
         function (newVal, oldVal) {
@@ -79,10 +79,10 @@
           if (GameStatusesFact.playersready) { playersready_watch(); }
         },
         true
-      );
+        );
 
-      // started    
-      var gamestarted_watch = $scope.$watch(
+      // watch play
+      $scope.$watch(
         function () { return GameDatasFact.chrono; },
         function (newVal, oldVal) {
           GameStatusesFact.gamestarted = !(GameDatasFact.chrono.curr_time === 0 && GameDatasFact.chrono.curr_period === 0);
@@ -100,7 +100,7 @@
       };
 
     })
-  ;
+;
 
 
 
@@ -111,31 +111,80 @@
   * 
   */
   app.controller('Plays', function ($scope, $filter, GameDatasFact, GameStatusesFact) {
+
+
+
+    $scope.resetPlay = function() {
+      $scope.play = {
+        time : null,
+        teamid : null,
+        playerid : null,
+        action : null
+      };
+    }
+    $scope.resetPlay();
     
+
+
     $scope.init = function(teamid) {
       $scope.teamid = teamid
       $scope.team = GameDatasFact.teams[teamid];
     };
 
+
+    // players 
     $scope.getEmptyPlayersSpots = function(){
       var 
-        pp = $filter('getCourtPlayers')(GameDatasFact.teams[0].players),
-        bp = $filter('getBenchPlayers')(GameDatasFact.teams[0].players)
+      pp = $filter('getCourtPlayers')(GameDatasFact.teams[0].players),
+      bp = $filter('getBenchPlayers')(GameDatasFact.teams[0].players)
       ;
       var n = Math.min(bp.length, (5-pp.length));
-      return new Array(n);
+      return new Array(Math.max(0, n));
     }
 
-    $scope.showBench = function() {
+
+    // plays
+    $scope.savePlay = function() {
+      GameDatasFact.playbyplay.push(
+        $scope.play
+        );
+      $scope.resetPlay();
+    };
+    $scope.selectPlayer = function(player){
+      $scope.play.time = (GameDatasFact.chrono.curr_period*GameDatasFact.chrono.minutes_periods*60) + (GameDatasFact.chrono.minutes_periods*60) - GameDatasFact.chrono.curr_time;
+      $scope.play.teamid = $scope.teamid;
+      $scope.play.playerid = player.id;
+    }
+    $scope.playSubstitution = function(){
       $('#bench').modal('show');
     };
 
+
+    // bench
+    $scope.showBench = function() {
+      $('#bench').modal('show');
+    };
     $scope.selectPlayerFromBench = function(player) {
       $('#bench').modal('hide');
-      var index = GameDatasFact.teams[$scope.teamid].players.indexOf(player);
-      GameDatasFact.teams[$scope.teamid].players[index].playing = true;
+
+      // set as not playing
+      if ($scope.play.playerid !== null) {
+        var pp = $filter('getPlayerById')(GameDatasFact.teams[$scope.teamid].players, $scope.play.playerid);
+        var index_pp = GameDatasFact.teams[$scope.teamid].players.indexOf(pp);
+        GameDatasFact.teams[$scope.teamid].players[index_pp].playing = false;
+        $scope.play.action = 'out';
+        $scope.savePlay();
+      }
+      
+      // set as playing
+      var index_player = GameDatasFact.teams[$scope.teamid].players.indexOf(player);
+      GameDatasFact.teams[$scope.teamid].players[index_player].playing = true;
+      $scope.selectPlayer(player);
+      $scope.play.action = 'in';
+      $scope.savePlay();
       $scope.saveGameDatasFact();
     };
+
 
   });
 
@@ -164,6 +213,44 @@
       return filtered;
     };
   });
+
+  app.filter('getPlayerById', function() {
+    return function(players, id) {
+      var i=0, len=players.length;
+      for (; i<len; i++) {
+        if (players[i].id === id) {
+          console.log('getPlayerById', id, '>', i, players[i]);
+          return players[i];
+        }
+      }
+      return Array();
+    }
+  });
+
+
+
+  /**
+  * Play By Play
+  *
+  * 
+  */
+  app
+    .controller('PlayByPlay', function ($scope, $filter, GameDatasFact) {
+      // watch play
+      $scope.$watch(
+        function () { return GameDatasFact.playbyplay; },
+        function (newVal, oldVal) {
+          $scope.plays = GameDatasFact.playbyplay;
+        },
+        true
+      );
+    })
+    .filter('reverse', function() {
+      return function(items) {
+        return items.slice().reverse();
+      };
+    })
+  ;
 
   /**
   * Chrono
@@ -201,7 +288,6 @@
       GameStatusesFact.clockisrunning = false;
       $scope.saveGameDatasFact();
     };
-
 
   });
 
@@ -250,8 +336,8 @@
   app.filter('chronoGotoNextPeriod', function (GameDatasFact) {
     return function (period) {
       var 
-        p = period+1,
-        output = "Go to "
+      p = period+1,
+      output = "Go to "
       ;
       if (p <= GameDatasFact.chrono.nb_periods) {
         output += 'next period';

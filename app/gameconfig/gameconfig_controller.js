@@ -30,14 +30,16 @@
     })
     ;
   })
-  .controller('gameConfig', function ($scope, config, $routeParams, $indexedDB, gameDatas, GameDatasFact) {
+  .controller('gameConfig', function ($scope, $filter, config, $routeParams, $indexedDB, gameDatas, GameDatasFact) {
     angular.merge(GameDatasFact, gameDatas);
     
     $scope.gamedatas = GameDatasFact;
 
     $scope.addPayer = function() {
-      $scope.gamedatas.teams[0].players.push({playing:false});
+      var id = Math.round(Math.random()*10000);
+      $scope.gamedatas.teams[0].players.push({id:id, playing:false});
     };
+
     $scope.removePlayer = function(index) {      
       $scope.gamedatas.teams[0].players.splice(index, 1);
     };
@@ -46,10 +48,10 @@
       console.log('save', GameDatasFact);
       $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
         if ($routeParams.sheetId !== 'new') {
-          store.upsert (GameDatasFact).then(function(e){console.log(e);});
+          store.upsert(GameDatasFact).then(function(e){console.log(e);});
         }
         else {
-          store.insert (GameDatasFact).then(function(e){console.log(e);});
+          store.insert(GameDatasFact).then(function(e){console.log(e);});
         }
       });
     };

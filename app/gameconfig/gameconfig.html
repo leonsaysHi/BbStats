@@ -1,7 +1,6 @@
 <form action="/" ng-submit="save()">
 	<div class="form-group">
-		<label for="id">Id</label>
-		<input class="form-control" id="id" type="text" id="id" ng-model="gamedatas.id" placeholder="No id ?!" disabled>
+		<input class="form-control" type="text" ng-model="gamedatas.id" placeholder="No id ?!" disabled>
 	</div>
 	<fieldset>
 		<legend>Game</legend>
@@ -56,7 +55,10 @@
 				<tr ng-repeat="(playerid, player) in gamedatas.teams[0].players">
 					<td><input class="form-control" type="number" ng-model="player.number" placeholder="Player's number"></td>
 					<td><input class="form-control" type="text" ng-model="player.name" placeholder="Player's name"></td>
-					<td><a class="btn btn-default" ng-click="removePlayer(playerid)">&times;</a></td>
+					<td>
+						<input type="text" ng-model="player.id">
+						<a class="btn btn-default" ng-click="removePlayer(playerid)">&times;</a>
+					</td>
 				</tr>
 			</tbody>
 			<tfoot>
