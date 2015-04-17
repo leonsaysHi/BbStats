@@ -1,0 +1,13 @@
+.plays-list {
+	margin:2em -5px;
+	> a { 
+		display:inline-block;
+		width:15%;
+		height:100px;
+		margin:5px;
+		font-size:16px;
+		text-align:center;
+		padding:10px;
+		border:solid 5px #efefef;
+	}
+}
