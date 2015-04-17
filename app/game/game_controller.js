@@ -242,7 +242,26 @@
         output += 'th';
         break;
       }
-      if (ot) { output += 'OT'; }
+      output +=   (ot) ? ' OT' : 'QT';
+      return output;
+    };
+  });
+
+  app.filter('chronoGotoNextPeriod', function (GameDatasFact) {
+    return function (period) {
+      var 
+        p = period+1,
+        output = "Go to "
+      ;
+      if (p <= GameDatasFact.chrono.nb_periods) {
+        output += 'next period';
+      }
+      else if (p>GameDatasFact.chrono.nb_periods+1) {
+        output += 'next overtime';
+      }
+      else {
+        output += 'overtime';
+      }
       return output;
     };
   });

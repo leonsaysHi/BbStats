@@ -22,10 +22,7 @@
 				<span class="muted">{{gamedatas.chrono.curr_period | chronoPeriod}}</span> : <strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
 			</h2>
 			<!-- between periods -->
-			<div ng-show="!gamestatuses.periodisrunning">
-				<a class="btn btn-default btn-sm" ng-show="!gamestatuses.regulationisover" ng-click="nextPeriod()">Go to next period</a>
-				<a class="btn btn-default btn-sm" ng-show="gamestatuses.regulationisover" ng-click="nextPeriod()">Go to overtime</a>
-			</div>
+				<a class="btn btn-default btn-sm" ng-show="!gamestatuses.periodisrunning" ng-click="nextPeriod()">{{gamedatas.chrono.curr_period | chronoGotoNextPeriod}}</a>
 			<!-- play / stop -->
 			<div ng-show="gamestatuses.periodisrunning">			
 				<a class="btn btn-default btn-sm" ng-show="!gamestatuses.clockisrunning" ng-click="play()">Play</a>
