@@ -118,7 +118,7 @@
       $scope.play = {
         time : null,
         teamid : null,
-        playerid : null,
+        player : null,
         action : null
       };
     }
@@ -140,20 +140,25 @@
       ;
       var n = Math.min(bp.length, (5-pp.length));
       return new Array(Math.max(0, n));
-    }
+    };
 
 
     // plays
     $scope.savePlay = function() {
       GameDatasFact.playbyplay.push(
-        $scope.play
-        );
+        {
+          time : $scope.play.time,
+          teamid : $scope.teamid,
+          playerid : $scope.play.player.id,
+          action : $scope.play.action
+        }
+      );
       $scope.resetPlay();
     };
     $scope.selectPlayer = function(player){
       $scope.play.time = (GameDatasFact.chrono.curr_period*GameDatasFact.chrono.minutes_periods*60) + (GameDatasFact.chrono.minutes_periods*60) - GameDatasFact.chrono.curr_time;
       $scope.play.teamid = $scope.teamid;
-      $scope.play.playerid = player.id;
+      $scope.play.player = player;
     }
     $scope.playSubstitution = function(){
       $('#bench').modal('show');
@@ -168,9 +173,8 @@
       $('#bench').modal('hide');
 
       // set as not playing
-      if ($scope.play.playerid !== null) {
-        var pp = $filter('getPlayerById')(GameDatasFact.teams[$scope.teamid].players, $scope.play.playerid);
-        var index_pp = GameDatasFact.teams[$scope.teamid].players.indexOf(pp);
+      if ($scope.play.player !== null) {
+        var index_pp = GameDatasFact.teams[$scope.teamid].players.indexOf($scope.play.player);
         GameDatasFact.teams[$scope.teamid].players[index_pp].playing = false;
         $scope.play.action = 'out';
         $scope.savePlay();
@@ -213,20 +217,6 @@
       return filtered;
     };
   });
-
-  app.filter('getPlayerById', function() {
-    return function(players, id) {
-      var i=0, len=players.length;
-      for (; i<len; i++) {
-        if (players[i].id === id) {
-          console.log('getPlayerById', id, '>', i, players[i]);
-          return players[i];
-        }
-      }
-      return Array();
-    }
-  });
-
 
 
   /**
