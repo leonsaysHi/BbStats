@@ -36,7 +36,15 @@
     $scope.gamedatas = GameDatasFact;
 
     $scope.addPayer = function() {
-      var id = Math.round(Math.random()*10000);
+      var test = true, id;
+      // find unique id :
+      while (test === true) {
+        id = Math.round(Math.random()*10000);
+        var f = $filter('filter')($scope.gamedatas.teams[0].players, function (player) {
+          return (player.id === id);
+        });
+        test = !(f.length === 0);
+      }
       $scope.gamedatas.teams[0].players.push({id:id, playing:false});
     };
 
