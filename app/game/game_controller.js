@@ -47,17 +47,6 @@
       playbyplay : []
     };
   });
-  
-  // Stores UI vars
-  app.factory('GameUIFact', function() {
-    return {
-      playersready : false,
-      gamestarted : false,
-      clockisrunning : false,
-      periodisrunning : false,
-      regulationisover : false
-    };
-  });
 
 
   /**
@@ -66,33 +55,23 @@
   * 
   */
   app
-  .controller('Game', function ($scope, $filter, config, $indexedDB, gameDatas, GameDatasFact, GameUIFact) {
-    angular.merge(GameDatasFact, gameDatas);
+    .controller('Game', function ($scope, $filter, config, $indexedDB, gameDatas, GameDatasFact) {
+      
+      angular.merge(GameDatasFact, gameDatas);
+      $scope.gamedatas = GameDatasFact;
 
-    $scope.gamedatas = GameDatasFact;
-    $scope.gamestatuses = GameUIFact;
-
-      // watch players
+      // are players ready
+      $scope.playersready = false;
       var playersready_watch = $scope.$watch(
         function () { return GameDatasFact.teams[0].players; },
         function (newVal, oldVal) {
           var fp = $filter('getCourtPlayers')(GameDatasFact.teams[0].players);
-          GameUIFact.playersready = (fp.length == 5);
-          if (GameUIFact.playersready) { playersready_watch(); }
+          $scope.playersready = (fp.length == 5);
+          if ($scope.playersready) { playersready_watch(); }
         },
         true
         );
 
-      // watch play
-      $scope.$watch(
-        function () { return GameDatasFact.chrono; },
-        function (newVal, oldVal) {
-          GameUIFact.gamestarted = !(GameDatasFact.chrono.curr_time === 0 && GameDatasFact.chrono.curr_period === 0);
-          GameUIFact.periodisrunning = GameDatasFact.chrono.curr_time > 0;
-          GameUIFact.regulationisover = (GameDatasFact.chrono.curr_period >= GameDatasFact.chrono.nb_periods);
-        },
-        true
-      );
 
       $scope.saveGameDatasFact = function() {
         var gamedatas = GameDatasFact;
@@ -112,7 +91,7 @@
   *
   * 
   */
-  app.controller('Plays', function ($scope, $filter, GameDatasFact, GameUIFact) {
+  app.controller('Plays', function ($scope, $filter, GameDatasFact) {
 
 
 
@@ -275,24 +254,35 @@
   *
   * 
   */
-  app.controller('Chrono', function ($scope, $interval, GameDatasFact, GameUIFact) {
+  app.controller('Chrono', function ($scope, $interval, GameDatasFact) {
 
     $scope.timer = null;
+    $scope.periodisrunning = GameDatasFact.chrono.curr_time>0;
+
+
+      // watch play
+      $scope.$watch(
+        function () { return GameDatasFact.chrono; },
+        function (newVal, oldVal) {
+          $scope.gamestarted = !(GameDatasFact.chrono.curr_time === 0 && GameDatasFact.chrono.curr_period === 0);
+        },
+        true
+      );
     
     $scope.nextPeriod = function() {
       GameDatasFact.chrono.curr_period += 1;
       GameDatasFact.chrono.curr_time = 60 * GameDatasFact.chrono.minutes_periods;
-      GameUIFact.periodisrunning = true;
+      $scope.periodisrunning = true;
     };
 
     $scope.play = function() {
-      GameUIFact.clockisrunning = true;
+      $scope.clockisrunning = true;
       $scope.timer = $interval(
         function(){
           GameDatasFact.chrono.curr_time -= 0.1;
           if (GameDatasFact.chrono.curr_time <=0) {
             GameDatasFact.chrono.curr_time = 0;
-            GameUIFact.periodisrunning = false;
+            $scope.periodisrunning = false;
             $scope.stop();
           }
         },
@@ -303,7 +293,7 @@
     $scope.stop = function() {
       $interval.cancel($scope.timer);
       $scope.timer = null;
-      GameUIFact.clockisrunning = false;
+     $scope.clockisrunning = false;
       $scope.saveGameDatasFact();
     };
 
