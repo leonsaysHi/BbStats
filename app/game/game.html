@@ -1,10 +1,6 @@
 	<div class="page-header">
-		<h1>{{gamedatas.name}} <span class="small">({{gamedatas.id}})</span></h1>
-		<span class="muted">
-			playersready : {{playersready}}
-			<br>curr_period : {{gamedatas.chrono.curr_period}}
-			<br>curr_time : {{gamedatas.chrono.curr_time}}
-		</span>
+		<h1>{{gamedatas.name}}</h1>
+		<a href="#/gameconfig/{{gamedatas.id}}" class="text-muted">Edit</a> - <a href="#/" class="text-muted">Close</a>
 	</div>
 
 	<!-- Chrono -->
@@ -107,7 +103,53 @@
 				</div>
 			</div>
     		<div class="tab-pane" id="boxscore">
-				[stats here]
+				<table class="table table-condensed table-bordered table-striped">
+					<thead>
+						<tr class="headrange">
+							<td colspan="2"></td>
+							<td colspan="3">Field goals</td>
+							<td></td>
+							<td colspan="3">Rebounds</td>
+							<td colspan="6"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>Min</td>
+							<td>FgM-A</td>
+							<td>3pM-A</td>
+							<td>FtM-A</td>
+							<td>+/-</td>
+							<td>Off</td>
+							<td>Def</td>
+							<td>Tot</td>
+							<td>Ast</td>
+							<td>Pf</td>
+							<td>St</td>
+							<td>To</td>
+							<td>Blk</td>
+							<td>Pts</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="player in gamedatas.teams[0].players">
+							<td>{{player.name}}</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</ul>
 	</div>

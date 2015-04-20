@@ -50,13 +50,14 @@
 
 
   /**
-  * Game
+  * Game : Parent controller
   *
   * 
   */
   app
     .controller('Game', function ($scope, $filter, config, $indexedDB, gameDatas, GameDatasFact) {
       
+      // init store GameDatasFact into scope
       angular.merge(GameDatasFact, gameDatas);
       $scope.gamedatas = GameDatasFact;
 
@@ -70,9 +71,9 @@
           if ($scope.playersready) { playersready_watch(); }
         },
         true
-        );
+      );
 
-
+      // Saving current game state
       $scope.saveGameDatasFact = function() {
         var gamedatas = GameDatasFact;
         $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
@@ -153,6 +154,7 @@
         }
       );
       $scope.resetPlay();
+      $scope.saveGameDatasFact();
     };
     $scope.playSubstitution = function(){
       $('#bench').modal('show');
@@ -227,7 +229,7 @@
 
 
   /**
-  * Play By Play
+  * Output
   *
   * 
   */
@@ -336,7 +338,7 @@
         output += 'th';
         break;
       }
-      output +=   (ot) ? ' OT' : 'QT';
+      output +=   (ot) ? ' OT' : ' Qt';
       return output;
     };
   });
