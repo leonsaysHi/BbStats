@@ -30,6 +30,15 @@
 		}
 	);
 
-
+	app.directive('showTab', function () {
+        return {
+            link: function (scope, element, attrs) {
+                $(element).on('click', function(e) {
+                    e.preventDefault();
+                    $(this).tab('show');
+                });
+            }
+        };
+    });
 
 })();

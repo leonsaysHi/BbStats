@@ -4935,11 +4935,6 @@ button.close {
     padding: 10px;
     border: solid 5px #efefef; }
 
-.playbyplay {
+#outputs .tab-content > div {
   height: 200px;
   overflow: auto; }
-  .playbyplay ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 11px; }

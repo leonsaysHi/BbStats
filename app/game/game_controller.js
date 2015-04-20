@@ -234,7 +234,7 @@
   * 
   */
   app
-    .controller('PlayByPlay', function ($scope, $filter, GameDatasFact) {
+    .controller('Output', function ($scope, $filter, GameDatasFact) {
       // watch play
       $scope.$watch(
         function () { return GameDatasFact.playbyplay; },

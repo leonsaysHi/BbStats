@@ -38,7 +38,8 @@
 
 		<!-- players -->
 		<div class="players-list">
-			<a class="player" ng-class="{selected:play.player.id===player.id}" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
+			<a class="player" ng-show="play.time" ng-click="resetPlay()"><span>&times;</span></a>
+			<a class="player" ng-class="{selected:play.player.id===player.id}" ng-show="play.time === null || play.player.id===player.id" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
 				<strong>{{player.name}}</strong><span>{{player.number}}</span>
 			</a>
 			<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
@@ -57,12 +58,12 @@
 				<a ng-click="playSubstitution()">Subs</a>
 			</div>
 			<div ng-show="play.action=='fg'">
-				<a ng-click="selectAction('ft-a')">1pt missed</a>
-				<a ng-click="selectAction('2fg-a')">2pts missed</a>
-				<a ng-click="selectAction('3fg-a')">3pts missed</a>
-				<a ng-click="selectAction('ft-m')">1pt made</a>
-				<a ng-click="selectAction('2fg-m')">2pts made</a>
-				<a ng-click="selectAction('3fg-m')">3pts made</a>
+				<a ng-click="selectAction('fta')">1pt missed</a>
+				<a ng-click="selectAction('fga-2')">2pts missed</a>
+				<a ng-click="selectAction('fga-3')">3pts missed</a>
+				<a ng-click="selectAction('ftm')">1pt made</a>
+				<a ng-click="selectAction('fgm-2')">2pts made</a>
+				<a ng-click="selectAction('fgm-3')">3pts made</a>
 			</div>
 			<div ng-show="play.action=='reb'">
 				<a ng-click="selectAction('reb-def')">Def</a>
@@ -93,10 +94,17 @@
 	</div>
 
 	<!-- Play By Play -->
-	<div ng-controller="PlayByPlay" class="playbyplay">
-		<ul>
-			<li ng-repeat="play in plays | reverse">
-				{{play.time}} - {{play.playerid}} - {{play.action}}
-			</li>
+	<div ng-controller="Output" id="outputs">
+		<ul class="nav nav-tabs">
+		    <li class="active"><a show-tab href="#play-by-play">Play-by-play</a></li>
+		    <li><a show-tab href="#boxscore">Box score</a></li>
+		</ul>
+		<div class="tab-content">
+    		<div class="tab-pane active" id="play-by-play">
+				<div ng-repeat="play in plays | reverse">{{play.time}} - {{play.playerid}} - {{play.action}}</div>
+			</div>
+    		<div class="tab-pane" id="boxscore">
+				[stats here]
+			</div>
 		</ul>
 	</div>
