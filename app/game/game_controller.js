@@ -141,6 +141,7 @@
       if(save) {
         $scope.savePlay();
       }
+      // todo fgm should increase fga too
     };
     $scope.savePlay = function() {
       GameDatasFact.playbyplay.push(
@@ -241,6 +242,7 @@
         function () { return GameDatasFact.playbyplay; },
         function (newVal, oldVal) {
           $scope.plays = GameDatasFact.playbyplay;
+          // Toto update stats
         },
         true
       );
