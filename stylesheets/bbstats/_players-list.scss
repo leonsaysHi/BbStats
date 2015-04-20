@@ -17,5 +17,8 @@
 			display:block;
 			font-size:30px;
 		}
+		&.selected {
+			border-color:blue;
+		}
 	}
 }
