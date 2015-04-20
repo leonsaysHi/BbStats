@@ -37,8 +37,8 @@
 		<h4>players playing : </h4>
 
 		<!-- players -->
-		<div class="players-list" ng-hide="play.time">
-			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
+		<div class="players-list">
+			<a class="player" ng-class="{selected:play.player.id===player.id}" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
 				<strong>{{player.name}}</strong><span>{{player.number}}</span>
 			</a>
 			<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
@@ -46,7 +46,28 @@
 
 		<!-- play -->
 		<div class="plays-list" ng-show="play.time">
-			<a ng-click="playSubstitution()">Subs</a>
+			<div ng-show="play.action===null">
+				<a ng-click="selectAction('fg', false)" >Shoot</a>
+				<a ng-click="selectAction('ast')">Assist</a>
+				<a ng-click="selectAction('reb', false)">Rebound</a>
+				<a ng-click="selectAction('to')">Turn over</a>
+				<a ng-click="selectAction('st')">Steal</a>
+				<a ng-click="selectAction('blk')">Block</a>
+				<a ng-click="selectAction('f')">Foul</a>
+				<a ng-click="playSubstitution()">Subs</a>
+			</div>
+			<div ng-show="play.action=='fg'">
+				<a ng-click="selectAction('ft-a')">1pt missed</a>
+				<a ng-click="selectAction('2fg-a')">2pts missed</a>
+				<a ng-click="selectAction('3fg-a')">3pts missed</a>
+				<a ng-click="selectAction('ft-m')">1pt made</a>
+				<a ng-click="selectAction('2fg-m')">2pts made</a>
+				<a ng-click="selectAction('3fg-m')">3pts made</a>
+			</div>
+			<div ng-show="play.action=='reb'">
+				<a ng-click="selectAction('reb-def')">Def</a>
+				<a ng-click="selectAction('reb-off')">Off</a>
+			</div>
 		</div>
 
 		<!-- bench modal -->
@@ -68,6 +89,7 @@
 				</div>
 			</div>
 		</div>
+
 	</div>
 
 	<!-- Play By Play -->

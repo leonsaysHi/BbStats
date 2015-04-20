@@ -4920,10 +4920,12 @@ button.close {
     .players-list .player > span {
       display: block;
       font-size: 30px; }
+    .players-list .player.selected {
+      border-color: blue; }
 
 .plays-list {
   margin: 2em -5px; }
-  .plays-list > a {
+  .plays-list a {
     display: inline-block;
     width: 15%;
     height: 100px;
