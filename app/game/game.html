@@ -6,6 +6,8 @@
 			<br>clockisrunning : {{gamestatuses.clockisrunning}}
 			<br>periodisrunning : {{gamestatuses.periodisrunning}}
 			<br>regulationisover : {{gamestatuses.regulationisover}}
+			<br>curr_period : {{gamedatas.chrono.curr_period}}
+			<br>curr_time : {{gamedatas.chrono.curr_time}}
 		</span>
 	</div>
 
@@ -101,7 +103,10 @@
 		</ul>
 		<div class="tab-content">
     		<div class="tab-pane active" id="play-by-play">
-				<div ng-repeat="play in plays | reverse">{{play.time}} - {{play.playerid}} - {{play.action}}</div>
+				<div ng-repeat="play in plays | reverse">
+					<span class="text-muted">{{play.curr_period | chronoPeriod}} - {{play.curr_time | chronoTime}} </span>
+					{{play.playerid | playerFromPid}} : <strong>{{play.action}}</strong>
+				</div>
 			</div>
     		<div class="tab-pane" id="boxscore">
 				[stats here]

@@ -119,6 +119,8 @@
     $scope.resetPlay = function() {
       $scope.play = {
         time : null,
+        curr_time : null,
+        curr_period : null,
         teamid : null,
         player : null,
         action : null
@@ -147,7 +149,9 @@
 
     // plays
     $scope.selectPlayer = function(player){
-      $scope.play.time = (GameDatasFact.chrono.curr_period*GameDatasFact.chrono.minutes_periods*60) + (GameDatasFact.chrono.minutes_periods*60) - GameDatasFact.chrono.curr_time;
+      $scope.play.time = ((GameDatasFact.chrono.curr_period-1)*(GameDatasFact.chrono.minutes_periods*60)) + ((GameDatasFact.chrono.minutes_periods*60) - GameDatasFact.chrono.curr_time);
+      $scope.play.curr_time = GameDatasFact.chrono.curr_time;
+      $scope.play.curr_period = GameDatasFact.chrono.curr_period;
       $scope.play.teamid = $scope.teamid;
       $scope.play.player = player;
     }
@@ -162,6 +166,8 @@
       GameDatasFact.playbyplay.push(
         {
           time : $scope.play.time,
+          curr_period : $scope.play.curr_period,
+          curr_time : $scope.play.curr_time,
           teamid : $scope.teamid,
           playerid : $scope.play.player.id,
           action : $scope.play.action
@@ -224,6 +230,19 @@
         }
       }
       return filtered;
+    };
+  });
+
+  app.filter('playerFromPid', function (GameDatasFact) {
+    return function (id) {
+      var players = GameDatasFact.teams[0].players;
+      for (var i = 0; i < players.length; i++) {
+        var player = players[i];
+        console.log(id, player.id);
+        if (player.id===id) {
+          return '#'+player.number + ' ' + player.name;
+        }
+      }
     };
   });
 
