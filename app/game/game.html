@@ -55,15 +55,15 @@
 			</div>
 			<div ng-show="play.action=='fg'">
 				<a ng-click="selectAction('fta')">1pt missed</a>
-				<a ng-click="selectAction('fga-2')">2pts missed</a>
-				<a ng-click="selectAction('fga-3')">3pts missed</a>
+				<a ng-click="selectAction('fga2')">2pts missed</a>
+				<a ng-click="selectAction('fga3')">3pts missed</a>
 				<a ng-click="selectAction('ftm')">1pt made</a>
-				<a ng-click="selectAction('fgm-2')">2pts made</a>
-				<a ng-click="selectAction('fgm-3')">3pts made</a>
+				<a ng-click="selectAction('fgm2')">2pts made</a>
+				<a ng-click="selectAction('fgm3')">3pts made</a>
 			</div>
 			<div ng-show="play.action=='reb'">
-				<a ng-click="selectAction('reb-def')">Def</a>
-				<a ng-click="selectAction('reb-off')">Off</a>
+				<a ng-click="selectAction('rebdef')">Def</a>
+				<a ng-click="selectAction('reboff')">Off</a>
 			</div>
 		</div>
 
@@ -134,18 +134,18 @@
 						<tr ng-repeat="player in gamedatas.teams[0].players">
 							<td>{{player.name}}</td>
 							<td></td>
+							<td>{{stats[player.id].fgm2}} - {{stats[player.id].fga2}}</td>
+							<td>{{stats[player.id].fgm3}} - {{stats[player.id].fga3}}</td>
+							<td>{{stats[player.id].ftm}} - {{stats[player.id].fta}}</td>
 							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
+							<td>{{stats[player.id].reboff}}</td>
+							<td>{{stats[player.id].rebdef}}</td>
+							<td>{{stats[player.id].reboff + stats[player.id].rebdef}}</td>
+							<td>{{stats[player.id].ast}}</td>
+							<td>{{stats[player.id].f}}</td>
+							<td>{{stats[player.id].st}}</td>
+							<td>{{stats[player.id].to}}</td>
+							<td>{{stats[player.id].blk}}</td>
 							<td></td>
 						</tr>
 					</tbody>

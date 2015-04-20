@@ -32,19 +32,19 @@
       name : '',
       // team
       teams : [
-      { 
-        name : '',
-        color: '',
+        { 
+          name : '',
+          color: '',
           players : [] // {id, name, number, playing}          
         }
-        ],
-        chrono : {
-          nb_periods : 4,
+      ],
+      chrono : {
+        nb_periods : 4,
         minutes_periods : 10, // minutes
         curr_period : 0,
         curr_time : 0, // in secondes
       },
-      playbyplay : []
+      playbyplay : [], // { time, curr_period, curr_time, teamid, playerid, action}
     };
   });
 
@@ -116,11 +116,11 @@
     };
 
 
-    // players 
+    // return an array of empty player spot 
     $scope.getEmptyPlayersSpots = function(){
       var 
-      pp = $filter('getCourtPlayers')(GameDatasFact.teams[0].players),
-      bp = $filter('getBenchPlayers')(GameDatasFact.teams[0].players)
+        pp = $filter('getCourtPlayers')(GameDatasFact.teams[0].players),
+        bp = $filter('getBenchPlayers')(GameDatasFact.teams[0].players)
       ;
       var n = Math.min(bp.length, (5-pp.length));
       return new Array(Math.max(0, n));
@@ -219,7 +219,6 @@
       var players = GameDatasFact.teams[0].players;
       for (var i = 0; i < players.length; i++) {
         var player = players[i];
-        console.log(id, player.id);
         if (player.id===id) {
           return '#'+player.number + ' ' + player.name;
         }
@@ -228,6 +227,7 @@
   });
 
 
+  
   /**
   * Output
   *
@@ -235,6 +235,7 @@
   */
   app
     .controller('Output', function ($scope, $filter, GameDatasFact) {
+      
       // watch play
       $scope.$watch(
         function () { return GameDatasFact.playbyplay; },
@@ -243,6 +244,57 @@
         },
         true
       );
+
+      // update $scope.plyer
+      $scope.updateplayerStats = function (playerid) {
+        var updateall = (typeof playerid === 'undefined');
+        // reset all/playerid stats
+        var players = {};
+        if (updateall) {
+          players = GameDatasFact.teams[0].players;
+        }
+        else {
+          players[playerid] = { id:playerid };
+        }
+        var playerlength = players.length;
+        for (var i = 0; i < playerlength; i++) {
+          var playerid = players[i].id;
+          $scope.stats[playerid] = {
+            'fta':0,
+            'fga2':0,
+            'fga3':0,
+            'ftm':0,
+            'fgm2':0,
+            'fgm3':0,
+            'ast':0,
+            'rebdef':0,
+            'reboff':0,
+            'to':0,
+            'st':0,
+            'blk':0,
+            'f':0
+          };
+        }
+
+        // insert stats :
+        var playbyplay = GameDatasFact.playbyplay, playslength = playbyplay.length;
+        for (var i = 0; i < playslength; i++) {
+          var play = playbyplay[i];
+          if (play.playerid===playerid || updateall) {
+            if (typeof $scope.stats[play.playerid][play.action] !== 'undefined') {
+              $scope.stats[play.playerid][play.action]++;
+            }
+          }
+        }
+        console.log($scope.stats);
+      };
+
+      // init 
+      // 
+      $scope.stats = {};
+      $scope.updateplayerStats();
+
+
     })
     .filter('reverse', function() {
       return function(items) {
