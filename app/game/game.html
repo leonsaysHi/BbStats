@@ -55,7 +55,7 @@
 				<a ng-click="selectAction('st')">Steal</a>
 				<a ng-click="selectAction('blk')">Block</a>
 				<a ng-click="selectAction('f')">Foul</a>
-				<a ng-click="playSubstitution()">Subs</a>
+				<a ng-show="benchplayers.length>0" ng-click="playSubstitution()">Subs</a>
 			</div>
 			<div ng-show="play.action=='fg'">
 				<a ng-click="selectAction('fta')">1pt missed</a>
