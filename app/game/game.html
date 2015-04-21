@@ -26,10 +26,10 @@
 		</div>
 	</div>
 	
-	<!-- Plays -->
+
 	<div ng-controller="Plays" ng-init="init(0)">
 		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
-		recored length : {{recorder.length}}
+		<small>{{recorder}}</small>
 		<!-- players -->
 		<div class="players-list" ng-show="gamedatas.chrono.total_time===0 || recorder.length===0">
 			<h4>players playing : </h4>
@@ -39,7 +39,7 @@
 			<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
 		</div>
 
-		<!-- play -->
+		<!-- plays -->
 		<div class="plays-list" ng-show="gamedatas.chrono.total_time>0 && recorder.length===1">
 			<div ng-show="!recorder[0].action && !subaction">
 				<a ng-repeat="act in actionsdata.base" ng-click="selectAction(act.code, act.subaction, act.addaction)">{{act.label}}</a>
@@ -90,8 +90,8 @@
 		<div class="tab-content">
     		<div class="tab-pane active" id="play-by-play">
 				<div ng-repeat="play in plays | reverse">
-					<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}} </span>
-					{{play[0].playerid | playerFromPid}} : <strong>{{play[0].action}}</strong>
+					<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}}</span>
+					{{play | playByPlay}}</strong>
 				</div>
 			</div>
     		<div class="tab-pane" id="boxscore">

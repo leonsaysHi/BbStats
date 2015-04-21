@@ -160,7 +160,7 @@
 
     // click on player :
     $scope.selectPlayer = function(player, code, subaction, addaction){
-      // init action :
+      // init action : 
       if ($scope.recorder.length === 0) {
         $scope.recorder.push({
           time: GameDatasFact.chrono.total_time,
@@ -171,9 +171,15 @@
           playerid: player.id,
           action: false
         });
+        // pregame substitution :
+        if (GameDatasFact.chrono.total_time===0) {
+          $scope.substitution();
+        }
+
       }
       // addaction : 
       else {
+        console.log('player addaction');
         $scope.recorder.push({
           time: $scope.recorder[0].time,
           curr_time: $scope.recorder[0].curr_time,
@@ -183,12 +189,15 @@
           playerid: player.id,
           action: false
         });
+      }
+      // follow with addaction if necessary args
+      if (typeof code !== 'undefined' && typeof subaction !== 'undefined' && typeof addaction !== 'undefined') {
         $scope.selectAction(code, subaction, addaction);
       }
     };
 
     // click on action
-    $scope.selectAction = function(code, subaction, addaction) {
+    $scope.selectAction = function(code, subaction, addaction) {   
       var actionindex = ($scope.recorder.length-1);
       $scope.subaction = subaction;
       $scope.addaction = addaction;
@@ -199,9 +208,6 @@
       if (!subaction && !addaction) {  
         $scope.savePlay(); 
       }
-    };
-    $scope.selectAddAction = function(player, code, subaction, addaction) {
-
     };
 
     $scope.savePlay = function() {
@@ -220,8 +226,6 @@
       $('#bench').modal('show');
     };
     $scope.selectPlayerFromBench = function(player) {
-      $('#bench').modal('hide');
-
       // set as not playing
       if ($scope.recorder.length===1) {
         $scope.recorder[0].action = ['out'];
@@ -232,7 +236,11 @@
       // set as playing
       var index_bp = GameDatasFact.teams[$scope.teamid].players.indexOf(player);
       GameDatasFact.teams[$scope.teamid].players[index_bp].playing = true;
-      $scope.selectPlayer(player, ['in'], false, false);
+      console.log ('... >', $scope.recorder);  
+      $scope.selectPlayer(player, ['in'], false, false); // full record 
+      console.log ('selectPlayer >', $scope.recorder); 
+
+      $('#bench').modal('hide'); 
     };
 
 
@@ -261,18 +269,6 @@ app.filter('getCourtPlayers', function () {
       }
     }
     return filtered;
-  };
-});
-
-app.filter('playerFromPid', function (GameDatasFact) {
-  return function (id) {
-    var players = GameDatasFact.teams[0].players;
-    for (var i = 0; i < players.length; i++) {
-      var player = players[i];
-      if (player.id===id) {
-        return '#'+player.number + ' ' + player.name;
-      }
-    }
   };
 });
 
@@ -365,6 +361,28 @@ app.filter('playerFromPid', function (GameDatasFact) {
 
 
   })
+.filter('playByPlay', function(GameDatasFact) {
+  return function(play) {
+    var output = '';
+      //console.log(play);
+      /*for (i=0; i<play.length; i++) {
+        var code = play[i].code;
+        var player = $filter('playerFromPid')(play[i].playerid);
+      }*/
+      return 'log';
+    }
+  })
+.filter('playerFromPid', function (GameDatasFact) {
+  return function (id) {
+    var players = GameDatasFact.teams[0].players;
+    for (var i = 0; i < players.length; i++) {
+      var player = players[i];
+      if (player.id===id) {
+        return player;
+      }
+    }
+  };
+})
 .filter('statsPlayingMinutes', function(GameDatasFact) {
   return function(inout) {
     var t=0, i=0, inoutlength = inout.length;
