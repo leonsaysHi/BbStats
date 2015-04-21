@@ -44,48 +44,50 @@
           curr_period: 0,
           curr_time: 0, // in secondes
           total_time: 0 // in secondes
-      },
-      playbyplay: [], // { time, curr_period, curr_time, teamid, playerid, action}
-      actions: {
-        base: [
-          { code:['fg'], label:'Field goal', subactions: true }, 
-          { code:['ast'], label:'Assist', subactions: false }, 
-          { code:['reb'], label:'Rebound', subactions: true }, 
-          { code:['to'], label:'Turn over', subactions: false },
-          { code:['st'], label:'Steal', subactions: false },
-          { code:['blk'], label:'Block', subactions: false },
-          { code:['pf'], label:'Foul', subactions: false }
-        ],
-        subs: {
-          fg: [
-            {code:['fta'], label:'1pt missed'},
-            {code:['fga2'], label:'2pts missed'},
-            {code:['fga3'], label:'3pts missed'},
-            {code:['fta','ftm'], label:'1pt made'},
-            {code:['fga2','fgm2'], label:'2pts made'},
-            {code:['fga3','fgm3'], label:'3pts made'}
-          ],
-          reb: [
-            {code:['reboff'], label:'Off'},
-            {code:['rebdef'], label:'Def'}
-          ]
         },
-        output: [
-          'fta','fga2','fga3',
-          'ftm','fgm2','fgm3',
-          'ast',
-          'rebdef',
-          'reboff',
-          'to',
-          'st',
-          'blk',
-          'f',
-          'pts'
-        ]
-      },
+      playbyplay: [], // { time, curr_period, curr_time, teamid, playerid, action}
     };
   });
 
+
+  app.factory('ActionsDatasFact', function() {
+    return {
+      base: [
+      {code:false, subaction:'fg', label:'Field goal', addaction: false },
+      {code:['rebdef'], subaction:false, label:'Defensive rebound', addaction: false }, 
+      {code:['to'], subaction:false, label:'Turn over', addaction: false },
+      {code:['st'], subaction:false, label:'Steal', addaction: false },
+      {code:['blk'], subaction:false, label:'Block', addaction: false },
+      {code:['pf'], subaction:false, label:'Foul', addaction: false }
+      ],
+      subactions: {
+        fg: [
+        {code:['fta'], subaction:false, label:'1pt missed', addaction: false},
+        {code:['fga2'], subaction:false, label:'2pts missed', addaction:'reboff'},
+        {code:['fga3'], subaction:false, label:'3pts missed', addaction:'reboff'},
+        {code:['fta','ftm'], subaction:false, label:'1pt made', addaction: false},
+        {code:['fga2','fgm2'], subaction:false, label:'2pts made', addaction:'ast'},
+        {code:['fga3','fgm3'], subaction:false, label:'3pts made', addaction:'ast'}
+        ]
+      },
+      addactions: {
+        'reboff': [{code:['reboff'], subaction:false, label:'Offemsive rebound', addaction: false}],
+        'ast': [{code:['ast'], subaction:false, label:'Assist', addaction: false}]
+      },
+      output: [
+      'fta','fga2','fga3',
+      'ftm','fgm2','fgm3',
+      'ast',
+      'rebdef',
+      'reboff',
+      'to',
+      'st',
+      'blk',
+      'f',
+      'pts'
+      ]
+    };
+  });
 
   /**
   * Game : Parent controller
@@ -130,27 +132,18 @@
   *
   * 
   */
-  app.controller('Plays', function ($scope, $filter, GameDatasFact) {
+  app.controller('Plays', function ($scope, $filter, GameDatasFact, ActionsDatasFact) {
 
 
-
-    $scope.resetPlay = function() {
-      $scope.play = {
-        time : null,
-        curr_time : null,
-        curr_period : null,
-        teamid : null,
-        player : null,
-        action : null
-      };
-    }
-    $scope.resetPlay();
-    
-
+    $scope.resetRecorder = function() {
+      $scope.recorder = []; 
+    };
 
     $scope.init = function(teamid) {
+      $scope.actionsdata = ActionsDatasFact;
       $scope.teamid = teamid
       $scope.team = GameDatasFact.teams[teamid];
+      $scope.resetRecorder();
     };
 
 
@@ -165,40 +158,59 @@
     };
 
 
-    // plays
-    $scope.selectPlayer = function(player){
-      $scope.play.time = GameDatasFact.chrono.total_time;
-      $scope.play.curr_time = GameDatasFact.chrono.curr_time;
-      $scope.play.curr_period = GameDatasFact.chrono.curr_period;
-      $scope.play.teamid = $scope.teamid;
-      $scope.play.player = player;
-    }
-    $scope.selectAction = function(code, subactions) {
-      // no subactions :
-      if (subactions === false) {
-        $scope.play.action = code;
+    // click on player :
+    $scope.selectPlayer = function(player, code, subaction, addaction){
+      // init action :
+      if ($scope.recorder.length === 0) {
+        $scope.recorder.push({
+          time: GameDatasFact.chrono.total_time,
+          curr_time: GameDatasFact.chrono.curr_time,
+          curr_period: GameDatasFact.chrono.curr_period,
+          teamid: $scope.teamid,
+          player: player,
+          playerid: player.id,
+          action: false
+        });
+      }
+      // addaction : 
+      else {
+        $scope.recorder.push({
+          time: $scope.recorder[0].time,
+          curr_time: $scope.recorder[0].curr_time,
+          curr_period: $scope.recorder[0].curr_period,
+          teamid: $scope.recorder[0].teamid,
+          player: player,
+          playerid: player.id,
+          action: false
+        });
+        $scope.selectAction(code, subaction, addaction);
+      }
+    };
+
+    // click on action
+    $scope.selectAction = function(code, subaction, addaction) {
+      var actionindex = ($scope.recorder.length-1);
+      $scope.subaction = subaction;
+      $scope.addaction = addaction;
+      if (code) {
+        $scope.recorder[actionindex].action = code;
+      }
+      // save ?
+      if (!subaction && !addaction) {  
         $scope.savePlay(); 
       }
-      // subactions :
-      else {
-        $scope.play.action = code[0];
-      }
     };
+    $scope.selectAddAction = function(player, code, subaction, addaction) {
+
+    };
+
     $scope.savePlay = function() {
-      GameDatasFact.playbyplay.push(
-      {
-        time : $scope.play.time,
-        curr_period : $scope.play.curr_period,
-        curr_time : $scope.play.curr_time,
-        teamid : $scope.teamid,
-        playerid : $scope.play.player.id,
-        action : $scope.play.action
-      }
-      );
-      $scope.resetPlay();
+      console.log('SAVE', $scope.recorder);
+      GameDatasFact.playbyplay.push($scope.recorder);
+      $scope.resetRecorder();
       $scope.saveGameDatasFact();
     };
-    $scope.playSubstitution = function(){
+    $scope.substitution = function(){
       $('#bench').modal('show');
     };
 
@@ -211,20 +223,16 @@
       $('#bench').modal('hide');
 
       // set as not playing
-      if ($scope.play.player !== null) {
-        var index_pp = GameDatasFact.teams[$scope.teamid].players.indexOf($scope.play.player);
+      if ($scope.recorder.length===1) {
+        $scope.recorder[0].action = ['out'];
+        var index_pp = GameDatasFact.teams[$scope.teamid].players.indexOf($scope.recorder[0].player);
         GameDatasFact.teams[$scope.teamid].players[index_pp].playing = false;
-        $scope.play.action = ['out'];
-        $scope.savePlay();
       }
-      
+
       // set as playing
-      var index_player = GameDatasFact.teams[$scope.teamid].players.indexOf(player);
-      GameDatasFact.teams[$scope.teamid].players[index_player].playing = true;
-      $scope.selectPlayer(player);
-      $scope.play.action = ['in'];
-      $scope.savePlay();
-      $scope.saveGameDatasFact();
+      var index_bp = GameDatasFact.teams[$scope.teamid].players.indexOf(player);
+      GameDatasFact.teams[$scope.teamid].players[index_bp].playing = true;
+      $scope.selectPlayer(player, ['in'], false, false);
     };
 
 
@@ -276,7 +284,7 @@ app.filter('playerFromPid', function (GameDatasFact) {
   * 
   */
   app
-  .controller('Output', function ($scope, $filter, GameDatasFact) {
+  .controller('Output', function ($scope, $filter, GameDatasFact, ActionsDatasFact) {
 
     // watch play
     $scope.$watch(
@@ -288,63 +296,60 @@ app.filter('playerFromPid', function (GameDatasFact) {
         if (i === 0) { return; }
         for (i = newVal.length - i;i<newVal.length;i++) {
           var play = $scope.plays[i];
-          $scope.updateplayerStats(play.playerid);
+          $scope.updateScorebox();
         }
       },
       true
       );
 
     // update $scope.stats { playerid: {code:..., code:... } }
-    $scope.updateplayerStats = function (playerid) {
-      var updateall = (typeof playerid === 'undefined');
-      // reset all/playerid stats
-      var players = [];
-      if (updateall) {
-        players = GameDatasFact.teams[0].players;
-      }
-      else {
-        players.push({ id:playerid });
-      }
-      // init empty statsheet for each players :
-      var playerlength = players.length;
+    $scope.updateScorebox = function () {
+
+      // init statsheets:
+      var players = GameDatasFact.teams[0].players, playerlength = players.length;
       for (var i = 0; i < playerlength; i++) {
         var playerid = players[i].id;          
         $scope.stats[playerid] = {};
-        var actionsoutput = GameDatasFact.actions.output, actionsoutputlength = actionsoutput.length;
-        for (var j = 0; j < actionsoutputlength; j++) {
-          $scope.stats[playerid][actionsoutput[j]] = 0;
-        };
+        var actionsoutputs = ActionsDatasFact.output, actionsoutputslength = actionsoutputs.length;
+        for (var j = 0; j < actionsoutputslength; j++) {
+          $scope.stats[playerid][actionsoutputs[j]] = 0;
+        }
         // record minutes :
         $scope.stats[playerid].playingtime = [];
       }
 
-      // calculate stats :
+      // calculate statsheets:
+      // for each play...
       var playbyplay = GameDatasFact.playbyplay, playslength = playbyplay.length;
       for (var i = 0; i < playslength; i++) {
-        var play = playbyplay[i];
-        if (play.playerid === playerid || updateall) {
-            for (var j=0; j<play.action.length; j++) {
-            
-            // each actions
-            var code = play.action[j];
-            if (typeof $scope.stats[play.playerid][code] !== 'undefined') {
-              $scope.stats[play.playerid][code]++;
-            }
 
+        // for each actions...
+        var actions = playbyplay[i], actionslength = actions.length;
+        for (var j = 0; j<actionslength; j++) {
+          var action = actions[j], playerid = action.playerid;
+          // each codes ...
+          var codes = action.action, codeslength = codes.length;
+          for (var k = 0; k<codeslength; k++) {
+
+            // use code:
+            var code = codes[k];
+            if (typeof $scope.stats[playerid][code] !== 'undefined') {
+              $scope.stats[playerid][code]++;
+            }
             // extra stats
             switch(code) {
               // points
-              case 'ftm' : $scope.stats[play.playerid].pts += 1; break;
-              case 'fgm2' : $scope.stats[play.playerid].pts += 2; break;
-              case 'fgm3' : $scope.stats[play.playerid].pts += 3; break;
+              case 'ftm' : $scope.stats[playerid].pts += 1; break;
+              case 'fgm2' : $scope.stats[playerid].pts += 2; break;
+              case 'fgm3' : $scope.stats[playerid].pts += 3; break;
               // minutes
               case 'in' : 
-                $scope.stats[play.playerid].playingtime.push([play.time, GameDatasFact.chrono.total_time]); 
-                break;
+              $scope.stats[playerid].playingtime.push([action.time, GameDatasFact.chrono.total_time]); 
+              break;
               case 'out' : 
-                var lastin = ($scope.stats[play.playerid].playingtime.length-1);
-                $scope.stats[play.playerid].playingtime[lastin][1] = play.time;
-                break;
+              var lastin = ($scope.stats[playerid].playingtime.length-1);
+              $scope.stats[playerid].playingtime[lastin][1] = action.time;
+              break;
             }
 
           }
@@ -356,33 +361,32 @@ app.filter('playerFromPid', function (GameDatasFact) {
     // init 
     // 
     $scope.stats = {};
-    $scope.updateplayerStats();
+    $scope.updateScorebox();
 
 
   })
-  .filter('statsPlayingMinutes', function(GameDatasFact) {
-    return function(inout) {
-      var t=0, i=0, inoutlength = inout.length;
-      for (;i<inoutlength;i++) {
-        var a = inout[i];
-        t += a[1] - a[0];
-      }
-      var m = Math.floor(t/60);
-      var s = Math.floor(t-m*60);
-      console.log(m, s);
-      var output =  
-        ((m<10) ? '0' + m : m) 
-        + ':' 
-        + ((s<10) ? '0' + s : s)
-      ;
-      return output;
+.filter('statsPlayingMinutes', function(GameDatasFact) {
+  return function(inout) {
+    var t=0, i=0, inoutlength = inout.length;
+    for (;i<inoutlength;i++) {
+      var a = inout[i];
+      t += a[1] - a[0];
     }
-  })
-  .filter('reverse', function() {
-    return function(items) {
-      return items.slice().reverse();
-    };
-  })
+    var m = Math.floor(t/60);
+    var s = Math.floor(t-m*60);
+    var output =  
+    ((m<10) ? '0' + m : m) 
+    + ':' 
+    + ((s<10) ? '0' + s : s)
+    ;
+    return output;
+  }
+})
+.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+})
 ;
 
   /**

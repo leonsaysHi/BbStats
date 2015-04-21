@@ -5,7 +5,6 @@
 
 	<!-- Chrono -->
 	<div ng-controller="Chrono" >
-	{{ test }}
 		<div class="alert alert-danger" role="alert" ng-show="!gamestarted && !playersready">
 			Select 5 players from the bench
 		</div>
@@ -16,9 +15,8 @@
 				<h2>
 					<span class="muted">{{gamedatas.chrono.curr_period | chronoPeriod}}</span> : <strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
 				</h2>
-				{{gamedatas.chrono.total_time}}
 				<!-- between periods -->
-					<a class="btn btn-default btn-sm" ng-show="!periodisrunning" ng-click="nextPeriod()">{{gamedatas.chrono.curr_period | chronoGotoNextPeriod}}</a>
+				<a class="btn btn-default btn-sm" ng-show="!periodisrunning" ng-click="nextPeriod()">{{gamedatas.chrono.curr_period | chronoGotoNextPeriod}}</a>
 				<!-- play / stop -->
 				<div ng-show="periodisrunning">			
 					<a class="btn btn-default btn-sm" ng-show="!clockisrunning" ng-click="play()">Play</a>
@@ -31,25 +29,33 @@
 	<!-- Plays -->
 	<div ng-controller="Plays" ng-init="init(0)">
 		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
-		<h4>players playing : </h4>
-
+		recored length : {{recorder.length}}
 		<!-- players -->
-		<div class="players-list">
-			<a class="player" ng-show="play.time" ng-click="resetPlay()"><span>&times;</span></a>
-			<a class="player" ng-class="{selected:play.player.id===player.id}" ng-show="play.time === null || play.player.id===player.id" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
+		<div class="players-list" ng-show="gamedatas.chrono.total_time===0 || recorder.length===0">
+			<h4>players playing : </h4>
+			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
 				<strong>{{player.name}}</strong><span>{{player.number}}</span>
 			</a>
 			<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
 		</div>
 
 		<!-- play -->
-		<div class="plays-list" ng-show="play.time">
-			<div ng-show="play.action===null">
-				<a ng-repeat="act in gamedatas.actions.base" ng-click="selectAction(act.code, act.subactions)">{{act.label}}</a>
-				<a ng-show="benchplayers.length>0" ng-click="playSubstitution()">Subs</a>
+		<div class="plays-list" ng-show="gamedatas.chrono.total_time>0 && recorder.length===1">
+			<div ng-show="!recorder[0].action && !subaction">
+				<a ng-repeat="act in actionsdata.base" ng-click="selectAction(act.code, act.subaction, act.addaction)">{{act.label}}</a>
+				<a ng-show="benchplayers.length>0" ng-click="substitution()">Subs</a>
 			</div>
-			<div ng-repeat="(code, subs) in gamedatas.actions.subs" ng-show="play.action==code">
-				<a ng-repeat="act in subs" ng-click="selectAction(act.code, false)">{{act.label}}</a>
+			<div ng-repeat="(code, subs) in actionsdata.subactions" ng-show="subaction===code">
+				<a ng-repeat="act in subs" ng-click="selectAction(act.code, act.subaction, act.addaction)">{{act.label}}</a>
+			</div>
+			<div ng-repeat="(code, adds) in actionsdata.addactions" ng-show="addaction===code">
+				<div ng-repeat="act in adds">
+					{{act.label}} ?
+					<a class="player" ng-click="savePlay()"><span>No</span></a>
+					<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player, act.code, act.subaction, act.addaction)">
+						<strong>{{player.name}}</strong><span>{{player.number}}</span>
+					</a>
+				</div>
 			</div>
 		</div>
 
@@ -75,7 +81,7 @@
 
 	</div>
 
-	<!-- Play By Play -->
+	<!-- Output -->
 	<div ng-controller="Output" id="outputs">
 		<ul class="nav nav-tabs">
 		    <li class="active"><a show-tab href="#play-by-play">Play-by-play</a></li>
@@ -84,8 +90,8 @@
 		<div class="tab-content">
     		<div class="tab-pane active" id="play-by-play">
 				<div ng-repeat="play in plays | reverse">
-					<span class="text-muted">{{play.curr_period | chronoPeriod}} - {{play.curr_time | chronoTime}} </span>
-					{{play.playerid | playerFromPid}} : <strong>{{play.action}}</strong>
+					<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}} </span>
+					{{play[0].playerid | playerFromPid}} : <strong>{{play[0].action}}</strong>
 				</div>
 			</div>
     		<div class="tab-pane" id="boxscore">
