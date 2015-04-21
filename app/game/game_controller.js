@@ -361,17 +361,18 @@ app.filter('getCourtPlayers', function () {
 
 
   })
-.filter('playByPlay', function(GameDatasFact) {
+.filter('playByPlay', function($filter, GameDatasFact) {
   return function(play) {
     var output = '';
-      //console.log(play);
-      /*for (i=0; i<play.length; i++) {
-        var code = play[i].code;
-        var player = $filter('playerFromPid')(play[i].playerid);
-      }*/
-      return 'log';
+    console.log(play);
+    for (var i=0; i<play.length; i++) {
+      var code = play[i].action;
+      var player = $filter('playerFromPid')(play[i].playerid);
+      output += '#' + player.number + ' ' + player.name + ': ' + code + '... ';
     }
-  })
+    return output;
+  }
+})
 .filter('playerFromPid', function (GameDatasFact) {
   return function (id) {
     var players = GameDatasFact.teams[0].players;
