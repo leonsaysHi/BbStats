@@ -16,6 +16,7 @@
 				<h2>
 					<span class="muted">{{gamedatas.chrono.curr_period | chronoPeriod}}</span> : <strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
 				</h2>
+				{{gamedatas.chrono.total_time}}
 				<!-- between periods -->
 					<a class="btn btn-default btn-sm" ng-show="!periodisrunning" ng-click="nextPeriod()">{{gamedatas.chrono.curr_period | chronoGotoNextPeriod}}</a>
 				<!-- play / stop -->
@@ -118,7 +119,7 @@
 					<tbody>
 						<tr ng-repeat="player in gamedatas.teams[0].players">
 							<td>{{player.name}}</td>
-							<td></td>
+							<td>{{stats[player.id].playingtime | statsPlayingMinutes}}</td>
 							<td>{{stats[player.id].fgm2}} - {{stats[player.id].fga2}}</td>
 							<td>{{stats[player.id].fgm3}} - {{stats[player.id].fga3}}</td>
 							<td>{{stats[player.id].ftm}} - {{stats[player.id].fta}}</td>

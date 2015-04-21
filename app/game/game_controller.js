@@ -40,9 +40,10 @@
         ],
         chrono: {
           nb_periods: 4,
-        minutes_periods: 10, // minutes
-        curr_period: 0,
-        curr_time: 0, // in secondes
+          minutes_periods: 10, // minutes
+          curr_period: 0,
+          curr_time: 0, // in secondes
+          total_time: 0 // in secondes
       },
       playbyplay: [], // { time, curr_period, curr_time, teamid, playerid, action}
       actions: {
@@ -166,7 +167,7 @@
 
     // plays
     $scope.selectPlayer = function(player){
-      $scope.play.time = ((GameDatasFact.chrono.curr_period-1)*(GameDatasFact.chrono.minutes_periods*60)) + ((GameDatasFact.chrono.minutes_periods*60) - GameDatasFact.chrono.curr_time);
+      $scope.play.time = GameDatasFact.chrono.total_time;
       $scope.play.curr_time = GameDatasFact.chrono.curr_time;
       $scope.play.curr_period = GameDatasFact.chrono.curr_period;
       $scope.play.teamid = $scope.teamid;
@@ -277,77 +278,111 @@ app.filter('playerFromPid', function (GameDatasFact) {
   app
   .controller('Output', function ($scope, $filter, GameDatasFact) {
 
-      // watch play
-      $scope.$watch(
-        function () { return GameDatasFact.playbyplay; },
-        function (newVal, oldVal) {
-          $scope.plays = GameDatasFact.playbyplay;
-          // Toto update stats
-          var i = (newVal.length-oldVal.length);
-          for (;i<newVal.length;i++) {
-            var play = $scope.plays[i];
-            $scope.updateplayerStats(play.playerid);
-          }
-        },
-        true
-        );
+    // watch play
+    $scope.$watch(
+      function () { return GameDatasFact.playbyplay; },
+      function (newVal, oldVal) {
+        $scope.plays = GameDatasFact.playbyplay;
+        // Toto update stats
+        var i = (newVal.length-oldVal.length);
+        if (i === 0) { return; }
+        for (i = newVal.length - i;i<newVal.length;i++) {
+          var play = $scope.plays[i];
+          $scope.updateplayerStats(play.playerid);
+        }
+      },
+      true
+      );
 
-      // update $scope.stats { playerid: {code:..., code:... } }
-      $scope.updateplayerStats = function (playerid) {
-        var updateall = (typeof playerid === 'undefined');
-        // reset all/playerid stats
-        var players = [];
-        if (updateall) {
-          players = GameDatasFact.teams[0].players;
-        }
-        else {
-          players.push({ id:playerid });
-        }
-        // init empty statsheet for each players :
-        console.log('player',players);
-        var playerlength = players.length;
-        for (var i = 0; i < playerlength; i++) {
-          var playerid = players[i].id;          
-          $scope.stats[playerid] = {};
-          var actionsoutput = GameDatasFact.actions.output, actionsoutputlength = actionsoutput.length;
-          for (var j = 0; j < actionsoutputlength; j++) {
-            $scope.stats[playerid][actionsoutput[j]] = 0;
-          };
-        }
+    // update $scope.stats { playerid: {code:..., code:... } }
+    $scope.updateplayerStats = function (playerid) {
+      var updateall = (typeof playerid === 'undefined');
+      // reset all/playerid stats
+      var players = [];
+      if (updateall) {
+        players = GameDatasFact.teams[0].players;
+      }
+      else {
+        players.push({ id:playerid });
+      }
+      // init empty statsheet for each players :
+      var playerlength = players.length;
+      for (var i = 0; i < playerlength; i++) {
+        var playerid = players[i].id;          
+        $scope.stats[playerid] = {};
+        var actionsoutput = GameDatasFact.actions.output, actionsoutputlength = actionsoutput.length;
+        for (var j = 0; j < actionsoutputlength; j++) {
+          $scope.stats[playerid][actionsoutput[j]] = 0;
+        };
+        // record minutes :
+        $scope.stats[playerid].playingtime = [];
+      }
 
-        // calculate stats :
-        var playbyplay = GameDatasFact.playbyplay, playslength = playbyplay.length;
-        for (var i = 0; i < playslength; i++) {
-          var play = playbyplay[i];
-          if (play.playerid === playerid || updateall) {
-              for (var j=0; j<play.action.length; j++) {
-              var code = play.action[j];
-              if (typeof $scope.stats[play.playerid][code] !== 'undefined') {
-                $scope.stats[play.playerid][code]++;
-                switch(code) {
-                  case 'ftm' : $scope.stats[play.playerid].pts += 1; break;
-                  case 'fgm2' : $scope.stats[play.playerid].pts += 2; break;
-                  case 'fgm3' : $scope.stats[play.playerid].pts += 3; break;
-                }
-              }              
+      // calculate stats :
+      var playbyplay = GameDatasFact.playbyplay, playslength = playbyplay.length;
+      for (var i = 0; i < playslength; i++) {
+        var play = playbyplay[i];
+        if (play.playerid === playerid || updateall) {
+            for (var j=0; j<play.action.length; j++) {
+            
+            // each actions
+            var code = play.action[j];
+            if (typeof $scope.stats[play.playerid][code] !== 'undefined') {
+              $scope.stats[play.playerid][code]++;
+            }
+
+            // extra stats
+            switch(code) {
+              // points
+              case 'ftm' : $scope.stats[play.playerid].pts += 1; break;
+              case 'fgm2' : $scope.stats[play.playerid].pts += 2; break;
+              case 'fgm3' : $scope.stats[play.playerid].pts += 3; break;
+              // minutes
+              case 'in' : 
+                $scope.stats[play.playerid].playingtime.push([play.time, GameDatasFact.chrono.total_time]); 
+                break;
+              case 'out' : 
+                var lastin = ($scope.stats[play.playerid].playingtime.length-1);
+                $scope.stats[play.playerid].playingtime[lastin][1] = play.time;
+                break;
             }
 
           }
+
         }
-      };
+      }
+    };
 
-      // init 
-      // 
-      $scope.stats = {};
-      $scope.updateplayerStats();
+    // init 
+    // 
+    $scope.stats = {};
+    $scope.updateplayerStats();
 
 
-    })
-.filter('reverse', function() {
-  return function(items) {
-    return items.slice().reverse();
-  };
-})
+  })
+  .filter('statsPlayingMinutes', function(GameDatasFact) {
+    return function(inout) {
+      var t=0, i=0, inoutlength = inout.length;
+      for (;i<inoutlength;i++) {
+        var a = inout[i];
+        t += a[1] - a[0];
+      }
+      var m = Math.floor(t/60);
+      var s = Math.floor(t-m*60);
+      console.log(m, s);
+      var output =  
+        ((m<10) ? '0' + m : m) 
+        + ':' 
+        + ((s<10) ? '0' + s : s)
+      ;
+      return output;
+    }
+  })
+  .filter('reverse', function() {
+    return function(items) {
+      return items.slice().reverse();
+    };
+  })
 ;
 
   /**
@@ -365,7 +400,7 @@ app.filter('playerFromPid', function (GameDatasFact) {
       $scope.$watch(
         function () { return GameDatasFact.chrono; },
         function (newVal, oldVal) {
-          $scope.gamestarted = !(GameDatasFact.chrono.curr_time === 0 && GameDatasFact.chrono.curr_period === 0);
+          $scope.gamestarted = (GameDatasFact.chrono.curr_period > 0);
         },
         true
         );
@@ -381,6 +416,7 @@ app.filter('playerFromPid', function (GameDatasFact) {
         $scope.timer = $interval(
           function(){
             GameDatasFact.chrono.curr_time -= 0.1;
+            GameDatasFact.chrono.total_time += 0.1;
             if (GameDatasFact.chrono.curr_time <=0) {
               GameDatasFact.chrono.curr_time = 0;
               $scope.periodisrunning = false;
