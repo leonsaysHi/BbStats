@@ -283,6 +283,11 @@ app.filter('playerFromPid', function (GameDatasFact) {
         function (newVal, oldVal) {
           $scope.plays = GameDatasFact.playbyplay;
           // Toto update stats
+          var i = (newVal.length-oldVal.length);
+          for (;i<newVal.length;i++) {
+            var play = $scope.plays[i];
+            $scope.updateplayerStats(play.playerid);
+          }
         },
         true
         );
@@ -291,14 +296,15 @@ app.filter('playerFromPid', function (GameDatasFact) {
       $scope.updateplayerStats = function (playerid) {
         var updateall = (typeof playerid === 'undefined');
         // reset all/playerid stats
-        var players = {};
+        var players = [];
         if (updateall) {
           players = GameDatasFact.teams[0].players;
         }
         else {
-          players[playerid] = { id:playerid };
+          players.push({ id:playerid });
         }
         // init empty statsheet for each players :
+        console.log('player',players);
         var playerlength = players.length;
         for (var i = 0; i < playerlength; i++) {
           var playerid = players[i].id;          
