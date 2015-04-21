@@ -315,7 +315,7 @@ app.filter('playerFromPid', function (GameDatasFact) {
           };
         }
 
-        // insert stats :
+        // calculate stats :
         var playbyplay = GameDatasFact.playbyplay, playslength = playbyplay.length;
         for (var i = 0; i < playslength; i++) {
           var play = playbyplay[i];
@@ -324,6 +324,11 @@ app.filter('playerFromPid', function (GameDatasFact) {
               var code = play.action[j];
               if (typeof $scope.stats[play.playerid][code] !== 'undefined') {
                 $scope.stats[play.playerid][code]++;
+                switch(code) {
+                  case 'ftm' : $scope.stats[play.playerid].pts += 1; break;
+                  case 'fgm2' : $scope.stats[play.playerid].pts += 2; break;
+                  case 'fgm3' : $scope.stats[play.playerid].pts += 3; break;
+                }
               }              
             }
 
