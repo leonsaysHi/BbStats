@@ -50,6 +50,21 @@
   });
 
 
+  app.factory('PlaysRecordFact', function() {
+    return {
+      play:[],
+      ui: {},
+      reset:function(){
+        console.log(this);
+        this.play=[];
+        this.ui= {
+          subaction:false,
+          addaction:false
+        };
+      }
+    };
+  });
+
   app.factory('ActionsDatasFact', function() {
     return {
       base: [
@@ -142,17 +157,21 @@
   *
   * 
   */
-  app.controller('Plays', function ($scope, $filter, GameDatasFact) {
+  app.controller('PlayEditor', function ($scope, $filter, GameDatasFact, PlaysRecordFact) {
 
-
-    $scope.resetRecorder = function() {
-      $scope.recorder = []; 
-    };
 
     $scope.init = function(teamid) {
       $scope.teamid = teamid
       $scope.team = GameDatasFact.teams[teamid];
-      $scope.resetRecorder();
+      PlaysRecordFact.reset();
+      $scope.recorder = PlaysRecordFact;
+      $scope.$watch(
+        function () { return PlaysRecordFact; },
+        function (newVal, oldVal) {
+          $scope.recorder = PlaysRecordFact;
+        },
+        true
+      );
     };
 
 
@@ -170,8 +189,8 @@
     // click on player :
     $scope.selectPlayer = function(player, action, subaction, addaction){
       // init action : 
-      if ($scope.recorder.length === 0) {
-        $scope.recorder.push({
+      if (PlaysRecordFact.play.length === 0) {
+        PlaysRecordFact.play.push({
           time: GameDatasFact.chrono.total_time,
           curr_time: GameDatasFact.chrono.curr_time,
           curr_period: GameDatasFact.chrono.curr_period,
@@ -188,12 +207,11 @@
       }
       // addaction : 
       else {
-        console.log('player addaction');
-        $scope.recorder.push({
-          time: $scope.recorder[0].time,
-          curr_time: $scope.recorder[0].curr_time,
-          curr_period: $scope.recorder[0].curr_period,
-          teamid: $scope.recorder[0].teamid,
+        PlaysRecordFact.play.push({
+          time: PlaysRecordFact.play[0].time,
+          curr_time: PlaysRecordFact.play[0].curr_time,
+          curr_period: PlaysRecordFact.play[0].curr_period,
+          teamid: PlaysRecordFact.play[0].teamid,
           player: player,
           playerid: player.id,
           action: false
@@ -207,24 +225,24 @@
 
     // click on action
     $scope.selectAction = function(action, subaction, addaction) {   
-      var actionindex = ($scope.recorder.length-1);
-      $scope.subaction = subaction;
-      $scope.addaction = addaction;
+      var actionindex = (PlaysRecordFact.play.length-1);
+      PlaysRecordFact.ui.subaction = subaction;
+      PlaysRecordFact.ui.addaction = addaction;
       if (action) {
-        $scope.recorder[actionindex].action = action;
+        PlaysRecordFact.play[actionindex].action = action;
       }
       // save ?
-      if (!subaction && !addaction) {  
+      if (!PlaysRecordFact.ui.subaction && !PlaysRecordFact.ui.addaction) {  
         $scope.savePlay(); 
       }
     };
 
     $scope.savePlay = function() {
-      var play = $scope.recorder;
+      var play = PlaysRecordFact.play;
       delete play.player;
       console.log('SAVE', play);
       GameDatasFact.playbyplay.push(play);
-      $scope.resetRecorder();
+      PlaysRecordFact.reset();
       $scope.saveGameDatasFact();
     };
 
@@ -239,18 +257,16 @@
     };
     $scope.selectPlayerFromBench = function(player) {
       // set as not playing
-      if ($scope.recorder.length===1) {
-        $scope.recorder[0].action = ['out'];
-        var index_pp = GameDatasFact.teams[$scope.teamid].players.indexOf($scope.recorder[0].player);
+      if (PlaysRecordFact.play.length===1) {
+        PlaysRecordFact.play[0].action = ['out'];
+        var index_pp = GameDatasFact.teams[$scope.teamid].players.indexOf(PlaysRecordFact.play[0].player);
         GameDatasFact.teams[$scope.teamid].players[index_pp].playing = false;
       }
 
       // set as playing
       var index_bp = GameDatasFact.teams[$scope.teamid].players.indexOf(player);
       GameDatasFact.teams[$scope.teamid].players[index_bp].playing = true;
-      console.log ('... >', $scope.recorder);  
       $scope.selectPlayer(player, ['in'], false, false); // full record 
-      console.log ('selectPlayer >', $scope.recorder); 
 
       $('#bench').modal('hide'); 
     };
