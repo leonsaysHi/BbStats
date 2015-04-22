@@ -220,11 +220,14 @@
     };
 
     $scope.savePlay = function() {
-      console.log('SAVE', $scope.recorder);
-      GameDatasFact.playbyplay.push($scope.recorder);
+      var play = $scope.recorder;
+      delete play.player;
+      console.log('SAVE', play);
+      GameDatasFact.playbyplay.push(play);
       $scope.resetRecorder();
       $scope.saveGameDatasFact();
     };
+
     $scope.substitution = function(){
       $('#bench').modal('show');
     };
@@ -366,6 +369,19 @@ app.filter('getCourtPlayers', function () {
 
       $scope.stats = stats;
 
+    };
+
+    $scope.deletePlay = function(index){
+      index = GameDatasFact.playbyplay.length-1-index;
+      GameDatasFact.playbyplay.splice(index, 1);
+      $scope.saveGameDatasFact();
+      $scope.updateScorebox();
+    };
+
+    $scope.editPlay = function(index){
+      index = GameDatasFact.playbyplay.length-1-index;
+      var play = GameDatasFact.playbyplay[index];
+      play.index = index;
     };
 
     // init 

@@ -90,8 +90,8 @@
 		</ul>
 		<div class="tab-content">
     		<div class="tab-pane active" id="play-by-play">
-				<div ng-repeat="play in plays | reverse">
-					<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}}</span> {{play | playByPlay}}
+				<div ng-repeat="(playid, play) in plays | reverse">
+					<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}}</span> {{play | playByPlay}} <a ng-click="editPlay(playid)">edit</a> - <a ng-click="deletePlay(playid)">&times;</a>
 				</div>
 			</div>
     		<div class="tab-pane" id="boxscore">
