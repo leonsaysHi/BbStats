@@ -29,10 +29,10 @@
 
 	<div ng-controller="Plays" ng-init="init(0)">
 		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
-		<small>{{recorder}}</small>
+				
 		<!-- players -->
 		<div class="players-list" ng-show="gamedatas.chrono.total_time===0 || recorder.length===0">
-			<h4>players playing : </h4>
+			<h4>Select player :</h4>
 			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
 				<strong>{{player.name}}</strong><span>{{player.number}}</span>
 			</a>
@@ -41,6 +41,7 @@
 
 		<!-- plays -->
 		<div class="plays-list" ng-show="gamedatas.chrono.total_time>0 && recorder.length===1">
+			<h4>Select action :</h4>
 			<div ng-show="!recorder[0].action && !subaction">
 				<a ng-repeat="act in actionsdata.base" ng-click="selectAction(act.action, act.subaction, act.addaction)">{{actionsdata.dictio[act.id].btnlabel}}</a>
 				<a ng-show="benchplayers.length>0" ng-click="substitution()">Subs</a>
@@ -50,9 +51,9 @@
 			</div>
 			<div ng-repeat="(code, adds) in actionsdata.addactions" ng-show="addaction===code">
 				<div ng-repeat="act in adds">
-					{{actionsdata.dictio[act.id].btnlabel}} ?
+					<h4>{{actionsdata.dictio[act.id].btnlabel}} ?</h4>
 					<a class="player" ng-click="savePlay()"><span>No</span></a>
-					<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player, act.action, act.subaction, act.addaction)">
+					<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-hide="player==recorder[0].player" ng-click="selectPlayer(player, act.action, act.subaction, act.addaction)">
 						<strong>{{player.name}}</strong><span>{{player.number}}</span>
 					</a>
 				</div>

@@ -90,9 +90,9 @@
         'blk': {btnlabel:'Block', pplabel:'@: block shoot.', addtostatsheet:0},
         'pf': {btnlabel:'Foul', pplabel:'@: personnal foul.', addtostatsheet:0},
         'pts': {btnlabel:'Points', addtostatsheet:0},
-        'playingtime': {addtostatsheet:[]},
-        'out': {pplabel:'@ substitution replaced by'},
-        'in': {pplabel:'@.'},
+        'playingtime': {addtostatsheet:'array'},
+        'out': {pplabel:'@ ir removed.'},
+        'in': {pplabel:'@ enters the game.'},
         
       }
     };
@@ -310,61 +310,66 @@ app.filter('getCourtPlayers', function () {
     // update $scope.stats { playerid: {action:..., action:... } }
     $scope.updateScorebox = function () {
 
-      // init statsheets:
+      var stats = {};
+
+      // init statsheets values:
       var players = GameDatasFact.teams[0].players, playerlength = players.length;
-      for (var i = 0; i < playerlength; i++) {
-        var playerid = players[i].id;          
-        $scope.stats[playerid] = {};
+      for (var h = 0; h < playerlength; h++) {
+        var playerid = players[h].id;          
+        stats[playerid] = {};
         angular.forEach(ActionsDatasFact.dictio, function(act, id) {
           if (typeof act.addtostatsheet !== 'undefined') {
-            $scope.stats[playerid][id] = act.addtostatsheet;
+            stats[playerid][id] = (act.addtostatsheet==='array') ? [] : act.addtostatsheet;
           }
         });
       }
 
       // calculate statsheets:
+      var playbyplay = GameDatasFact.playbyplay, playbyplaylength = playbyplay.length;
       // for each play...
-      var playbyplay = GameDatasFact.playbyplay, playslength = playbyplay.length;
-      for (var i = 0; i < playslength; i++) {
+      for (var i = 0; i < playbyplaylength; i++) {        
+        var play = playbyplay[i], actionslength = play.length;
+        // each action ...
+        for (var j = 0; j<actionslength; j++) {
+          var action = play[j], playerid = action.playerid, time = action.time, actcodeslength = action.action.length;
+          // each action code...
+          for (var k = 0; k<actcodeslength; k++) {
+            var actcode = action.action[k];
 
-        // for each actions...
-        var plays = playbyplay[i], playslength = plays.length;
-        for (var j = 0; j<playslength; j++) {
-          var play = plays[j], playerid = play.playerid;
-          // each actions ...
-          var actions = play.action, actionslength = actions.length;
-          for (var k = 0; k<actionslength; k++) {
-
-            // use code:
-            var action = actions[k];
-            if (typeof $scope.stats[playerid][action] !== 'undefined') {
-              $scope.stats[playerid][action]++;
+            // stats
+            if (actcode==='in') {
+              var p = [time, GameDatasFact.chrono.total_time];
+              stats[playerid].playingtime.push(p); 
             }
-            // extra stats
-            switch(action) {
-              // points
-              case 'ftm' : $scope.stats[playerid].pts += 1; break;
-              case 'fgm2' : $scope.stats[playerid].pts += 2; break;
-              case 'fgm3' : $scope.stats[playerid].pts += 3; break;
-              // minutes
-              case 'in' : 
-              $scope.stats[playerid].playingtime.push([action.time, GameDatasFact.chrono.total_time]); 
-              break;
-              case 'out' : 
-              var lastin = ($scope.stats[playerid].playingtime.length-1);
-              $scope.stats[playerid].playingtime[lastin][1] = action.time;
-              break;
+            else if (actcode==='out') {
+              var lastin = (stats[playerid].playingtime.length-1);
+              stats[playerid].playingtime[lastin][1] = time;
+            }
+            else {
+              stats[playerid][actcode]++;
+            }
+
+            // calculate points
+            if (actcode==='ftm') {
+              stats[playerid].pts += 1; 
+            }
+            else if (actcode==='fgm2') {
+              stats[playerid].pts += 2; 
+            }
+            else if (actcode==='fgm3') {
+              stats[playerid].pts += 3; 
             }
 
           }
-
         }
       }
+
+      $scope.stats = stats;
+
     };
 
     // init 
     // 
-    $scope.stats = {};
     $scope.updateScorebox();
 
 
