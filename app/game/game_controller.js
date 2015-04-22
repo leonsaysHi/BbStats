@@ -59,8 +59,13 @@
         this.play=[];
         this.ui= {
           subaction:false,
-          addaction:false
+          addaction:false,
+          edit:false
         };
+      },
+      edit:function(play){
+        this.ui.edit = true;
+        this.play=play;
       }
     };
   });
@@ -171,7 +176,7 @@
           $scope.recorder = PlaysRecordFact;
         },
         true
-      );
+        );
     };
 
 
@@ -308,7 +313,7 @@ app.filter('getCourtPlayers', function () {
   * 
   */
   app
-  .controller('Output', function ($scope, $filter, GameDatasFact, ActionsDatasFact) {
+  .controller('Output', function ($scope, $filter, GameDatasFact, ActionsDatasFact, PlaysRecordFact) {
 
     // watch play
     $scope.$watch(
@@ -398,6 +403,7 @@ app.filter('getCourtPlayers', function () {
       index = GameDatasFact.playbyplay.length-1-index;
       var play = GameDatasFact.playbyplay[index];
       play.index = index;
+      PlaysRecordFact.edit(play);
     };
 
     // init 

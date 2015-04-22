@@ -26,38 +26,65 @@
 		</div>
 	</div>
 	
-
+	
 	<div ng-controller="PlayEditor" ng-init="init(0)">
-		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>
-		*{{recorder}}		
-		<!-- players -->
-		<div class="players-list" ng-show="gamedatas.chrono.total_time===0 || recorder.play.length===0">
-			<h4>Select player :</h4>
-			<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
-				<strong>{{player.name}}</strong><span>{{player.number}}</span>
-			</a>
-			<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
-		</div>
+		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>	
+		
+		<!-- Create Play -->
+		<div ng-show="!recorder.ui.edit">
+		
+			<!-- players -->
+			<div class="players-list" ng-show="gamedatas.chrono.total_time===0 || recorder.play.length===0">
+				<h4>Select player :</h4>
+				<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)">
+					<strong>{{player.name}}</strong><span>{{player.number}}</span>
+				</a>
+				<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
+			</div>
 
-		<!-- plays -->
-		<div class="plays-list" ng-show="gamedatas.chrono.total_time>0 && recorder.play.length===1">
-			<h4>Select action :</h4>
-			<div ng-show="!recorder.play[0].action && !recorder.ui.subaction">
-				<a ng-repeat="act in actionsdata.base" ng-click="selectAction(act.action, act.subaction, act.addaction)">{{actionsdata.dictio[act.id].btnlabel}}</a>
-				<a ng-show="benchplayers.length>0" ng-click="substitution()">Subs</a>
-			</div>
-			<div ng-repeat="(code, subs) in actionsdata.subactions" ng-show="recorder.ui.subaction===code">
-				<a ng-repeat="act in subs" ng-click="selectAction(act.action, act.subaction, act.addaction)">{{actionsdata.dictio[act.id].btnlabel}}</a>
-			</div>
-			<div ng-repeat="(code, adds) in actionsdata.addactions" ng-show="recorder.ui.addaction===code">
-				<div ng-repeat="act in adds">
-					<h4>{{actionsdata.dictio[act.id].btnlabel}} ?</h4>
-					<a class="player" ng-click="savePlay()"><span>No</span></a>
+			<!-- plays -->
+			<div class="plays-list" ng-show="gamedatas.chrono.total_time>0 && recorder.play.length===1">
+				<h4>Select action :</h4>
+				<div ng-show="recorder.ui.edit">
 					<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-hide="player==recorder.play[0].player" ng-click="selectPlayer(player, act.action, act.subaction, act.addaction)">
 						<strong>{{player.name}}</strong><span>{{player.number}}</span>
 					</a>
 				</div>
+				<div ng-show="!recorder.play[0].action && !recorder.ui.subaction">
+					<a ng-repeat="act in actionsdata.base" ng-click="selectAction(act.action, act.subaction, act.addaction)">{{actionsdata.dictio[act.id].btnlabel}}</a>
+					<a ng-show="benchplayers.length>0" ng-click="substitution()">Subs</a>
+				</div>
+				<div ng-repeat="(code, subs) in actionsdata.subactions" ng-show="recorder.ui.subaction===code">
+					<a ng-repeat="act in subs" ng-click="selectAction(act.action, act.subaction, act.addaction)">{{actionsdata.dictio[act.id].btnlabel}}</a>
+				</div>
+
+				<div ng-repeat="(code, adds) in actionsdata.addactions" ng-show="recorder.ui.addaction===code">
+					<div ng-repeat="act in adds">
+						<h4>{{actionsdata.dictio[act.id].btnlabel}} ?</h4>
+						<a class="player" ng-click="savePlay()"><span>No</span></a>
+						<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-hide="player==recorder.play[0].player" ng-click="selectPlayer(player, act.action, act.subaction, act.addaction)">
+							<strong>{{player.name}}</strong><span>{{player.number}}</span>
+						</a>
+					</div>
+				</div>
 			</div>
+
+		</div>
+
+		<!-- Edit Play -->		
+		<div ng-show="recorder.ui.edit">
+			<h4>Edit play</h4>
+			<a>{{recorder.play[0].playerid}}</a>
+			<a ng-show="recorder.play[1]">{{recorder.play[1].playerid}}</a>
+
+			<div>
+				{{recorder.play[0]}}
+			</div>
+
+			<div ng-show="recorder.play.length===2">
+				{{recorder.play[1]}}
+			</div>
+
 		</div>
 
 		<!-- bench modal -->
