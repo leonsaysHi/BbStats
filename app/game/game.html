@@ -42,17 +42,17 @@
 		<!-- plays -->
 		<div class="plays-list" ng-show="gamedatas.chrono.total_time>0 && recorder.length===1">
 			<div ng-show="!recorder[0].action && !subaction">
-				<a ng-repeat="act in actionsdata.base" ng-click="selectAction(act.code, act.subaction, act.addaction)">{{act.label}}</a>
+				<a ng-repeat="act in actionsdata.base" ng-click="selectAction(act.action, act.subaction, act.addaction)">{{actionsdata.dictio[act.id].btnlabel}}</a>
 				<a ng-show="benchplayers.length>0" ng-click="substitution()">Subs</a>
 			</div>
 			<div ng-repeat="(code, subs) in actionsdata.subactions" ng-show="subaction===code">
-				<a ng-repeat="act in subs" ng-click="selectAction(act.code, act.subaction, act.addaction)">{{act.label}}</a>
+				<a ng-repeat="act in subs" ng-click="selectAction(act.action, act.subaction, act.addaction)">{{actionsdata.dictio[act.id].btnlabel}}</a>
 			</div>
 			<div ng-repeat="(code, adds) in actionsdata.addactions" ng-show="addaction===code">
 				<div ng-repeat="act in adds">
-					{{act.label}} ?
+					{{actionsdata.dictio[act.id].btnlabel}} ?
 					<a class="player" ng-click="savePlay()"><span>No</span></a>
-					<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player, act.code, act.subaction, act.addaction)">
+					<a class="player" ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player, act.action, act.subaction, act.addaction)">
 						<strong>{{player.name}}</strong><span>{{player.number}}</span>
 					</a>
 				</div>
@@ -90,8 +90,7 @@
 		<div class="tab-content">
     		<div class="tab-pane active" id="play-by-play">
 				<div ng-repeat="play in plays | reverse">
-					<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}}</span>
-					{{play | playByPlay}}</strong>
+					<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}}</span> {{play | playByPlay}}
 				</div>
 			</div>
     		<div class="tab-pane" id="boxscore">
