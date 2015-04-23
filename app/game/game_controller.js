@@ -50,22 +50,42 @@
   });
 
 
-  app.factory('PlaysRecordFact', function() {
+  app.factory('PlaysRecordFact', function(GameDatasFact, ActionsDatasFact) {
     return {
       play:[],
       ui: {},
       reset:function(){
-        console.log(this);
         this.play=[];
         this.ui= {
           subaction:false,
           addaction:false,
-          edit:false
+          edit:false,
+          index:0
         };
       },
-      edit:function(play){
+      edit:function(index){
+        var 
+          self = this,
+          play = GameDatasFact.playbyplay[index]
+        ;
         this.ui.edit = true;
-        this.play=play;
+        this.ui.index = index;
+        this.play = play;
+        // set subaction/addaction
+        this.ui.subaction = false;
+        var action = $.grep(ActionsDatasFact.base, function(e){ return e.id == play[0].action.id; });
+        if (action.length===0) {
+          angular.forEach(ActionsDatasFact.subactions, function(subactions, id) {
+            var i, subactionslength = subactions.length;
+            var subaction = $.grep(ActionsDatasFact.subactions[id], function(e){ return e.id == play[0].action.id; });
+            if (subaction.length===1) {
+              console.log(subaction);
+              self.ui.subaction = id;
+              self.ui.addaction = subaction[0].addaction;
+              return;
+            }
+          });
+        }
       }
     };
   });
@@ -73,26 +93,30 @@
   app.factory('ActionsDatasFact', function() {
     return {
       base: [
-      {id:'fg', action:false, subaction:'fg', addaction: false },
-      {id:'rebdef', action:['rebdef'], subaction:false, addaction: false }, 
-      {id:'to', action:['to'], subaction:false, addaction: false },
-      {id:'st', action:['st'], subaction:false, addaction: false },
-      {id:'blk', action:['blk'], subaction:false, addaction: false },
-      {id:'pf', action:['pf'], subaction:false, addaction: false }
+        {id:'fg', refs:false, subaction:'fg', addaction: false },
+        {id:'rebdef', refs:['rebdef'], subaction:false, addaction: false }, 
+        {id:'to', refs:['to'], subaction:false, addaction: false },
+        {id:'st', refs:['st'], subaction:false, addaction: false },
+        {id:'blk', refs:['blk'], subaction:false, addaction: false },
+        {id:'pf', refs:['pf'], subaction:false, addaction: false }
       ],
       subactions: {
         fg: [
-        {id:'fta', action:['fta'], subaction:false, addaction: false},
-        {id:'fga2', action:['fga2'], subaction:false, addaction:'reboff'},
-        {id:'fga3', action:['fga3'], subaction:false, addaction:'reboff'},
-        {id:'ftm', action:['fta','ftm'], subaction:false, addaction: false},
-        {id:'fgm2', action:['fga2','fgm2'], subaction:false, addaction:'ast'},
-        {id:'fgm3', action:['fga3','fgm3'], subaction:false, addaction:'ast'}
+          {id:'fta', refs:['fta'], subaction:false, addaction: 'reboff'},
+          {id:'fga2', refs:['fga2'], subaction:false, addaction:'reboff'},
+          {id:'fga3', refs:['fga3'], subaction:false, addaction:'reboff'},
+          {id:'ftm', refs:['fta','ftm'], subaction:false, addaction: false},
+          {id:'fgm2', refs:['fga2','fgm2'], subaction:false, addaction:'ast'},
+          {id:'fgm3', refs:['fga3','fgm3'], subaction:false, addaction:'ast'}
         ]
       },
       addactions: {
-        'reboff': [{id:'reboff', action:['reboff'], subaction:false, addaction: false}],
-        'ast': [{id:'ast', action:['ast'], subaction:false, addaction: false}]
+        'reboff': [{id:'reboff', refs:['reboff'], subaction:false, addaction: false}],
+        'ast': [{id:'ast', refs:['ast'], subaction:false, addaction: false}]
+      },
+      hiddenactions: {
+        'in': {id:'in', refs:['in'], subaction:false, addaction: false},
+        'out': {id:'out', refs:['out'], subaction:false, addaction: false}
       },
       dictio: {
         'fg': {btnlabel:'Field goal'},
@@ -104,14 +128,14 @@
         'fgm3': {btnlabel:'3pts made', pplabel:'@: 3pt shot: made.', addtostatsheet:0, ppbold:true},
         'ast': {btnlabel:'Assist', pplabel:'Assist: @.', addtostatsheet:0},
         'rebdef': {btnlabel:'Defensive rebound', pplabel:'@: defensive rebound.', addtostatsheet:0},
-        'reboff': {btnlabel:'Offemsive rebound', pplabel:'Offensive rebound: @.', addtostatsheet:0},
+        'reboff': {btnlabel:'Offensive rebound', pplabel:'Offensive rebound: @.', addtostatsheet:0},
         'to': {btnlabel:'Turn over', pplabel:'@: turnover', addtostatsheet:0},
         'st': {btnlabel:'Steal', pplabel:'@: steal.', addtostatsheet:0},
         'blk': {btnlabel:'Block', pplabel:'@: block shoot.', addtostatsheet:0},
         'pf': {btnlabel:'Foul', pplabel:'@: personnal foul.', addtostatsheet:0},
         'pts': {btnlabel:'Points', addtostatsheet:0},
         'playingtime': {addtostatsheet:'array'},
-        'out': {pplabel:'@ ir removed.'},
+        'out': {pplabel:'@ is removed.'},
         'in': {pplabel:'@ enters the game.'},
         
       }
@@ -162,13 +186,13 @@
   *
   * 
   */
-  app.controller('PlayEditor', function ($scope, $filter, GameDatasFact, PlaysRecordFact) {
+  app.controller('PlayEditor', function ($scope, $filter, GameDatasFact, ActionsDatasFact, PlaysRecordFact) {
 
 
     $scope.init = function(teamid) {
       $scope.teamid = teamid
       $scope.team = GameDatasFact.teams[teamid];
-      PlaysRecordFact.reset();
+      $scope.resetPlay();
       $scope.recorder = PlaysRecordFact;
       $scope.$watch(
         function () { return PlaysRecordFact; },
@@ -192,63 +216,104 @@
 
 
     // click on player :
-    $scope.selectPlayer = function(player, action, subaction, addaction){
-      // init action : 
-      if (PlaysRecordFact.play.length === 0) {
+    // push new action or update into play's actionindex
+    $scope.selectPlayer = function(player, actionindex){
+      var 
+        actionindex = (typeof actionindex === 'undefined') ? false : actionindex // no play index : push
+      ;
+      console.log('actionindex', actionindex);
+      // push new action :
+      if(typeof PlaysRecordFact.play[actionindex] === 'undefined') {
+        console.log('push action');
+        var
+          firstpush = (PlaysRecordFact.play.length===0),
+          time = firstpush ? GameDatasFact.chrono.total_time : PlaysRecordFact.play[0].time,
+          curr_time = firstpush ? GameDatasFact.chrono.curr_time : PlaysRecordFact.play[0].curr_time,
+          curr_period = firstpush ? GameDatasFact.chrono.curr_period : PlaysRecordFact.play[0].curr_period
+        ;
         PlaysRecordFact.play.push({
-          time: GameDatasFact.chrono.total_time,
-          curr_time: GameDatasFact.chrono.curr_time,
-          curr_period: GameDatasFact.chrono.curr_period,
+          time: time,
+          curr_time: curr_time,
+          curr_period: curr_period,
           teamid: $scope.teamid,
-          player: player,
-          playerid: player.id,
+          player: false,
+          playerid: false,
           action: false
         });
-        // pregame substitution :
-        if (GameDatasFact.chrono.total_time===0) {
-          $scope.substitution();
-        }
+        actionindex = (PlaysRecordFact.play.length-1);
+      }
 
+      PlaysRecordFact.play[actionindex].player = player;
+      PlaysRecordFact.play[actionindex].playerid = player.id;
+
+      // pregame substitution ?
+      if (GameDatasFact.chrono.total_time===0) {
+        $scope.substitution();
       }
-      // addaction : 
-      else {
-        PlaysRecordFact.play.push({
-          time: PlaysRecordFact.play[0].time,
-          curr_time: PlaysRecordFact.play[0].curr_time,
-          curr_period: PlaysRecordFact.play[0].curr_period,
-          teamid: PlaysRecordFact.play[0].teamid,
-          player: player,
-          playerid: player.id,
-          action: false
-        });
-      }
-      // follow with addaction if necessary args
-      if (typeof action !== 'undefined' && typeof subaction !== 'undefined' && typeof addaction !== 'undefined') {
-        $scope.selectAction(action, subaction, addaction);
-      }
+
     };
 
-    // click on action
-    $scope.selectAction = function(action, subaction, addaction) {   
-      var actionindex = (PlaysRecordFact.play.length-1);
-      PlaysRecordFact.ui.subaction = subaction;
-      PlaysRecordFact.ui.addaction = addaction;
-      if (action) {
-        PlaysRecordFact.play[actionindex].action = action;
-      }
+    // click on action :
+    // update into play's action index or play's last action
+    $scope.selectAction = function(action) {   
+      var 
+        actionindex = PlaysRecordFact.play.length-1
+      ;
+
+      PlaysRecordFact.ui.subaction = action.subaction;
+      PlaysRecordFact.ui.addaction = action.addaction;
+      
+      // add action to play
+      PlaysRecordFact.play[actionindex].action = action;
+
       // save ?
-      if (!PlaysRecordFact.ui.subaction && !PlaysRecordFact.ui.addaction) {  
+      console.log('save ?', PlaysRecordFact.ui.edit, action.subaction, action.addaction);
+      if (!PlaysRecordFact.ui.edit && !action.subaction && !action.addaction) {  
+        $scope.savePlay(); 
+      }
+    };
+    $scope.noSubaction = function(){
+      PlaysRecordFact.ui.subaction = false;
+    }
+
+    // click on addaction
+    $scope.selectAddAction = function(player, action) {
+      $scope.selectPlayer(player, 1);
+      PlaysRecordFact.play[1].action = action;
+
+      // save ?
+      console.log('save ?', PlaysRecordFact.ui.edit, action.subaction, action.addaction);
+      if (!PlaysRecordFact.ui.edit && !action.subaction && !action.addaction) {  
         $scope.savePlay(); 
       }
     };
 
+    $scope.noAddAction = function(){
+      PlaysRecordFact.play.splice(1,1);
+      if (!PlaysRecordFact.ui.edit) {
+        $scope.savePlay(); 
+      };
+    };
+
+
+
+
     $scope.savePlay = function() {
       var play = PlaysRecordFact.play;
       delete play.player;
-      console.log('SAVE', play);
-      GameDatasFact.playbyplay.push(play);
-      PlaysRecordFact.reset();
+      if(!PlaysRecordFact.ui.edit) {
+        console.log('SAVE', play);
+        GameDatasFact.playbyplay.push(play);
+      }
+      else {
+        console.log('EDIT', PlaysRecordFact.ui.index, play);
+        GameDatasFact.playbyplay[PlaysRecordFact.ui.index] = play;
+      }
+      $scope.resetPlay();
       $scope.saveGameDatasFact();
+    };
+    $scope.resetPlay=function() {
+      PlaysRecordFact.reset();
     };
 
     $scope.substitution = function(){
@@ -263,7 +328,7 @@
     $scope.selectPlayerFromBench = function(player) {
       // set as not playing
       if (PlaysRecordFact.play.length===1) {
-        PlaysRecordFact.play[0].action = ['out'];
+        PlaysRecordFact.play[0].action = ActionsDatasFact.hiddenactions.out;
         var index_pp = GameDatasFact.teams[$scope.teamid].players.indexOf(PlaysRecordFact.play[0].player);
         GameDatasFact.teams[$scope.teamid].players[index_pp].playing = false;
       }
@@ -271,7 +336,8 @@
       // set as playing
       var index_bp = GameDatasFact.teams[$scope.teamid].players.indexOf(player);
       GameDatasFact.teams[$scope.teamid].players[index_bp].playing = true;
-      $scope.selectPlayer(player, ['in'], false, false); // full record 
+      $scope.selectPlayer(player);
+      $scope.selectAction(ActionsDatasFact.hiddenactions.in);
 
       $('#bench').modal('hide'); 
     };
@@ -320,13 +386,7 @@ app.filter('getCourtPlayers', function () {
       function () { return GameDatasFact.playbyplay; },
       function (newVal, oldVal) {
         $scope.plays = GameDatasFact.playbyplay;
-        // Toto update stats
-        var i = (newVal.length-oldVal.length);
-        if (i === 0) { return; }
-        for (i = newVal.length - i;i<newVal.length;i++) {
-          var play = $scope.plays[i];
-          $scope.updateScorebox();
-        }
+        $scope.updateScorebox();
       },
       true
       );
@@ -350,37 +410,38 @@ app.filter('getCourtPlayers', function () {
 
       // calculate statsheets:
       var playbyplay = GameDatasFact.playbyplay, playbyplaylength = playbyplay.length;
+      console.log(playbyplay);
       // for each play...
       for (var i = 0; i < playbyplaylength; i++) {        
         var play = playbyplay[i], actionslength = play.length;
         // each action ...
         for (var j = 0; j<actionslength; j++) {
-          var action = play[j], playerid = action.playerid, time = action.time, actcodeslength = action.action.length;
+          var action = play[j], playerid = action.playerid, time = action.time, actcodeslength = action.action.refs.length;
           // each action code...
           for (var k = 0; k<actcodeslength; k++) {
-            var actcode = action.action[k];
+            var ref = action.action.refs[k];
 
             // stats
-            if (actcode==='in') {
+            if (ref==='in') {
               var p = [time, GameDatasFact.chrono.total_time];
               stats[playerid].playingtime.push(p); 
             }
-            else if (actcode==='out') {
+            else if (ref==='out') {
               var lastin = (stats[playerid].playingtime.length-1);
               stats[playerid].playingtime[lastin][1] = time;
             }
             else {
-              stats[playerid][actcode]++;
+              stats[playerid][ref]++;
             }
 
             // calculate points
-            if (actcode==='ftm') {
+            if (ref==='ftm') {
               stats[playerid].pts += 1; 
             }
-            else if (actcode==='fgm2') {
+            else if (ref==='fgm2') {
               stats[playerid].pts += 2; 
             }
-            else if (actcode==='fgm3') {
+            else if (ref==='fgm3') {
               stats[playerid].pts += 3; 
             }
 
@@ -402,8 +463,7 @@ app.filter('getCourtPlayers', function () {
     $scope.editPlay = function(index){
       index = GameDatasFact.playbyplay.length-1-index;
       var play = GameDatasFact.playbyplay[index];
-      play.index = index;
-      PlaysRecordFact.edit(play);
+      PlaysRecordFact.edit(index);
     };
 
     // init 
@@ -416,15 +476,15 @@ app.filter('getCourtPlayers', function () {
   return function(play) {
     var output = '';
     for (var i=0; i<play.length; i++) {
-      var action = play[i].action;
-      if (action.length === 2) {
-        action = action[1];
+      var ref, refs = play[i].action.refs;
+      if (refs.length === 2) {
+        ref = refs[1];
       }
       else {
-        action = action[0];
+        ref = refs[0];
       }
       var player = $filter('playerFromPid')(play[i].playerid);
-      var descr = ActionsDatasFact.dictio[action].pplabel + ' ';
+      var descr = ActionsDatasFact.dictio[ref].pplabel + ' ';
       output += descr.replace("@", player.name);
     }
     return output;
