@@ -146,6 +146,7 @@ app.factory('ActionsDatasFact', function() {
       'pf': {btnlabel:'Foul', pplabel:'@: personnal foul.', addtostatsheet:0},
       'pts': {btnlabel:'Points', addtostatsheet:0},
       'playingtime': {addtostatsheet:'array'},
+      'plusminus': {addtostatsheet:'array'},
       'out': {pplabel:'@ is removed.'},
       'in': {pplabel:'@ enters the game.'},
       'opp1': {btnlabel:'+1', pplabel:'Opponent scores 1pt', class:'text-muted small'},
@@ -425,7 +426,7 @@ app.filter('getCourtPlayers', function () {
       function () { return GameDatasFact.playbyplay; },
       function (newVal, oldVal) {
         $scope.plays = GameDatasFact.playbyplay;
-        $scope.updateScorebox();
+        // $scope.updateScorebox();
       },
       true
       );
@@ -436,8 +437,8 @@ app.filter('getCourtPlayers', function () {
       var stats = {}, teamscore = 0, opponentscore = 0;
 
       // init statsheets values:
-      var players = GameDatasFact.teams[0].players, playerlength = players.length;
-      for (var h = 0; h < playerlength; h++) {
+      var h = 0, players = GameDatasFact.teams[0].players, playerlength = players.length;
+      for (; h < playerlength; h++) {
         var playerid = players[h].id;          
         stats[playerid] = {};
         angular.forEach(ActionsDatasFact.dictio, function(act, id) {
@@ -448,27 +449,28 @@ app.filter('getCourtPlayers', function () {
       }
 
       // calculate statsheets:
-      var playbyplay = GameDatasFact.playbyplay, playbyplaylength = playbyplay.length;
+      var i = 0,  playbyplay = GameDatasFact.playbyplay, playbyplaylength = playbyplay.length;
       // for each play...
-      for (var i = 0; i < playbyplaylength; i++) {        
-        var play = playbyplay[i], actionslength = play.length;
+      for (; i < playbyplaylength; i++) {        
+        var j = 0, play = playbyplay[i], actionslength = play.length;
         // each action ...
-        for (var j = 0; j<actionslength; j++) {
-          var action = play[j], playerid = action.playerid, time = action.time, actcodeslength = action.action.refs.length;
+        for (; j<actionslength; j++) {
+          var k = 0, action = play[j], playerid = action.playerid, time = action.time, refslength = action.action.refs.length;
           // each action code...
-          for (var k = 0; k<actcodeslength; k++) {
+          for (; k<refslength; k++) {
             var ref = action.action.refs[k];
 
             // My team
             if (playerid !== 'opp') {
               // stats
               if (ref==='in') {
-                var p = [time, GameDatasFact.chrono.total_time];
-                stats[playerid].playingtime.push(p); 
+                stats[playerid].playingtime.push([time]); 
+                stats[playerid].plusminus.push([teamscore-opponentscore]); 
               }
               else if (ref==='out') {
                 var lastin = (stats[playerid].playingtime.length-1);
-                stats[playerid].playingtime[lastin][1] = time;
+                stats[playerid].playingtime[lastin].push(time);
+                stats[playerid].plusminus[lastin].push(teamscore-opponentscore);
               }
               else {
                 stats[playerid][ref]++;
@@ -502,6 +504,16 @@ app.filter('getCourtPlayers', function () {
         }
       }
 
+      // closing playingminutes and plusminus values :
+      var l = 0, players = GameDatasFact.teams[0].players, playerlength = players.length;
+      for (; l < playerlength; l++) {
+        var playerid = players[l].id, lastin = (stats[playerid].playingtime.length-1);
+        if (lastin > -1 && stats[playerid].playingtime[lastin].length<2) {
+          stats[playerid].playingtime[lastin].push(GameDatasFact.chrono.total_time);
+          stats[playerid].plusminus[lastin].push(teamscore-opponentscore);
+        }
+      }
+
       GameDatasFact.teams[0].score = teamscore;
       GameDatasFact.teams[1].score = opponentscore;
       $scope.stats = stats;
@@ -512,7 +524,6 @@ app.filter('getCourtPlayers', function () {
       index = GameDatasFact.playbyplay.length-1-index;
       GameDatasFact.playbyplay.splice(index, 1);
       $scope.saveGameDatasFact();
-      $scope.updateScorebox();
     };
 
     $scope.editPlay = function(index){
@@ -557,7 +568,7 @@ app.filter('getCourtPlayers', function () {
     }
   };
 })
-.filter('statsPlayingMinutes', function(GameDatasFact) {
+.filter('statsPlayingMinutes', function() {
   return function(inout) {
     var t=0, i=0, inoutlength = inout.length;
     for (;i<inoutlength;i++) {
@@ -572,6 +583,17 @@ app.filter('getCourtPlayers', function () {
     + ((s<10) ? '0' + s : s)
     ;
     return output;
+  }
+})
+.filter('statsPlusMinus', function() {
+  return function(inout) {
+    console.log(inout);
+    var pm=0, i=0, inoutlength = inout.length;
+    for (;i<inoutlength;i++) {
+      var a = inout[i];
+      pm += a[1] - a[0];
+    }
+    return pm;
   }
 })
 .filter('reverse', function() {

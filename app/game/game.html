@@ -41,7 +41,7 @@
 		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>	
 		
 		<!-- Edit Play -->
-		<pre>{{recorder.ui}}</pre>
+		<pre>{{recorder.play}}</pre>
 		<h4>Play : (edit:{{recorder.ui.edit}})</h4>
 		<a ng-click="resetPlay()" class="btn btn-default">Cancel</a>
 
@@ -161,7 +161,7 @@
 							<td>{{stats[player.id].fgm2}} - {{stats[player.id].fga2}}</td>
 							<td>{{stats[player.id].fgm3}} - {{stats[player.id].fga3}}</td>
 							<td>{{stats[player.id].ftm}} - {{stats[player.id].fta}}</td>
-							<td></td>
+							<td>{{stats[player.id].plusminus | statsPlusMinus}}</td>
 							<td>{{stats[player.id].reboff}}</td>
 							<td>{{stats[player.id].rebdef}}</td>
 							<td>{{stats[player.id].reboff + stats[player.id].rebdef}}</td>
