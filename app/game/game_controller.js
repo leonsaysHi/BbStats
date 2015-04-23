@@ -36,6 +36,9 @@
         name: '',
         color: '',
           players: [] // {id, name, number, playing}          
+        }, { 
+          score: 0,
+          player: {id:'opp', name:'Opponent', number:'#'}       
         }
         ],
         chrono: {
@@ -59,18 +62,21 @@
         this.ui= {
           subaction:false,
           addaction:false,
+          oppaction:false,
           edit:false,
           index:0
         };
       },
       edit:function(index){
         var 
-          self = this,
-          play = GameDatasFact.playbyplay[index]
+        self = this,
+        play = GameDatasFact.playbyplay[index]
         ;
+        this.play = play;
         this.ui.edit = true;
         this.ui.index = index;
-        this.play = play;
+        this.ui.oppaction = (play[0].playerid==='opp');
+        console.log(play, play.playerid);
         // set subaction/addaction
         this.ui.subaction = false;
         var action = $.grep(ActionsDatasFact.base, function(e){ return e.id == play[0].action.id; });
@@ -90,57 +96,65 @@
     };
   });
 
-  app.factory('ActionsDatasFact', function() {
-    return {
-      base: [
-        {id:'fg', refs:false, subaction:'fg', addaction: false },
-        {id:'rebdef', refs:['rebdef'], subaction:false, addaction: false }, 
-        {id:'to', refs:['to'], subaction:false, addaction: false },
-        {id:'st', refs:['st'], subaction:false, addaction: false },
-        {id:'blk', refs:['blk'], subaction:false, addaction: false },
-        {id:'pf', refs:['pf'], subaction:false, addaction: false }
-      ],
-      subactions: {
-        fg: [
-          {id:'fta', refs:['fta'], subaction:false, addaction: 'reboff'},
-          {id:'fga2', refs:['fga2'], subaction:false, addaction:'reboff'},
-          {id:'fga3', refs:['fga3'], subaction:false, addaction:'reboff'},
-          {id:'ftm', refs:['fta','ftm'], subaction:false, addaction: false},
-          {id:'fgm2', refs:['fga2','fgm2'], subaction:false, addaction:'ast'},
-          {id:'fgm3', refs:['fga3','fgm3'], subaction:false, addaction:'ast'}
-        ]
-      },
-      addactions: {
-        'reboff': [{id:'reboff', refs:['reboff'], subaction:false, addaction: false}],
-        'ast': [{id:'ast', refs:['ast'], subaction:false, addaction: false}]
-      },
-      hiddenactions: {
-        'in': {id:'in', refs:['in'], subaction:false, addaction: false},
-        'out': {id:'out', refs:['out'], subaction:false, addaction: false}
-      },
-      dictio: {
-        'fg': {btnlabel:'Field goal'},
-        'fta': {btnlabel:'1pt missed', pplabel:'@: free throw missed.', addtostatsheet:0},
-        'fga2': {btnlabel:'2pts missed', pplabel:'@: 2pt shot: missed.', addtostatsheet:0},
-        'fga3': {btnlabel:'3pts missed', pplabel:'@: 3pt shot: missed.', addtostatsheet:0},
-        'ftm': {btnlabel:'1pt made', pplabel:'@: free throw made.', addtostatsheet:0, ppbold:true},
-        'fgm2': {btnlabel:'2pts made', pplabel:'@: 2pt shot: made.', addtostatsheet:0, ppbold:true},
-        'fgm3': {btnlabel:'3pts made', pplabel:'@: 3pt shot: made.', addtostatsheet:0, ppbold:true},
-        'ast': {btnlabel:'Assist', pplabel:'Assist: @.', addtostatsheet:0},
-        'rebdef': {btnlabel:'Defensive rebound', pplabel:'@: defensive rebound.', addtostatsheet:0},
-        'reboff': {btnlabel:'Offensive rebound', pplabel:'Offensive rebound: @.', addtostatsheet:0},
-        'to': {btnlabel:'Turn over', pplabel:'@: turnover', addtostatsheet:0},
-        'st': {btnlabel:'Steal', pplabel:'@: steal.', addtostatsheet:0},
-        'blk': {btnlabel:'Block', pplabel:'@: block shoot.', addtostatsheet:0},
-        'pf': {btnlabel:'Foul', pplabel:'@: personnal foul.', addtostatsheet:0},
-        'pts': {btnlabel:'Points', addtostatsheet:0},
-        'playingtime': {addtostatsheet:'array'},
-        'out': {pplabel:'@ is removed.'},
-        'in': {pplabel:'@ enters the game.'},
-        
-      }
-    };
-  });
+app.factory('ActionsDatasFact', function() {
+  return {
+    base: [
+    {id:'fg', refs:false, subaction:'fg', addaction: false },
+    {id:'rebdef', refs:['rebdef'], subaction:false, addaction: false }, 
+    {id:'to', refs:['to'], subaction:false, addaction: false },
+    {id:'st', refs:['st'], subaction:false, addaction: false },
+    {id:'blk', refs:['blk'], subaction:false, addaction: false },
+    {id:'pf', refs:['pf'], subaction:false, addaction: false }
+    ],
+    subactions: {
+      fg: [
+      {id:'fta', refs:['fta'], subaction:false, addaction: 'reboff'},
+      {id:'fga2', refs:['fga2'], subaction:false, addaction:'reboff'},
+      {id:'fga3', refs:['fga3'], subaction:false, addaction:'reboff'},
+      {id:'ftm', refs:['fta','ftm'], subaction:false, addaction: false},
+      {id:'fgm2', refs:['fga2','fgm2'], subaction:false, addaction:'ast'},
+      {id:'fgm3', refs:['fga3','fgm3'], subaction:false, addaction:'ast'}
+      ]
+    },
+    addactions: {
+      'reboff': [{id:'reboff', refs:['reboff'], subaction:false, addaction: false}],
+      'ast': [{id:'ast', refs:['ast'], subaction:false, addaction: false}]
+    },
+    hiddenactions: {
+      'in': {id:'in', refs:['in'], subaction:false, addaction: false},
+      'out': {id:'out', refs:['out'], subaction:false, addaction: false}
+    },
+    opponentactions: {
+      'opp1': {id:'opp1', refs:['opp1'], subaction:false, addaction: false},
+      'opp2': {id:'opp2', refs:['opp2'], subaction:false, addaction: false},
+      'opp3': {id:'opp3', refs:['opp3'], subaction:false, addaction: false}
+    },
+    dictio: {
+      'fg': {btnlabel:'Field goal'},
+      'fta': {btnlabel:'1pt missed', pplabel:'@: free throw missed.', addtostatsheet:0},
+      'fga2': {btnlabel:'2pts missed', pplabel:'@: 2pt shot: missed.', addtostatsheet:0},
+      'fga3': {btnlabel:'3pts missed', pplabel:'@: 3pt shot: missed.', addtostatsheet:0},
+      'ftm': {btnlabel:'1pt made', pplabel:'@: free throw made.', addtostatsheet:0, class:'text-bold'},
+      'fgm2': {btnlabel:'2pts made', pplabel:'@: 2pt shot: made.', addtostatsheet:0, class:'text-bold'},
+      'fgm3': {btnlabel:'3pts made', pplabel:'@: 3pt shot: made.', addtostatsheet:0, class:'text-bold'},
+      'ast': {btnlabel:'Assist', pplabel:'Assist: @.', addtostatsheet:0},
+      'rebdef': {btnlabel:'Defensive rebound', pplabel:'@: defensive rebound.', addtostatsheet:0},
+      'reboff': {btnlabel:'Offensive rebound', pplabel:'Offensive rebound: @.', addtostatsheet:0},
+      'to': {btnlabel:'Turn over', pplabel:'@: turnover', addtostatsheet:0},
+      'st': {btnlabel:'Steal', pplabel:'@: steal.', addtostatsheet:0},
+      'blk': {btnlabel:'Block', pplabel:'@: block shoot.', addtostatsheet:0},
+      'pf': {btnlabel:'Foul', pplabel:'@: personnal foul.', addtostatsheet:0},
+      'pts': {btnlabel:'Points', addtostatsheet:0},
+      'playingtime': {addtostatsheet:'array'},
+      'out': {pplabel:'@ is removed.'},
+      'in': {pplabel:'@ enters the game.'},
+      'opp1': {btnlabel:'+1', pplabel:'Opponent scores 1pt', class:'text-muted small'},
+      'opp2': {btnlabel:'+2', pplabel:'Opponent scores 2pt', class:'text-muted small'},
+      'opp3': {btnlabel:'+3', pplabel:'Opponent scores 3pt', class:'text-muted small'}
+
+    }
+  };
+});
 
   /**
   * Game : Parent controller
@@ -178,7 +192,24 @@
     })
 ;
 
+  /**
+  * Scoreboard
+  *
+  * 
+  */
+  app
+  .controller('Scoreboard', function ($scope, GameDatasFact) {
 
+    $scope.$watch(
+      function () { return GameDatasFact.teams[1].score; },
+      function (newVal, oldVal) {
+        console.log('new val', GameDatasFact.teams[1].score);
+        $scope.opponentscore = GameDatasFact.teams[1].score;
+      },
+      true
+      );
+
+  });
 
 
   /**
@@ -218,18 +249,18 @@
     // click on player :
     // push new action or update into play's actionindex
     $scope.selectPlayer = function(player, actionindex){
+      console.log(player);
       var 
         actionindex = (typeof actionindex === 'undefined') ? false : actionindex // no play index : push
-      ;
-      console.log('actionindex', actionindex);
+        ;
       // push new action :
       if(typeof PlaysRecordFact.play[actionindex] === 'undefined') {
         console.log('push action');
         var
-          firstpush = (PlaysRecordFact.play.length===0),
-          time = firstpush ? GameDatasFact.chrono.total_time : PlaysRecordFact.play[0].time,
-          curr_time = firstpush ? GameDatasFact.chrono.curr_time : PlaysRecordFact.play[0].curr_time,
-          curr_period = firstpush ? GameDatasFact.chrono.curr_period : PlaysRecordFact.play[0].curr_period
+        firstpush = (PlaysRecordFact.play.length===0),
+        time = firstpush ? GameDatasFact.chrono.total_time : PlaysRecordFact.play[0].time,
+        curr_time = firstpush ? GameDatasFact.chrono.curr_time : PlaysRecordFact.play[0].curr_time,
+        curr_period = firstpush ? GameDatasFact.chrono.curr_period : PlaysRecordFact.play[0].curr_period
         ;
         PlaysRecordFact.play.push({
           time: time,
@@ -257,7 +288,7 @@
     // update into play's action index or play's last action
     $scope.selectAction = function(action) {   
       var 
-        actionindex = PlaysRecordFact.play.length-1
+      actionindex = PlaysRecordFact.play.length-1
       ;
 
       PlaysRecordFact.ui.subaction = action.subaction;
@@ -267,7 +298,6 @@
       PlaysRecordFact.play[actionindex].action = action;
 
       // save ?
-      console.log('save ?', PlaysRecordFact.ui.edit, action.subaction, action.addaction);
       if (!PlaysRecordFact.ui.edit && !action.subaction && !action.addaction) {  
         $scope.savePlay(); 
       }
@@ -282,7 +312,6 @@
       PlaysRecordFact.play[1].action = action;
 
       // save ?
-      console.log('save ?', PlaysRecordFact.ui.edit, action.subaction, action.addaction);
       if (!PlaysRecordFact.ui.edit && !action.subaction && !action.addaction) {  
         $scope.savePlay(); 
       }
@@ -342,8 +371,18 @@
       $('#bench').modal('hide'); 
     };
 
+    // opponent
+    $scope.selectOpponent = function() {
+      PlaysRecordFact.ui.oppaction = true;
+      $scope.selectPlayer({id:'opp'});
+    };
+    $scope.selectOpponentAction = function(action) {
+     PlaysRecordFact.play[0].action = action;
+     $scope.savePlay(); 
+   };
 
-  });
+
+ });
 
 app.filter('getBenchPlayers', function () {
   return function (players) {
@@ -394,7 +433,7 @@ app.filter('getCourtPlayers', function () {
     // update $scope.stats { playerid: {action:..., action:... } }
     $scope.updateScorebox = function () {
 
-      var stats = {};
+      var stats = {}, teamscore = 0, opponentscore = 0;
 
       // init statsheets values:
       var players = GameDatasFact.teams[0].players, playerlength = players.length;
@@ -410,7 +449,6 @@ app.filter('getCourtPlayers', function () {
 
       // calculate statsheets:
       var playbyplay = GameDatasFact.playbyplay, playbyplaylength = playbyplay.length;
-      console.log(playbyplay);
       // for each play...
       for (var i = 0; i < playbyplaylength; i++) {        
         var play = playbyplay[i], actionslength = play.length;
@@ -421,34 +459,51 @@ app.filter('getCourtPlayers', function () {
           for (var k = 0; k<actcodeslength; k++) {
             var ref = action.action.refs[k];
 
-            // stats
-            if (ref==='in') {
-              var p = [time, GameDatasFact.chrono.total_time];
-              stats[playerid].playingtime.push(p); 
-            }
-            else if (ref==='out') {
-              var lastin = (stats[playerid].playingtime.length-1);
-              stats[playerid].playingtime[lastin][1] = time;
-            }
-            else {
-              stats[playerid][ref]++;
+            // My team
+            if (playerid !== 'opp') {
+              // stats
+              if (ref==='in') {
+                var p = [time, GameDatasFact.chrono.total_time];
+                stats[playerid].playingtime.push(p); 
+              }
+              else if (ref==='out') {
+                var lastin = (stats[playerid].playingtime.length-1);
+                stats[playerid].playingtime[lastin][1] = time;
+              }
+              else {
+                stats[playerid][ref]++;
+              }
+
+              // calculate points
+              if (ref==='ftm') {
+                stats[playerid].pts += 1;
+                teamscore += 1; 
+              }
+              else if (ref==='fgm2') {
+                stats[playerid].pts += 2;
+                teamscore += 2;  
+              }
+              else if (ref==='fgm3') {
+                stats[playerid].pts += 3; 
+                teamscore += 3; 
+              }
             }
 
-            // calculate points
-            if (ref==='ftm') {
-              stats[playerid].pts += 1; 
-            }
-            else if (ref==='fgm2') {
-              stats[playerid].pts += 2; 
-            }
-            else if (ref==='fgm3') {
-              stats[playerid].pts += 3; 
+            // Opponents's team
+            else {
+              switch (ref) {
+                case 'opp1' : opponentscore += 1; break;
+                case 'opp2' : opponentscore += 2; break;
+                case 'opp3' : opponentscore += 3; break;
+              }
             }
 
           }
         }
       }
 
+      GameDatasFact.teams[0].score = teamscore;
+      GameDatasFact.teams[1].score = opponentscore;
       $scope.stats = stats;
 
     };
@@ -492,6 +547,7 @@ app.filter('getCourtPlayers', function () {
 })
 .filter('playerFromPid', function (GameDatasFact) {
   return function (id) {
+    if (id==='opp') { return GameDatasFact.teams[1].player; }
     var players = GameDatasFact.teams[0].players;
     for (var i = 0; i < players.length; i++) {
       var player = players[i];
