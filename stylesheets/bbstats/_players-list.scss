@@ -1,24 +1,21 @@
-.players-list {
-	margin:2em -5px;
-	.player {
-		vertical-align:top;
-		display:inline-block;
-		width:15%;
-		min-height:75px;
-		margin:5px;
-		padding:5px;
-		text-align:center;
-		line-height:1;
-		border:solid 5px #efefef;
-		> strong {
-			font-size:14px;
-		}
-		> span {
-			display:block;
-			font-size:30px;
-		}
-		&.selected {
-			border-color:blue;
-		}
+.player {
+	vertical-align:top;
+	display:inline-block;
+	width:10%;
+	min-height:50px;
+	margin:0 5px 5px 0;
+	padding:5px;
+	text-align:center;
+	line-height:1;
+	border:solid 5px #efefef;
+	> strong {
+		font-size:12px;
+	}
+	> span {
+		display:block;
+		font-size:25px;
+	}
+	&.selected {
+		border-color:blue;
 	}
 }
