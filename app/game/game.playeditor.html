@@ -5,7 +5,7 @@
 			<h4>Choose a player: <small>edit:{{recorder.ui.edit}}</small></h4>
 			<!-- player -->
 			<div class="players-list">
-				<a ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)" ng-class="{'player--selected':player.id==recorder.play[0].playerid}" class="player">
+				<a ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player, 0)" ng-class="{'player--selected':player.id==recorder.play[0].playerid}" class="player">
 					<strong>{{player.name}}</strong><span>{{player.number}}</span>
 				</a>
 				<a class="player player--empty" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
@@ -16,7 +16,7 @@
 				<!-- actions -->
 				<div ng-show="recorder.play.length>0 && !recorder.ui.subaction" class="actions-list">
 				
-					<a ng-repeat="action in actionsdata.base" ng-click="selectAction(action)" ng-class="{'player--selected':action.id===recorder.play[0].action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
+					<a ng-repeat="action in actionsdata.base" ng-click="selectAction(action)" ng-class="{'action--selected':action.id===recorder.play[0].action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
 					<a ng-show="benchplayers.length>0" ng-click="substitution()" class="action">Subs</a>
 				</div>
 
@@ -42,7 +42,7 @@
 			<!-- opponentactions -->
 			<div ng-show="recorder.ui.oppaction" class="actions-list">
 				<h4>Opponent scores?</h4>
-				<a ng-repeat="action in actionsdata.opponentactions" ng-click="selectOpponentAction(action)" ng-class="{selected:recorder.play[0].action.id===action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
+				<a ng-repeat="action in actionsdata.opponentactions" ng-click="selectOpponentAction(action)" ng-class="{'action--selected':recorder.play[0].action.id===action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
 			</div>
 			
 			<p>

@@ -36,7 +36,6 @@
     return function(play) {
       var output = '';
       for (var i=0; i<play.length; i++) {
-        
         //player
         var player = $filter('playerFromPid')(play[i].playerid);
         // action
@@ -48,8 +47,10 @@
           else {
             ref = refs[0];
           }
-          var descr = ActionsDatasFact.dictio[ref].pplabel + ' ';
-          output += descr.replace("@", player.name);
+          if(typeof ref !== 'undefined') {
+            var descr = ActionsDatasFact.dictio[ref].pplabel + ' ';
+            output += descr.replace("@", player.name);
+          }
         }
         else {
           output += player.name + '... ';

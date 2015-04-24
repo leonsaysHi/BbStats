@@ -34,13 +34,12 @@
     // click on player :
     // push new action or update into play's actionindex
     $scope.selectPlayer = function(player, actionindex){
-      console.log(player);
       var 
-        actionindex = (typeof actionindex === 'undefined') ? false : actionindex // no play index : push
-        ;
+        lastindex = (PlaysRecordFact.play.length-1),
+        dopush =  (typeof PlaysRecordFact.play[actionindex] === 'undefined')
+      ;
       // push new action :
-      if(typeof PlaysRecordFact.play[actionindex] === 'undefined') {
-        console.log('push action');
+      if(dopush) {
         var
         firstpush = (PlaysRecordFact.play.length===0),
         time = firstpush ? GameDatasFact.chrono.total_time : PlaysRecordFact.play[0].time,
@@ -59,6 +58,12 @@
         actionindex = (PlaysRecordFact.play.length-1);
       }
 
+      // opp ? 
+      if (PlaysRecordFact.play[actionindex].playerid === 'opp'){
+        PlaysRecordFact.play[actionindex].action = false;
+        PlaysRecordFact.ui.oppaction = false;
+      }
+
       PlaysRecordFact.play[actionindex].player = player;
       PlaysRecordFact.play[actionindex].playerid = player.id;
 
@@ -71,24 +76,31 @@
 
     // click on action :
     // update into play's action index or play's last action
-    $scope.selectAction = function(action) {   
-      var 
-      actionindex = PlaysRecordFact.play.length-1
-      ;
+    $scope.selectAction = function(action) { 
 
-      PlaysRecordFact.ui.subaction = action.subaction;
+      if (PlaysRecordFact.ui.subaction === false)  { PlaysRecordFact.ui.subaction = action.subaction; }
       PlaysRecordFact.ui.addaction = action.addaction;
       
       // add action to play
-      PlaysRecordFact.play[actionindex].action = action;
+      PlaysRecordFact.play[0].action = action;
+
+      // delete addaction ?
+      if(PlaysRecordFact.play.length > 1 && PlaysRecordFact.play[0].action.addaction !== PlaysRecordFact.play[1].action.id) {
+        $scope.noAddAction();
+      }
 
       // save ?
       if (!PlaysRecordFact.ui.edit && !action.subaction && !action.addaction) {  
         //$scope.savePlay(); 
       }
     };
+
+    // click on No subaction
     $scope.noSubaction = function(){
       PlaysRecordFact.ui.subaction = false;
+      PlaysRecordFact.ui.addaction = false;
+      $scope.noAddAction();
+      PlaysRecordFact.play[0].action = false;
     }
 
     // click on addaction
@@ -150,8 +162,13 @@
       // set as playing
       var index_bp = GameDatasFact.teams[$scope.teamid].players.indexOf(player);
       GameDatasFact.teams[$scope.teamid].players[index_bp].playing = true;
-      $scope.selectPlayer(player);
+      $scope.selectPlayer(player,PlaysRecordFact.play.length);
       $scope.selectAction(ActionsDatasFact.hiddenactions.in);
+
+      // pregame select
+      if (PlaysRecordFact.play.length == 1) {  
+        $scope.savePlay(); 
+      }
 
       $('#bench').modal('hide'); 
     };
@@ -159,11 +176,12 @@
     // opponent
     $scope.selectOpponent = function() {
       PlaysRecordFact.ui.oppaction = true;
-      $scope.selectPlayer({id:'opp'});
+      $scope.selectPlayer({id:'opp'}, 0);
+      PlaysRecordFact.play[0].action = false;
     };
     $scope.selectOpponentAction = function(action) {
      PlaysRecordFact.play[0].action = action;
-     $scope.savePlay(); 
+     //$scope.savePlay(); 
    };
 
 

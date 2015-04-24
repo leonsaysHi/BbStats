@@ -109,7 +109,7 @@ app.factory('ActionsDatasFact', function() {
       'opp3': {id:'opp3', refs:['opp3'], subaction:false, addaction: false}
     },
     dictio: {
-      'fg': {btnlabel:'Field goal'},
+      'fg': {btnlabel:'Field goal', pplabel:'@: shot...'},
       'fta': {btnlabel:'1pt missed', pplabel:'@: free throw missed.', addtostatsheet:0},
       'fga2': {btnlabel:'2pts missed', pplabel:'@: 2pt shot: missed.', addtostatsheet:0},
       'fga3': {btnlabel:'3pts missed', pplabel:'@: 3pt shot: missed.', addtostatsheet:0},

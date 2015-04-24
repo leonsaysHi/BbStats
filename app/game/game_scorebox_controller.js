@@ -125,7 +125,6 @@
   })
   .filter('statsPlusMinus', function() {
     return function(inout) {
-      console.log(inout);
       var pm=0, i=0, inoutlength = inout.length;
       for (;i<inoutlength;i++) {
         var a = inout[i];
