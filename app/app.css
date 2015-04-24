@@ -1204,6 +1204,8 @@ a.text-danger:hover {
 
 .bg-primary {
   color: #fff; }
+  .bg-primary a {
+    color: #fff; }
 
 .bg-primary {
   background-color: #337ab7; }
@@ -4905,6 +4907,83 @@ button.close {
 @media print {
   .hidden-print {
     display: none !important; } }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0; }
+
+#game-layout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch; }
+  #game-layout .scoreboard, #game-layout .footer {
+    background-color: rgba(0, 0, 0, 0.05); }
+  #game-layout .scoreboard {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%; }
+    #game-layout .scoreboard > div {
+      flex-grow: 1;
+      padding: 20px; }
+  #game-layout .footer {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%; }
+    #game-layout .footer > a {
+      flex-grow: 1;
+      height: 75px;
+      padding: 20px;
+      text-align: center; }
+  #game-layout .panels {
+    overflow: hidden;
+    height: 100%;
+    flex: 1; }
+    #game-layout .panels .panels-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      align-content: stretch;
+      justify-content: flex-start;
+      height: 100%;
+      width: 300vw; }
+      #game-layout .panels .panels-wrapper > * {
+        flex-grow: 1;
+        width: 33.3333%;
+        height: 100%; }
+  #game-layout .playeditor {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%; }
+    #game-layout .playeditor .playeditor-ui {
+      flex-grow: 3;
+      padding: 20px; }
+    #game-layout .playeditor .chrono {
+      flex-grow: 2;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.03); }
+  #game-layout .play-by-play, #game-layout .scorebox {
+    padding: 20px; }
+
+.footer {
+  background-color: #337ab7; }
+  .footer .row > div {
+    text-align: center; }
 
 .player {
   vertical-align: top;

@@ -1,0 +1,50 @@
+	<div class="scorebox">
+		<a ng-click="updateScorebox()" class="btn btn-default">Refresh</a>
+		<table class="table table-condensed table-bordered table-striped">
+			<thead>
+				<tr class="headrange">
+					<td colspan="2"></td>
+					<td colspan="3">Field goals</td>
+					<td></td>
+					<td colspan="3">Rebounds</td>
+					<td colspan="6"></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>Min</td>
+					<td>FgM-A</td>
+					<td>3pM-A</td>
+					<td>FtM-A</td>
+					<td>+/-</td>
+					<td>Off</td>
+					<td>Def</td>
+					<td>Tot</td>
+					<td>Ast</td>
+					<td>Pf</td>
+					<td>St</td>
+					<td>To</td>
+					<td>Blk</td>
+					<td>Pts</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="player in gamedatas.teams[0].players">
+					<td>{{player.name}}</td>
+					<td>{{stats[player.id].playingtime | statsPlayingMinutes}}</td>
+					<td>{{stats[player.id].fgm2}} - {{stats[player.id].fga2}}</td>
+					<td>{{stats[player.id].fgm3}} - {{stats[player.id].fga3}}</td>
+					<td>{{stats[player.id].ftm}} - {{stats[player.id].fta}}</td>
+					<td>{{stats[player.id].plusminus | statsPlusMinus}}</td>
+					<td>{{stats[player.id].reboff}}</td>
+					<td>{{stats[player.id].rebdef}}</td>
+					<td>{{stats[player.id].reboff + stats[player.id].rebdef}}</td>
+					<td>{{stats[player.id].ast}}</td>
+					<td>{{stats[player.id].f}}</td>
+					<td>{{stats[player.id].st}}</td>
+					<td>{{stats[player.id].to}}</td>
+					<td>{{stats[player.id].blk}}</td>
+					<td>{{stats[player.id].pts}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>

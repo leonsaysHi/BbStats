@@ -1,179 +1,43 @@
-	<div class="row">
-		<div class="col-xs-4">
+<div id="game-layout">
+	
+	<!-- Scoreboard -->
+	<div ng-controller="Scoreboard" class="scoreboard">
+		<div>
 			<h3>{{gamedatas.name}}</h3>
 			<a ui-sref="gameconfig({gameId:gamedatas.id})" class="text-muted">Edit</a> - <a  ui-sref="home" class="text-muted">Close</a>
 		</div>
-		<div class="col-xs-4">
+		<div>
 			<h1 class="text-center">
 				<strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong><br><small>{{gamedatas.chrono.curr_period | chronoPeriod}}</small>
 			</h1>
 		</div>
-		<div class="col-xs-4">
-			<div ng-controller="Scoreboard">
+		<div>
+			<div>
 				<h1>{{gamedatas.teams[0].score}} - {{gamedatas.teams[1].score}}</h1>
 			</div>
 		</div>
 	</div>
 
-	<!-- Chrono -->
-	<div ng-controller="Chrono" >
-		<div class="alert alert-danger" role="alert" ng-show="!gamestarted && !playersready">
-			Select 5 players from the bench
-		</div>
-		
-		<div class="jumbotron">
-			<a class="btn btn-primary btn-sm" ng-click="nextPeriod()" ng-show="!gamestarted" ng-disabled="!playersready">Start the game</a>
-			<div ng-show="gamestarted">
-				
-				<!-- between periods -->
-				<a class="btn btn-default btn-sm" ng-show="!periodisrunning" ng-click="nextPeriod()">{{gamedatas.chrono.curr_period | chronoGotoNextPeriod}}</a>
-				<!-- play / stop -->
-				<div ng-show="periodisrunning">			
-					<a class="btn btn-default btn-sm" ng-show="!clockisrunning" ng-click="play()">Play</a>
-					<a class="btn btn-default btn-sm" ng-show="clockisrunning" ng-click="stop()">Stop</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	
-	<div ng-controller="PlayEditor" ng-init="init(0)">
-		<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>	
-		
-		<!-- Edit Play -->
-		<pre>{{recorder.play}}</pre>
-		<h4>Play : (edit:{{recorder.ui.edit}})</h4>
-		<a ng-click="resetPlay()" class="btn btn-default">Cancel</a>
+	<div class="panels">
+		<div class="panels-wrapper" style="margin-left:-{{gametab}}00%">
 
-		<!-- player -->
-		<div>
-			<a ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)" ng-class="{selected:player.id==recorder.play[0].playerid}" class="player">
-				<strong>{{player.name}}</strong><span>{{player.number}}</span>
-			</a>
-			<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
-			<a class="player" ng-click="selectOpponent()"><strong>Opponent scores</strong></a>
-		</div>
+			<!-- PlayEditor -->
+			<play-editor ng-init="init(0)"></play-editor>
 
-
-		<div ng-show="gamedatas.chrono.total_time>0 && !recorder.ui.oppaction">
-			<!-- actions -->
-			<div ng-show="recorder.play.length>0 && !recorder.ui.subaction">
+			<!-- PlayByPlay -->
+			<play-by-play></play-by-play>
 			
-				<a ng-repeat="action in actionsdata.base" ng-click="selectAction(action)" ng-class="{selected:action.id===recorder.play[0].action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
-				<a ng-show="benchplayers.length>0" ng-click="substitution()" class="action">Subs</a>
-			</div>
-
-			<!-- subactions -->
-			<div ng-repeat="(code, subactions) in actionsdata.subactions" ng-show="recorder.ui.subaction===code">
-				<a ng-click="noSubaction()" class="action">back</a>
-				<a ng-repeat="action in subactions" ng-click="selectAction(action)" ng-class="{selected:action.id===recorder.play[0].action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
-			</div>
-
-			<!-- addactions -->
-			<div ng-repeat="(code, addactions) in actionsdata.addactions" ng-show="recorder.ui.addaction===code">
-				<div ng-repeat="action in addactions">
-					<h4>{{actionsdata.dictio[action.id].btnlabel}} ?</h4>
-					<a ng-click="noAddAction()" ng-class="{selected:recorder.play.length===1}" class="player"><span>No</span></a>
-					<a ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectAddAction(player, action)" ng-hide="player==recorder.play[0].player" ng-class="{selected:recorder.play[1].playerid===player.id}" class="player">
-						<strong>{{player.name}}</strong><span>{{player.number}}</span>
-					</a>
-				</div>
-			</div>
+			<!-- ScoreBox -->
+			<score-box></score-box>
 
 		</div>
-
-		<!-- opponentactions -->
-		<div ng-show="recorder.ui.oppaction">
-			<h4>Opponent scores?</h4>
-			<a ng-repeat="action in actionsdata.opponentactions" ng-click="selectOpponentAction(action)" ng-class="{selected:recorder.play[0].action.id===action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
-		</div>
-
-		<a ng-click="savePlay()" ng-show="recorder.ui.edit" class="btn btn-primary">Save</a>
-
-		<!-- bench modal -->
-		<div class="modal fade" id="bench">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Banch</h4>
-					</div>
-					<div class="modal-body">
-						<div class="players-list">
-							<a class="player" ng-repeat="(index, player) in benchplayers = (team.players | getBenchPlayers)" ng-click="selectPlayerFromBench(player)">
-								<strong>{{player.name}}</strong><span>{{player.number}}</span>
-							</a>
-							<p ng-hide="benchplayers.length">No player on the bench</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
 	</div>
+	
+	<!-- panel navigation -->
+	<footer class="footer">
+			<a class="tab" ng-click="gametab = 0">Recorder</a>
+			<a class="tab" ng-click="gametab = 1">Play-by-Play</a>
+			<a class="tab" ng-click="gametab = 2">Scorebox</a>
+    </footer>
 
-	<!-- Output -->
-	<div ng-controller="Output" id="outputs">
-		<ul class="nav nav-tabs">
-		    <li class="active"><a show-tab href="#play-by-play">Play-by-play</a></li>
-		    <li><a show-tab href="#boxscore">Box score</a></li>
-		</ul>
-		<div class="tab-content">
-    		<div class="tab-pane active" id="play-by-play">
-				<div ng-repeat="(playid, play) in plays | reverse">
-					<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}}</span> 
-					<span class="{{actionsdata.dictio[play[0].action.id].class}}">{{play | playByPlay}}</span> <a ng-click="editPlay(playid)">edit</a> - <a ng-click="deletePlay(playid)">&times;</a>
-				</div>
-			</div>
-    		<div class="tab-pane" id="boxscore">
-    			<a ng-click="updateScorebox()" class="btn btn-default">Refresh</a>
-				<table class="table table-condensed table-bordered table-striped">
-					<thead>
-						<tr class="headrange">
-							<td colspan="2"></td>
-							<td colspan="3">Field goals</td>
-							<td></td>
-							<td colspan="3">Rebounds</td>
-							<td colspan="6"></td>
-						</tr>
-						<tr>
-							<td></td>
-							<td>Min</td>
-							<td>FgM-A</td>
-							<td>3pM-A</td>
-							<td>FtM-A</td>
-							<td>+/-</td>
-							<td>Off</td>
-							<td>Def</td>
-							<td>Tot</td>
-							<td>Ast</td>
-							<td>Pf</td>
-							<td>St</td>
-							<td>To</td>
-							<td>Blk</td>
-							<td>Pts</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="player in gamedatas.teams[0].players">
-							<td>{{player.name}}</td>
-							<td>{{stats[player.id].playingtime | statsPlayingMinutes}}</td>
-							<td>{{stats[player.id].fgm2}} - {{stats[player.id].fga2}}</td>
-							<td>{{stats[player.id].fgm3}} - {{stats[player.id].fga3}}</td>
-							<td>{{stats[player.id].ftm}} - {{stats[player.id].fta}}</td>
-							<td>{{stats[player.id].plusminus | statsPlusMinus}}</td>
-							<td>{{stats[player.id].reboff}}</td>
-							<td>{{stats[player.id].rebdef}}</td>
-							<td>{{stats[player.id].reboff + stats[player.id].rebdef}}</td>
-							<td>{{stats[player.id].ast}}</td>
-							<td>{{stats[player.id].f}}</td>
-							<td>{{stats[player.id].st}}</td>
-							<td>{{stats[player.id].to}}</td>
-							<td>{{stats[player.id].blk}}</td>
-							<td>{{stats[player.id].pts}}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</ul>
-	</div>
+</div>

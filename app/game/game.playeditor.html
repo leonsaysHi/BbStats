@@ -1,0 +1,95 @@
+<div class="playeditor">
+		<div class="playeditor-ui">
+			<h4>Team : {{team.name}} - <span style="color:{{team.color}}">■</span></h4>	
+							
+			<!-- Edit Play -->
+			<h4>Play : (edit:{{recorder.ui.edit}})</h4>
+			<a ng-click="resetPlay()" class="btn btn-default">Cancel</a>
+			<!-- player -->
+			<div>
+				<a ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectPlayer(player)" ng-class="{selected:player.id==recorder.play[0].playerid}" class="player">
+					<strong>{{player.name}}</strong><span>{{player.number}}</span>
+				</a>
+				<a class="player" ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="showBench()"><span>+</span></a>
+				<a class="player" ng-click="selectOpponent()"><strong>Opponent scores</strong></a>
+			</div>
+
+
+			<div ng-show="gamedatas.chrono.total_time>0 && !recorder.ui.oppaction">
+				<!-- actions -->
+				<div ng-show="recorder.play.length>0 && !recorder.ui.subaction">
+				
+					<a ng-repeat="action in actionsdata.base" ng-click="selectAction(action)" ng-class="{selected:action.id===recorder.play[0].action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
+					<a ng-show="benchplayers.length>0" ng-click="substitution()" class="action">Subs</a>
+				</div>
+
+				<!-- subactions -->
+				<div ng-repeat="(code, subactions) in actionsdata.subactions" ng-show="recorder.ui.subaction===code">
+					<a ng-click="noSubaction()" class="action">back</a>
+					<a ng-repeat="action in subactions" ng-click="selectAction(action)" ng-class="{selected:action.id===recorder.play[0].action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
+				</div>
+
+				<!-- addactions -->
+				<div ng-repeat="(code, addactions) in actionsdata.addactions" ng-show="recorder.ui.addaction===code">
+					<div ng-repeat="action in addactions">
+						<h4>{{actionsdata.dictio[action.id].btnlabel}} ?</h4>
+						<a ng-click="noAddAction()" ng-class="{selected:recorder.play.length===1}" class="player"><span>No</span></a>
+						<a ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectAddAction(player, action)" ng-hide="player==recorder.play[0].player" ng-class="{selected:recorder.play[1].playerid===player.id}" class="player">
+							<strong>{{player.name}}</strong><span>{{player.number}}</span>
+						</a>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- opponentactions -->
+			<div ng-show="recorder.ui.oppaction">
+				<h4>Opponent scores?</h4>
+				<a ng-repeat="action in actionsdata.opponentactions" ng-click="selectOpponentAction(action)" ng-class="{selected:recorder.play[0].action.id===action.id}" class="action">{{actionsdata.dictio[action.id].btnlabel}}</a>
+			</div>
+
+			<a ng-click="savePlay()" ng-show="recorder.ui.edit" class="btn btn-primary">Save</a>
+
+			<!-- bench modal -->
+			<div class="modal fade" id="bench">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">Banch</h4>
+						</div>
+						<div class="modal-body">
+							<div class="players-list">
+								<a class="player" ng-repeat="(index, player) in benchplayers = (team.players | getBenchPlayers)" ng-click="selectPlayerFromBench(player)">
+									<strong>{{player.name}}</strong><span>{{player.number}}</span>
+								</a>
+								<p ng-hide="benchplayers.length">No player on the bench</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+		</div>
+		<div class="chrono">
+
+			<!-- Chrono -->
+			<div ng-controller="Chrono">
+				<div class="alert alert-danger" role="alert" ng-show="!gamestarted && !playersready">
+					Select 5 players from the bench
+				</div>
+				<a class="btn btn-primary btn-sm" ng-click="nextPeriod()" ng-show="!gamestarted" ng-disabled="!playersready">Start the game</a>
+				<div ng-show="gamestarted">
+					
+					<!-- between periods -->
+					<a class="btn btn-default btn-sm" ng-show="!periodisrunning" ng-click="nextPeriod()">{{gamedatas.chrono.curr_period | chronoGotoNextPeriod}}</a>
+					<!-- play / stop -->
+					<div ng-show="periodisrunning">			
+						<a class="btn btn-default btn-sm" ng-show="!clockisrunning" ng-click="play()">Play</a>
+						<a class="btn btn-default btn-sm" ng-show="clockisrunning" ng-click="stop()">Stop</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+</div>

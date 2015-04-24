@@ -1,0 +1,105 @@
+$lvlpanels:1;
+$lvlchrono:2;
+$lvlui:3;
+
+$footerheight:60px;
+$scoreboardheight:150px;
+
+$padding:20px;
+
+html, body
+{
+    width: 100%;
+    height: 100%;
+    
+    margin: 0;
+    padding: 0;
+}
+
+#game-layout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;    
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch;
+
+
+
+  .scoreboard, .footer {
+    background-color:rgba(0,0,0,.05);
+  }
+
+  .scoreboard {
+    display:flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%;
+
+    > div {
+      flex-grow:1;
+      padding:$padding;
+    }
+
+  }
+  .footer {
+    display:flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    > a {
+      flex-grow:1;
+      height:75px;
+      padding:$padding;
+      text-align:center;
+    }
+  }
+
+  .panels {
+    overflow:hidden;
+    height:100%;
+    flex: 1;
+    .panels-wrapper {    
+      display:flex;
+      flex-direction: row;
+      align-items: stretch;
+      align-content: stretch;
+      justify-content: flex-start;
+      height:100%;
+      width: 300vw;
+      > * {
+        flex-grow:1;
+        width:33.3333%;
+        height:100%;
+      }
+    }
+  }
+  .playeditor { 
+    display:flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    .playeditor-ui {
+      flex-grow:3;
+      padding:$padding;
+    }
+    .chrono {
+      flex-grow:2;
+      padding:$padding;
+      background-color:rgba(0,0,0,.03);
+    }
+  }
+
+  .play-by-play, .scorebox {
+    padding:$padding;
+  }
+
+}
