@@ -1,7 +1,9 @@
-<p><a href="#/gameconfig/new">New game</a></p>
-<p>List of games :</p>
-<ul>
-    <li ng-repeat="game in gamesdatas">
-    {{game.id}}-<a href="#/game/{{game.id}}">{{game.name}}</a> - <a href="#/gameconfig/{{game.id}}">Edit</a> - <a ng-click="deleteGame(game.id)">&times;</a>
-    </li>
-</ul>
+<div>
+	<p><a ui-sref="gameconfig({gameId:'new'})">New game</a></p>
+	<p>List of games :</p>
+	<ul>
+	    <li ng-repeat="game in gamesdatas">
+	    {{game.id}}-<a ui-sref="game({gameId:game.id})">{{game.name}}</a> - <a ui-sref="gameconfig({gameId:game.id})">Edit</a> - <a ng-click="deleteGame(game.id)">&times;</a>
+	    </li>
+	</ul>
+</div>

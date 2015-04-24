@@ -1,7 +1,7 @@
 	<div class="row">
 		<div class="col-xs-4">
 			<h3>{{gamedatas.name}}</h3>
-			<a href="#/gameconfig/{{gamedatas.id}}" class="text-muted">Edit</a> - <a href="#/" class="text-muted">Close</a>
+			<a ui-sref="gameconfig({gameId:gamedatas.id})" class="text-muted">Edit</a> - <a  ui-sref="home" class="text-muted">Close</a>
 		</div>
 		<div class="col-xs-4">
 			<h1 class="text-center">

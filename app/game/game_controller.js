@@ -3,28 +3,7 @@
 
 
   var app = angular.module('bbstats');
-
-  app.config(function ($routeProvider) {
-    $routeProvider
-    .when('/game/:gameId', {
-      templateUrl: 'game/game.html',
-      controller:  'Game',
-      resolve: {
-        gameDatas : function ($route, config, $q, $indexedDB) {
-          var deferred = $q.defer(),
-          id = parseInt($route.current.params.gameId);
-          $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
-            store.find(id).then(function(data) {
-              deferred.resolve(data);
-            });
-          });
-          return deferred.promise;
-        }
-      }
-    })
-    ;
-  });
-  
+ 
   // Stores Game datas
   app.factory('GameDatasFact', function() {
     return {

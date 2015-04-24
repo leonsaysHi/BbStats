@@ -3,14 +3,6 @@
 
 
   angular.module('bbstats')
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'main/main.html',
-        controller: 'MainCtrl'
-      })
-    ;
-  })
   .controller('MainCtrl', function ($scope, config, $indexedDB) {
     
     // get Games list :
