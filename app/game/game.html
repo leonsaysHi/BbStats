@@ -3,18 +3,21 @@
 	<!-- Scoreboard -->
 	<div ng-controller="Scoreboard" class="scoreboard">
 		<div>
-			<h3>{{gamedatas.name}}</h3>
-			<a ui-sref="gameconfig({gameId:gamedatas.id})" class="text-muted">Edit</a> - <a  ui-sref="home" class="text-muted">Close</a>
+			<h3>
+				Game: {{gamedatas.name}}
+				<br><small>Team: {{team.name}} - <span style="color:{{team.color}}">■</span></small>
+			</h3>
+			<small><a ui-sref="gameconfig({gameId:gamedatas.id})" class="text-muted">Edit</a> - <a  ui-sref="home" class="text-muted">Close</a></small>
 		</div>
 		<div>
 			<h1 class="text-center">
-				<strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong><br><small>{{gamedatas.chrono.curr_period | chronoPeriod}}</small>
+				<small>{{gamedatas.chrono.curr_period | chronoPeriod}}</small><br><strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
 			</h1>
 		</div>
-		<div>
-			<div>
-				<h1>{{gamedatas.teams[0].score}} - {{gamedatas.teams[1].score}}</h1>
-			</div>
+		<div class="text-center">
+			<h1>
+				<small>Score</small><br>{{gamedatas.teams[0].score}} - {{gamedatas.teams[1].score}}
+			</h1>
 		</div>
 	</div>
 
@@ -35,9 +38,9 @@
 	
 	<!-- panel navigation -->
 	<footer class="footer">
-			<a class="tab" ng-click="gametab = 0">Recorder</a>
-			<a class="tab" ng-click="gametab = 1">Play-by-Play</a>
-			<a class="tab" ng-click="gametab = 2">Scorebox</a>
+			<a ng-class="{active:(gametab==0)}" ng-click="gametab = 0">Recorder</a>
+			<a ng-class="{active:(gametab==1)}" ng-click="gametab = 1">Play-by-Play</a>
+			<a ng-class="{active:(gametab==2)}" ng-click="gametab = 2">Scorebox</a>
     </footer>
 
 </div>

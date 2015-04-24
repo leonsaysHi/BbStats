@@ -1,6 +1,14 @@
-.footer {
-	background-color: $brand-primary;
-	.row > div {
-		text-align:center;
-	}
+.footer {	
+  background-color:rgba(0,0,0,.05);
+  a {
+  	text-decoration: none;
+  	text-align:center;
+    &:hover, &:focus {
+      background-color:rgba(0,0,0,.05);
+    }
+  	&.active {
+  		&, &:hover, &:focus { background-color:$brand-primary; }
+  		&, &:hover, &:focus { color:white; }
+  	}
+  }
 }

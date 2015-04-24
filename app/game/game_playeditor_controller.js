@@ -84,7 +84,7 @@
 
       // save ?
       if (!PlaysRecordFact.ui.edit && !action.subaction && !action.addaction) {  
-        $scope.savePlay(); 
+        //$scope.savePlay(); 
       }
     };
     $scope.noSubaction = function(){
@@ -98,14 +98,14 @@
 
       // save ?
       if (!PlaysRecordFact.ui.edit && !action.subaction && !action.addaction) {  
-        $scope.savePlay(); 
+        //$scope.savePlay(); 
       }
     };
 
     $scope.noAddAction = function(){
       PlaysRecordFact.play.splice(1,1);
       if (!PlaysRecordFact.ui.edit) {
-        $scope.savePlay(); 
+        //$scope.savePlay(); 
       };
     };
 

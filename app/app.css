@@ -1204,8 +1204,6 @@ a.text-danger:hover {
 
 .bg-primary {
   color: #fff; }
-  .bg-primary a {
-    color: #fff; }
 
 .bg-primary {
   background-color: #337ab7; }
@@ -4922,7 +4920,7 @@ html, body {
   justify-content: flex-start;
   align-items: stretch;
   align-content: stretch; }
-  #game-layout .scoreboard, #game-layout .footer {
+  #game-layout .scoreboard {
     background-color: rgba(0, 0, 0, 0.05); }
   #game-layout .scoreboard {
     display: flex;
@@ -4944,13 +4942,13 @@ html, body {
     #game-layout .footer > a {
       flex-grow: 1;
       height: 75px;
-      padding: 20px;
-      text-align: center; }
+      padding: 20px; }
   #game-layout .panels {
     overflow: hidden;
     height: 100%;
     flex: 1; }
     #game-layout .panels .panels-wrapper {
+      overflow: hidden;
       display: flex;
       flex-direction: row;
       align-items: stretch;
@@ -4981,46 +4979,62 @@ html, body {
     padding: 20px; }
 
 .footer {
-  background-color: #337ab7; }
-  .footer .row > div {
+  background-color: rgba(0, 0, 0, 0.05); }
+  .footer a {
+    text-decoration: none;
     text-align: center; }
+    .footer a:hover, .footer a:focus {
+      background-color: rgba(0, 0, 0, 0.05); }
+    .footer a.active, .footer a.active:hover, .footer a.active:focus {
+      background-color: #337ab7; }
+    .footer a.active, .footer a.active:hover, .footer a.active:focus {
+      color: white; }
 
-.player {
-  vertical-align: top;
-  display: inline-block;
-  width: 12%;
-  min-height: 70px;
-  margin: 0 5px 5px 0;
-  padding: 5px;
-  text-align: center;
-  line-height: 1;
-  border: solid 5px #efefef; }
-  .player > strong {
-    font-size: 12px; }
-  .player > span {
-    display: block;
-    font-size: 25px; }
-  .player.selected {
-    border-color: blue; }
+.scoreboard h1, .scoreboard h2, .scoreboard h3 {
+  margin: 0; }
 
-.action {
-  display: inline-block;
-  vertical-align: top;
-  width: 10%;
-  min-height: 70px;
-  margin: 0 5px 5px 0;
-  font-size: 14px;
-  text-align: center;
-  padding: 10px;
-  border: solid 5px #efefef; }
-  .action.selected {
-    border-color: blue; }
+.players-list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: stretch;
+  align-content: stretch;
+  justify-content: flex-start;
+  width: 100%; }
+  .players-list .player {
+    flex-grow: 3;
+    padding: 20px;
+    font-size: 14px;
+    text-align: center;
+    border: solid 5px white;
+    background-color: #eeeeee; }
+    .players-list .player > span {
+      display: block;
+      font-size: 25px; }
+    .players-list .player--opponent {
+      flex-grow: 1; }
+    .players-list .player--selected {
+      border-color: blue; }
 
-#outputs .tab-content > div {
-  height: 300px;
-  overflow: auto;
-  padding: 10px;
-  border: solid 1px #ddd;
-  border-top: 0; }
-#outputs table .headrange td {
-  text-align: center; }
+.actions-list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: stretch;
+  align-content: stretch;
+  justify-content: flex-start;
+  width: 100%; }
+  .actions-list .action {
+    flex-grow: 3;
+    padding: 20px;
+    font-size: 18px;
+    text-align: center;
+    border: solid 5px white;
+    background-color: #eeeeee; }
+    .actions-list .action > span {
+      display: block;
+      font-size: 25px; }
+    .actions-list .action--opponent {
+      flex-grow: 1; }
+    .actions-list .action--selected {
+      border-color: blue; }

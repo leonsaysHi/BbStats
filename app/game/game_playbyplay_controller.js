@@ -26,6 +26,7 @@
       index = GameDatasFact.playbyplay.length-1-index;
       var play = GameDatasFact.playbyplay[index];
       PlaysRecordFact.edit(index);
+      $scope.gotoEditTab();
     };
 
 
@@ -35,16 +36,25 @@
     return function(play) {
       var output = '';
       for (var i=0; i<play.length; i++) {
-        var ref, refs = play[i].action.refs;
-        if (refs.length === 2) {
-          ref = refs[1];
+        
+        //player
+        var player = $filter('playerFromPid')(play[i].playerid);
+        // action
+        if (play[i].action) {
+          var ref, refs = play[i].action.refs;
+          if (refs.length === 2) {
+            ref = refs[1];
+          }
+          else {
+            ref = refs[0];
+          }
+          var descr = ActionsDatasFact.dictio[ref].pplabel + ' ';
+          output += descr.replace("@", player.name);
         }
         else {
-          ref = refs[0];
+          output += player.name + '... ';
         }
-        var player = $filter('playerFromPid')(play[i].playerid);
-        var descr = ActionsDatasFact.dictio[ref].pplabel + ' ';
-        output += descr.replace("@", player.name);
+
       }
       return output;
     }

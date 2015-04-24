@@ -1,0 +1,55 @@
+.players-list {
+	display:flex;
+    flex-wrap:wrap;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    .player {
+    	flex-grow:3;
+    	padding:$padding;
+    	font-size:14px;
+    	text-align:center;
+	    border:solid 5px white;
+	    background-color:$gray-lighter;
+		> span {
+			display:block;
+			font-size:25px;
+		}
+	    &--opponent {
+	    	flex-grow:1;
+	    }
+		&--selected {
+			border-color:blue;
+		}
+    }
+}
+
+.actions-list {
+	display:flex;
+    flex-wrap:wrap;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    .action {
+    	flex-grow:3;
+    	padding:$padding;
+    	font-size:18px;
+    	text-align:center;
+	    border:solid 5px white;
+	    background-color:$gray-lighter;
+		> span {
+			display:block;
+			font-size:25px;
+		}
+	    &--opponent {
+	    	flex-grow:1;
+	    }
+		&--selected {
+			border-color:blue;
+		}
+    }
+}

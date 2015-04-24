@@ -27,7 +27,7 @@ html, body
 
 
 
-  .scoreboard, .footer {
+  .scoreboard {
     background-color:rgba(0,0,0,.05);
   }
 
@@ -56,7 +56,6 @@ html, body
       flex-grow:1;
       height:75px;
       padding:$padding;
-      text-align:center;
     }
   }
 
@@ -64,7 +63,8 @@ html, body
     overflow:hidden;
     height:100%;
     flex: 1;
-    .panels-wrapper {    
+    .panels-wrapper { 
+      overflow:hidden;   
       display:flex;
       flex-direction: row;
       align-items: stretch;
@@ -79,7 +79,7 @@ html, body
       }
     }
   }
-  .playeditor { 
+  .playeditor {
     display:flex;
     flex-direction: row;
     align-items: stretch;
