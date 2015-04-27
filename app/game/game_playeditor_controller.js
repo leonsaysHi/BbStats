@@ -84,7 +84,6 @@
     };
 
     $scope.showplayers = function() {
-      console.log(PlaysRecordFact.play.length, PlaysRecordFact.ui.edit);
       return (PlaysRecordFact.play.length===0 || PlaysRecordFact.ui.edit);
     };
     $scope.showactions = function() {
@@ -109,12 +108,12 @@
     $scope.addStarter = function() {
       $scope.playInsert();
       PlaysRecordFact.play[0].action = ActionsDatasFact.hiddenactions.in;
-      $('#bench').modal('show');
+      $scope.toggleBench(true);
     };
     $scope.substitution = function() {
       // add action to play
       PlaysRecordFact.play[0].action = ActionsDatasFact.hiddenactions.out;
-      $('#bench').modal('show');
+      $scope.toggleBench(true);
     };
     $scope.selectBenchPlayer = function(player) {
       $scope.setPlayerPlayingStatus(player.id, true);
@@ -127,8 +126,11 @@
         $scope.setPlayerPlayingStatus(PlaysRecordFact.play[0].playerid, false);
         $scope.selectAddPlayerAction(player, ActionsDatasFact.hiddenactions.in);
       }
-      $('#bench').modal('hide');
+      $scope.toggleBench(false);
     };
+    $scope.toggleBench = function(toggle) {
+      $('#bench').foundation('reveal', (toggle) ? 'open' : 'close');      
+    }
 
     // Addaction    
     $scope.insertAddAction = function() {

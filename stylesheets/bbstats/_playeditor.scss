@@ -1,4 +1,11 @@
-.playeditor-ui {
+.playeditor__preview {
+    padding:5px;
+    background-color:$white-smoke;
+    line-height:2rem;
+    > * { display:inline-block; margin-right:1rem; }
+    .button { margin-bottom:0; }
+}
+.playeditor__ui {
     padding:$padding;
 }
 
@@ -16,7 +23,7 @@
     	font-size:12px;
     	text-align:center;
 	    border:solid 5px white;
-	    background-color:$gray-lighter;
+	    background-color:$smoke;
 		> span {
 			display:block;
 			font-size:20px;
@@ -33,6 +40,11 @@
 .actions-list {
     .item {
     	flex-grow:3;
+        padding:$padding;
     	font-size:14px;
     }
+}
+
+.scorebox table {
+    width:100%;
 }

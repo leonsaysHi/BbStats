@@ -26,10 +26,6 @@ html, body
 
 
   .scoreboard {
-    background-color:rgba(0,0,0,.05);
-  }
-
-  .scoreboard {
     display:flex;
     flex-direction: row;
     align-items: stretch;
@@ -95,21 +91,21 @@ html, body
     align-content: stretch;
     justify-content: flex-start;
     
-    .playeditor-ui {
+    .playeditor__ui {
       overflow:auto;
       flex:3;
     }
-    .playeditor-chrono {
+    .playeditor__chrono {
       flex:1;
       padding:$padding;
       background-color:rgba(0,0,0,.02);
     }
     @media all and (orientation:landscape) {
       flex-direction: row;
-      .playeditor-ui {
+      .playeditor__ui {
         flex:3;
       }
-      .playeditor-chrono {
+      .playeditor__chrono {
         flex:1;
       }
     }

@@ -1,13 +1,13 @@
 .footer {	
-  background-color:rgba(0,0,0,.05);
+  background-color:$smoke;
   a {
   	text-decoration: none;
   	text-align:center;
     &:hover, &:focus {
-      background-color:rgba(0,0,0,.05);
+      background-color:$iron;
     }
   	&.active {
-  		&, &:hover, &:focus { background-color:$brand-primary; }
+  		&, &:hover, &:focus { background-color:$primary-color; }
   		&, &:hover, &:focus { color:white; }
   	}
   }

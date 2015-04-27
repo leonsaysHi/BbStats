@@ -3,15 +3,15 @@
 	<!-- Scoreboard -->
 	<div ng-controller="Scoreboard" class="scoreboard">
 		<div>
-			<small>{{gamedatas.name}}</small>
+			{{gamedatas.name}}
 			<h4>Team: <strong>{{team.name}} <span style="color:{{team.color}}">■</span></strong></h4>
 		</div>
 		<div>
-			<small>Score</small>
+			Score
 			<h4><strong>{{gamedatas.teams[0].score}}</strong> - {{gamedatas.teams[1].score}}</h4>
 		</div>
 		<div class="text-right">
-			<small><a ui-sref="gameconfig({gameId:gamedatas.id})" class="text-muted">Edit</a> - <a  ui-sref="home" class="text-muted">Close</a></small>			
+			<a ui-sref="gameconfig({gameId:gamedatas.id})">Edit</a> - <a ui-sref="home">Close</a>		
 		</div>
 	</div>
 
