@@ -84,7 +84,8 @@
     };
 
     $scope.showplayers = function() {
-      return !PlaysRecordFact.ui.play.length || PlaysRecordFact.ui.edit;
+      console.log(PlaysRecordFact.play.length, PlaysRecordFact.ui.edit);
+      return (PlaysRecordFact.play.length===0 || PlaysRecordFact.ui.edit);
     };
     $scope.showactions = function() {
       return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.play[0].playerid && !PlaysRecordFact.ui.subaction);

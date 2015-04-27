@@ -86,19 +86,20 @@ html, body
       }
     }
   }
-  .playeditor {flex: 1;
+  .playeditor {
+    flex: 1;
     min-height:100%;
     display:flex;
     flex-direction: column;
     align-items: stretch;
     align-content: stretch;
     justify-content: flex-start;
-    padding:$padding;
+    
     .playeditor-ui {
       overflow:auto;
       flex:3;
     }
-    .chrono {
+    .playeditor-chrono {
       flex:1;
       padding:$padding;
       background-color:rgba(0,0,0,.02);
@@ -108,7 +109,7 @@ html, body
       .playeditor-ui {
         flex:3;
       }
-      .chrono {
+      .playeditor-chrono {
         flex:1;
       }
     }

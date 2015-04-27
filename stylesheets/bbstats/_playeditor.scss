@@ -1,4 +1,8 @@
-.players-list {
+.playeditor-ui {
+    padding:$padding;
+}
+
+.players-list, .actions-list {
 	display:flex;
     flex-wrap:wrap;
     flex-direction: row;
@@ -6,8 +10,8 @@
     align-content: stretch;
     justify-content: flex-start;
     width: 100%;
-    .player {
-    	flex-grow:3;
+    .item {
+    	flex:5;
     	padding:$padding*.5;
     	font-size:12px;
     	text-align:center;
@@ -18,7 +22,7 @@
 			font-size:20px;
 		}
 	    &--opponent {
-	    	flex-grow:1;
+	    	flex:4;
 	    }
 		&--selected {
 			border-color:blue;
@@ -27,25 +31,8 @@
 }
 
 .actions-list {
-	display:flex;
-    flex-wrap:wrap;
-    flex-direction: row;
-    align-items: stretch;
-    align-content: stretch;
-    justify-content: flex-start;
-    width: 100%;
-    .action {
+    .item {
     	flex-grow:3;
-    	padding:$padding*.5;
     	font-size:14px;
-    	text-align:center;
-	    border:solid 5px white;
-	    background-color:$gray-lighter;
-	    &--opponent {
-	    	flex-grow:1;
-	    }
-		&--selected {
-			border-color:blue;
-		}
     }
 }

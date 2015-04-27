@@ -4976,12 +4976,11 @@ html, body {
     flex-direction: column;
     align-items: stretch;
     align-content: stretch;
-    justify-content: flex-start;
-    padding: 10px; }
+    justify-content: flex-start; }
     #game-layout .playeditor .playeditor-ui {
       overflow: auto;
       flex: 3; }
-    #game-layout .playeditor .chrono {
+    #game-layout .playeditor .playeditor-chrono {
       flex: 1;
       padding: 10px;
       background-color: rgba(0, 0, 0, 0.02); }
@@ -4990,7 +4989,7 @@ html, body {
         flex-direction: row; }
         #game-layout .playeditor .playeditor-ui {
           flex: 3; }
-        #game-layout .playeditor .chrono {
+        #game-layout .playeditor .playeditor-chrono {
           flex: 1; } }
   #game-layout .play-by-play, #game-layout .scorebox {
     flex: 1;
@@ -5011,7 +5010,10 @@ html, body {
 .scoreboard h1, .scoreboard h2, .scoreboard h3, .scoreboard h4, .scoreboard h5, .scoreboard h6, .chrono h1, .chrono h2, .chrono h3, .chrono h4, .chrono h5, .chrono h6 {
   margin: 0; }
 
-.players-list {
+.playeditor-ui {
+  padding: 10px; }
+
+.players-list, .actions-list {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -5019,37 +5021,21 @@ html, body {
   align-content: stretch;
   justify-content: flex-start;
   width: 100%; }
-  .players-list .player {
-    flex-grow: 3;
+  .players-list .item, .actions-list .item {
+    flex: 5;
     padding: 5px;
     font-size: 12px;
     text-align: center;
     border: solid 5px white;
     background-color: #eeeeee; }
-    .players-list .player > span {
+    .players-list .item > span, .actions-list .item > span {
       display: block;
       font-size: 20px; }
-    .players-list .player--opponent {
-      flex-grow: 1; }
-    .players-list .player--selected {
+    .players-list .item--opponent, .actions-list .item--opponent {
+      flex: 4; }
+    .players-list .item--selected, .actions-list .item--selected {
       border-color: blue; }
 
-.actions-list {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: stretch;
-  align-content: stretch;
-  justify-content: flex-start;
-  width: 100%; }
-  .actions-list .action {
-    flex-grow: 3;
-    padding: 5px;
-    font-size: 14px;
-    text-align: center;
-    border: solid 5px white;
-    background-color: #eeeeee; }
-    .actions-list .action--opponent {
-      flex-grow: 1; }
-    .actions-list .action--selected {
-      border-color: blue; }
+.actions-list .item {
+  flex-grow: 3;
+  font-size: 14px; }
