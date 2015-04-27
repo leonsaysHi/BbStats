@@ -75,17 +75,24 @@
 
 			<!-- Chrono -->
 			<div ng-controller="Chrono">
+
 				<div class="alert alert-danger" role="alert" ng-show="!gamestarted && !playersready">
 					Select 5 players from the bench
 				</div>
+
 				<a class="btn btn-primary btn-sm" ng-click="nextPeriod()" ng-show="!gamestarted" ng-disabled="!playersready">Start the game</a>
-				<div ng-show="gamestarted">
+				
+				<div ng-show="gamestarted" class="text-center">
+
+					<h3>
+						<small>{{gamedatas.chrono.curr_period | chronoPeriod}}</small><br><strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
+					</h3>
 					
 					<!-- between periods -->
 					<a class="btn btn-default btn-sm" ng-show="!periodisrunning" ng-click="nextPeriod()">{{gamedatas.chrono.curr_period | chronoGotoNextPeriod}}</a>
 					<!-- play / stop -->
 					<div ng-show="periodisrunning">			
-						<a class="btn btn-default btn-sm" ng-show="!clockisrunning" ng-click="play()">Play</a>
+						<a class="btn btn-primary btn-sm" ng-show="!clockisrunning" ng-click="play()">Play</a>
 						<a class="btn btn-default btn-sm" ng-show="clockisrunning" ng-click="stop()">Stop</a>
 					</div>
 				</div>

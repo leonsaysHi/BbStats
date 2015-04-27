@@ -4,34 +4,30 @@
 	<div ng-controller="Scoreboard" class="scoreboard">
 		<div>
 			<h3>
-				Game: {{gamedatas.name}}
-				<br><small>Team: {{team.name}} - <span style="color:{{team.color}}">■</span></small>
+				{{gamedatas.name}} - Team: {{team.name}} <span style="color:{{team.color}}">■</span>
 			</h3>
-			<small><a ui-sref="gameconfig({gameId:gamedatas.id})" class="text-muted">Edit</a> - <a  ui-sref="home" class="text-muted">Close</a></small>
 		</div>
 		<div>
-			<h1 class="text-center">
-				<small>{{gamedatas.chrono.curr_period | chronoPeriod}}</small><br><strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
-			</h1>
+			<h3>
+				<small>Score</small> : {{gamedatas.teams[0].score}} - {{gamedatas.teams[1].score}}
+			</h3>
 		</div>
-		<div class="text-center">
-			<h1>
-				<small>Score</small><br>{{gamedatas.teams[0].score}} - {{gamedatas.teams[1].score}}
-			</h1>
+		<div class="text-right">
+			<small><a ui-sref="gameconfig({gameId:gamedatas.id})" class="text-muted">Edit</a> - <a  ui-sref="home" class="text-muted">Close</a></small>			
 		</div>
 	</div>
 
 	<div class="panels">
-		<div class="panels-wrapper" style="margin-left:-{{gametab}}00%">
+		<div class="panels-wrapper">
 
 			<!-- PlayEditor -->
-			<play-editor ng-init="init(0)"></play-editor>
+			<play-editor ng-init="init(0)" ng-show="gametab===0"></play-editor>
 
 			<!-- PlayByPlay -->
-			<play-by-play></play-by-play>
+			<play-by-play ng-show="gametab===1"></play-by-play>
 			
 			<!-- ScoreBox -->
-			<score-box></score-box>
+			<score-box ng-show="gametab===2"></score-box>
 
 		</div>
 	</div>

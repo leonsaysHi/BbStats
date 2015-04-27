@@ -1,69 +1,68 @@
-<form ng-submit="save()">
-	<div class="form-group">
-		<input class="form-control" type="text" ng-model="gamedatas.id" placeholder="No id ?!" disabled>
-	</div>
-	<fieldset>
-		<legend>Game</legend>
-		<div class="form-group">
-			<label for="name">Name</label>
-			<input class="form-control" id="name" type="text" ng-model="gamedatas.name" placeholder="Stat sheet's name">
-		</div>
-		<div class="row">
-			<div class="col-xs-12 col-lg-6">
-				<div class="form-group">
-					<label for="nb_periods">Number of periods</label>
-					<input type="number" class="form-control" id="nb_periods" ng-model="gamedatas.chrono.nb_periods" placeholder="4">
+<div class="container-fluid">
+	<form ng-submit="save()">
+		<fieldset>
+			<legend>Game <small class="text-muted">{{gamedatas.id}}</small></legend>
+			<div class="form-group">
+				<label for="name">Name</label>
+				<input class="form-control" id="name" type="text" ng-model="gamedatas.name" placeholder="Stat sheet's name">
+			</div>
+			<div class="row">
+				<div class="col-xs-12 col-lg-6">
+					<div class="form-group">
+						<label for="nb_periods">Number of periods</label>
+						<input type="number" class="form-control" id="nb_periods" ng-model="gamedatas.chrono.nb_periods" placeholder="4">
+					</div>
+				</div>
+				<div class="col-xs-12 col-lg-6">
+					<div class="form-group">
+						<label for="periods_time">Length of each periode</label>
+						<div class="input-group">
+							<input type="number" class="form-control" id="periods_time" ng-model="gamedatas.chrono.minutes_periods" placeholder="10">
+							<div class="input-group-addon">minutes</div>
+			   			</div>
+					</div>
 				</div>
 			</div>
-			<div class="col-xs-12 col-lg-6">
-				<div class="form-group">
-					<label for="periods_time">Length of each periode</label>
-					<div class="input-group">
-						<input type="number" class="form-control" id="periods_time" ng-model="gamedatas.chrono.minutes_periods" placeholder="10">
-						<div class="input-group-addon">minutes</div>
-		   			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Team #1</legend>
+			<div class="row">
+				<div class="col-xs-8">
+					<div class="form-group">
+						<label for="team0-name">Name</label>
+						<input class="form-control" id="team0-name" type="text" ng-model="gamedatas.teams[0].name" placeholder="Team's name">
+					</div>
+				</div>
+				<div class="col-xs-4">
+					<div class="form-group">
+						<label for="team0-color">Color</label>
+						<input class="form-control" id="team0-color" type="color" ng-model="gamedatas.teams[0].color" placeholder="Team's color">
+					</div>
 				</div>
 			</div>
-		</div>
-	</fieldset>
-	<fieldset>
-		<legend>Team #1</legend>
-		<div class="row">
-			<div class="col-xs-10">
-				<div class="form-group">
-					<label for="team0-name">Name</label>
-					<input class="form-control" id="team0-name" type="text" ng-model="gamedatas.teams[0].name" placeholder="Team's name">
-				</div>
-			</div>
-			<div class="col-xs-2">
-				<div class="form-group">
-					<label for="team0-color">Color</label>
-					<input class="form-control" id="team0-color" type="color" ng-model="gamedatas.teams[0].color" placeholder="Team's color">
-				</div>
-			</div>
-		</div>
-		<table class="table table-striped">
-			<captionPlayers list</caption>
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>Name</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="(playerid, player) in gamedatas.teams[0].players">
-					<td><input class="form-control" type="number" ng-model="player.number" placeholder="Player's number"></td>
-					<td><input class="form-control" type="text" ng-model="player.name" placeholder="Player's name"></td>
-					<td>
-						<a class="btn btn-default" ng-click="removePlayer(playerid)">&times;</a>
-					</td>
-				</tr>
-			</tbody>
-			<tfoot>
-				<tr><td colspan="3"><a class="btn btn-default" ng-click="addPayer()">Add player</a></td></tr>
-			</tfoot>
-		</table>
-	</fieldset>
-	<button type="submit" class="btn btn-primary">Submit</button>
-</form>
+			<table class="table table-striped">
+				<caption>Players list</caption>
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Name</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="(playerid, player) in gamedatas.teams[0].players">
+						<td><input class="form-control" type="number" ng-model="player.number" placeholder="Player's number"></td>
+						<td><input class="form-control" type="text" ng-model="player.name" placeholder="Player's name"></td>
+						<td>
+							<a class="btn btn-default" ng-click="removePlayer(playerid)">&times;</a>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr><td colspan="3"><a class="btn btn-default" ng-click="addPayer()">Add player</a></td></tr>
+				</tfoot>
+			</table>
+		</fieldset>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+</div>

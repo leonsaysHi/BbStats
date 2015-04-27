@@ -4931,7 +4931,7 @@ html, body {
     width: 100%; }
     #game-layout .scoreboard > div {
       flex-grow: 1;
-      padding: 20px; }
+      padding: 10px; }
   #game-layout .footer {
     display: flex;
     flex-direction: row;
@@ -4941,41 +4941,59 @@ html, body {
     width: 100%; }
     #game-layout .footer > a {
       flex-grow: 1;
-      height: 75px;
-      padding: 20px; }
+      /*height:50px;*/
+      padding: 10px; }
   #game-layout .panels {
     overflow: hidden;
-    height: 100%;
-    flex: 1; }
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start; }
     #game-layout .panels .panels-wrapper {
-      overflow: hidden;
+      flex: 1;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: stretch;
       align-content: stretch;
       justify-content: flex-start;
-      height: 100%;
-      width: 300vw; }
+      overflow: hidden;
+      width: 100%; }
       #game-layout .panels .panels-wrapper > * {
-        flex-grow: 1;
-        width: 33.3333%;
-        height: 100%; }
+        overflow: auto;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: stretch;
+        align-content: stretch;
+        justify-content: flex-start; }
   #game-layout .playeditor {
+    flex: 1;
+    min-height: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     align-content: stretch;
-    justify-content: flex-start;
-    width: 100%;
-    height: 100%; }
+    justify-content: flex-start; }
     #game-layout .playeditor .playeditor-ui {
-      flex-grow: 3;
+      overflow: auto;
+      flex: 3;
       padding: 20px; }
     #game-layout .playeditor .chrono {
-      flex-grow: 2;
-      padding: 20px;
-      background-color: rgba(0, 0, 0, 0.03); }
+      flex: 1;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.02); }
+    @media all and (orientation: landscape) {
+      #game-layout .playeditor {
+        flex-direction: row; }
+        #game-layout .playeditor .playeditor-ui {
+          flex: 3; }
+        #game-layout .playeditor .chrono {
+          flex: 1; } }
   #game-layout .play-by-play, #game-layout .scorebox {
+    flex: 1;
     padding: 20px; }
 
 .footer {
@@ -4990,7 +5008,7 @@ html, body {
     .footer a.active, .footer a.active:hover, .footer a.active:focus {
       color: white; }
 
-.scoreboard h1, .scoreboard h2, .scoreboard h3 {
+.scoreboard h1, .scoreboard h2, .scoreboard h3, .scoreboard h4, .scoreboard h5, .scoreboard h6, .chrono h1, .chrono h2, .chrono h3, .chrono h4, .chrono h5, .chrono h6 {
   margin: 0; }
 
 .players-list {
@@ -5003,14 +5021,14 @@ html, body {
   width: 100%; }
   .players-list .player {
     flex-grow: 3;
-    padding: 20px;
-    font-size: 14px;
+    padding: 10px;
+    font-size: 12px;
     text-align: center;
     border: solid 5px white;
     background-color: #eeeeee; }
     .players-list .player > span {
       display: block;
-      font-size: 25px; }
+      font-size: 20px; }
     .players-list .player--opponent {
       flex-grow: 1; }
     .players-list .player--selected {
@@ -5026,14 +5044,11 @@ html, body {
   width: 100%; }
   .actions-list .action {
     flex-grow: 3;
-    padding: 20px;
-    font-size: 18px;
+    padding: 10px;
+    font-size: 14px;
     text-align: center;
     border: solid 5px white;
     background-color: #eeeeee; }
-    .actions-list .action > span {
-      display: block;
-      font-size: 25px; }
     .actions-list .action--opponent {
       flex-grow: 1; }
     .actions-list .action--selected {

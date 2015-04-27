@@ -8,14 +8,14 @@
     width: 100%;
     .player {
     	flex-grow:3;
-    	padding:$padding;
-    	font-size:14px;
+    	padding:$padding*.5;
+    	font-size:12px;
     	text-align:center;
 	    border:solid 5px white;
 	    background-color:$gray-lighter;
 		> span {
 			display:block;
-			font-size:25px;
+			font-size:20px;
 		}
 	    &--opponent {
 	    	flex-grow:1;
@@ -36,15 +36,11 @@
     width: 100%;
     .action {
     	flex-grow:3;
-    	padding:$padding;
-    	font-size:18px;
+    	padding:$padding*.5;
+    	font-size:14px;
     	text-align:center;
 	    border:solid 5px white;
 	    background-color:$gray-lighter;
-		> span {
-			display:block;
-			font-size:25px;
-		}
 	    &--opponent {
 	    	flex-grow:1;
 	    }

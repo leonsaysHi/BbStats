@@ -2,8 +2,6 @@ $lvlpanels:1;
 $lvlchrono:2;
 $lvlui:3;
 
-$footerheight:60px;
-$scoreboardheight:150px;
 
 $padding:20px;
 
@@ -41,7 +39,7 @@ html, body
 
     > div {
       flex-grow:1;
-      padding:$padding;
+      padding:$padding*.5;
     }
 
   }
@@ -54,51 +52,71 @@ html, body
     width: 100%;
     > a {
       flex-grow:1;
-      height:75px;
-      padding:$padding;
+      /*height:50px;*/
+      padding:$padding*.5;
     }
   }
 
   .panels {
     overflow:hidden;
-    height:100%;
+    overflow-y:auto;
     flex: 1;
-    .panels-wrapper { 
-      overflow:hidden;   
       display:flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: stretch;
       align-content: stretch;
       justify-content: flex-start;
-      height:100%;
-      width: 300vw;
+    .panels-wrapper { 
+      flex: 1;
+      display:flex;
+      flex-direction: column;
+      align-items: stretch;
+      align-content: stretch;
+      justify-content: flex-start;
+      overflow:hidden;   
+      width: 100%;
       > * {
-        flex-grow:1;
-        width:33.3333%;
-        height:100%;
+        overflow:auto;
+        display:flex;
+        flex:1;
+        flex-direction: column;
+        align-items: stretch;
+        align-content: stretch;
+        justify-content: flex-start;
       }
     }
   }
-  .playeditor {
+  .playeditor {flex: 1;
+    min-height:100%;
     display:flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     align-content: stretch;
     justify-content: flex-start;
-    width: 100%;
-    height: 100%;
     .playeditor-ui {
-      flex-grow:3;
+      overflow:auto;
+      flex:3;
       padding:$padding;
     }
     .chrono {
-      flex-grow:2;
-      padding:$padding;
-      background-color:rgba(0,0,0,.03);
+      flex:1;
+      padding:$padding*.5;
+      background-color:rgba(0,0,0,.02);
     }
+    @media all and (orientation:landscape) {
+      flex-direction: row;
+      .playeditor-ui {
+        flex:3;
+      }
+      .chrono {
+        flex:1;
+      }
+    }
+
   }
 
-  .play-by-play, .scorebox {
+  .play-by-play, .scorebox {    
+    flex: 1;
     padding:$padding;
   }
 
