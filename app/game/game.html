@@ -3,14 +3,12 @@
 	<!-- Scoreboard -->
 	<div ng-controller="Scoreboard" class="scoreboard">
 		<div>
-			<h3>
-				{{gamedatas.name}} - Team: {{team.name}} <span style="color:{{team.color}}">■</span>
-			</h3>
+			<small>{{gamedatas.name}}</small>
+			<h4>Team: <strong>{{team.name}} <span style="color:{{team.color}}">■</span></strong></h4>
 		</div>
 		<div>
-			<h3>
-				<small>Score</small> : {{gamedatas.teams[0].score}} - {{gamedatas.teams[1].score}}
-			</h3>
+			<small>Score</small>
+			<h4><strong>{{gamedatas.teams[0].score}}</strong> - {{gamedatas.teams[1].score}}</h4>
 		</div>
 		<div class="text-right">
 			<small><a ui-sref="gameconfig({gameId:gamedatas.id})" class="text-muted">Edit</a> - <a  ui-sref="home" class="text-muted">Close</a></small>			
