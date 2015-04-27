@@ -83,10 +83,23 @@
       PlaysRecordFact.ui.addaction = false;
     };
 
+    $scope.showplayers = function() {
+      return !PlaysRecordFact.ui.play.length || PlaysRecordFact.ui.edit;
+    };
+    $scope.showactions = function() {
+      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.play[0].playerid && !PlaysRecordFact.ui.subaction);
+    };
+    $scope.showsubactions = function() {
+      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.subaction);
+    };
+    $scope.showaddactions = function() {
+      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.addaction);
+    };
+
     // Subaction
     $scope.selectSubAction = function(action) {
-      // ui
-      PlaysRecordFact.ui.addaction = action.addaction;      
+      $scope.removeAddAction();
+      PlaysRecordFact.ui.addaction = action.addaction; 
       // add action to play
       PlaysRecordFact.play[0].action = action;
     };
