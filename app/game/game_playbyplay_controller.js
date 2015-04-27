@@ -4,7 +4,7 @@
   var app = angular.module('bbstats');
  
   
-  app.controller('PlayByPlay', function ($scope, $filter, GameDatasFact, ActionsDatasFact, PlaysRecordFact) {
+  app.controller('PlayByPlay', function ($scope, $filter, GameDatasFact, PlaysRecordFact) {
 
     // watch play
     $scope.$watch(
@@ -24,7 +24,6 @@
 
     $scope.editPlay = function(index){
       index = GameDatasFact.playbyplay.length-1-index;
-      var play = GameDatasFact.playbyplay[index];
       PlaysRecordFact.edit(index);
       $scope.gotoEditTab();
     };
@@ -32,7 +31,7 @@
 
 
   })
-  .filter('playByPlay', function($filter, ActionsDatasFact) {
+  .filter('playByPlayLog', function($filter, ActionsDatasFact) {
     return function(play) {
       var output = '';
       for (var i=0; i<play.length; i++) {

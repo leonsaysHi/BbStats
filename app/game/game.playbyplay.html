@@ -1,7 +1,7 @@
 	<div class="play-by-play">
 		<div ng-repeat="(playid, play) in plays | reverse">
 			<span class="text-muted">{{play[0].curr_period | chronoPeriod}} - {{play[0].curr_time | chronoTime}}</span> 
-			<span class="{{actionsdata.dictio[play[0].action.id].class}}">{{play | playByPlay}}</span> 
+			<span class="{{actionsdata.dictio[play[0].action.id].class}}">{{play | playByPlayLog}}</span> 
 			<span ng-show="play[0].time>0"><a ng-click="editPlay(playid)">edit</a> - <a ng-click="deletePlay(playid)">&times;</a></span>
 		</div>
 	</div>

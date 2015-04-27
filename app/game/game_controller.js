@@ -48,14 +48,13 @@
       },
       edit:function(index){
         var 
-        self = this,
-        play = GameDatasFact.playbyplay[index]
+          self = this,
+          play =  angular.copy(GameDatasFact.playbyplay[index])
         ;
         this.play = play;
         this.ui.edit = true;
         this.ui.index = index;
         this.ui.oppaction = (play[0].playerid==='opp');
-        console.log(play, play.playerid);
         // set subaction/addaction
         this.ui.subaction = false;
         var action = $.grep(ActionsDatasFact.base, function(e){ return e.id == play[0].action.id; });
