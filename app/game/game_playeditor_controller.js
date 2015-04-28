@@ -31,8 +31,8 @@
     };
     $scope.setPlayerPlayingStatus = function(playerid, isplaying) {   
       var 
-        player = $filter('playerFromPid')(playerid),
-        index_bp = GameDatasFact.teams[$scope.teamid].players.indexOf(player)
+      player = $filter('playerFromPid')(playerid),
+      index_bp = GameDatasFact.teams[$scope.teamid].players.indexOf(player)
       ;
       GameDatasFact.teams[$scope.teamid].players[index_bp].playing = isplaying;
     };
@@ -44,9 +44,9 @@
         return;
       }
       var
-        time = GameDatasFact.chrono.total_time,
-        curr_time = GameDatasFact.chrono.curr_time,
-        curr_period = GameDatasFact.chrono.curr_period
+      time = GameDatasFact.chrono.total_time,
+      curr_time = GameDatasFact.chrono.curr_time,
+      curr_period = GameDatasFact.chrono.curr_period
       ;
       $scope.resetPlay();
       PlaysRecordFact.play.push({
@@ -90,7 +90,7 @@
       return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.play[0].playerid && !PlaysRecordFact.ui.subaction);
     };
     $scope.showsubactions = function() {
-      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.subaction);
+      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.subaction && !PlaysRecordFact.ui.addaction);
     };
     $scope.showaddactions = function() {
       return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.addaction);
@@ -176,7 +176,7 @@
     $scope.playIsSavable = function() {
       return (
         PlaysRecordFact.play[0] && PlaysRecordFact.play[0].playerid && PlaysRecordFact.play[0].action && !PlaysRecordFact.play[0].action.subaction
-      );
+        );
     };
     $scope.savePlay = function() {
       var play = PlaysRecordFact.play;
@@ -198,7 +198,7 @@
       PlaysRecordFact.ui.oppaction = false;
     };
 
- });
+  });
 
 app.filter('getBenchPlayers', function () {
   return function (players) {
@@ -230,7 +230,7 @@ app.filter('getCourtPlayers', function () {
 app.filter('playByPlayPreview', function($filter, ActionsDatasFact) {
   return function(action) {
     var output = '';
-      if (typeof action === 'undefined') { return '';}
+    if (typeof action === 'undefined') { return '';}
       //player
       var player = $filter('playerFromPid')(action.playerid);
       // action
@@ -251,8 +251,8 @@ app.filter('playByPlayPreview', function($filter, ActionsDatasFact) {
         output += player.name + '... ';
       }
 
-    return output;
-  }
-});
+      return output;
+    }
+  });
 
 })();

@@ -1,35 +1,57 @@
+.scoreboard {
+    background-color:$smoke;
+    padding:0;margin:0;
+}
+.scoreboard, .chrono {
+    h1, h2, h3, h4, h5, h6 {
+        margin:0;
+    }
+}
+
 .playeditor__preview {
     padding:5px;
     background-color:$white-smoke;
-    line-height:2rem;
-    > * { display:inline-block; margin-right:1rem; }
-    .button { margin-bottom:0; }
 }
-.playeditor__ui {
-    padding:$padding;
+.playeditor__step {
+    h5 { 
+        margin:10px 0 3px;
+        padding:5px;
+        text-align: center;
+    }
 }
 
-.players-list, .actions-list {
-	display:flex;
+.playeditor-list {
+    margin:0;
+    padding:0;
+    display:flex;
     flex-wrap:wrap;
     flex-direction: row;
     align-items: stretch;
     align-content: stretch;
-    justify-content: flex-start;
-    width: 100%;
-    .item {
-    	flex:5;
-    	padding:$padding*.5;
+    justify-content: center;
+    > .item {
+        flex : 1;
+        flex-basis: 33%;
+        height:80px;
+    	padding:$padding;
     	font-size:12px;
+        font-weight:bold;
     	text-align:center;
 	    border:solid 5px white;
 	    background-color:$smoke;
-		> span {
-			display:block;
-			font-size:20px;
-		}
-	    &--opponent {
-	    	flex:4;
+		
+        &--player {
+            > span {
+                display:block;
+                font-size:20px;
+
+            }
+        }
+        &--action {
+            font-size:16px;
+        }
+	    &--oppplayer {
+	    	/*flex:1;*/
 	    }
 		&--selected {
 			border-color:blue;

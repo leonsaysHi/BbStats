@@ -3,6 +3,7 @@
 
 	var app = angular.module( 'bbstats', [
 		'ui.router',
+		'ngAnimate',
 		'indexedDB',
 		'templates'
 	])

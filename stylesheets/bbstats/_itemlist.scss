@@ -1,0 +1,11 @@
+.itemlist {
+	margin-bottom:rem-calc(20);
+	border-top: solid 4px $smoke;
+	> div {
+		padding:5px 0;
+		border-bottom: solid 1px $smoke;
+	}
+	.button-group {
+		&, .button { margin:0; }
+	}
+}

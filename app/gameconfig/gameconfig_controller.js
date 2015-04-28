@@ -27,7 +27,7 @@
       $scope.gamedatas.teams[0].players.splice(index, 1);
     };
 
-    $scope.save = function() {
+    $scope.doSubmit = function() {
       $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
         if ($stateParams.gameId !== 'new') {
           store.upsert(GameDatasFact).then(function(e){console.log(e);});
@@ -35,7 +35,7 @@
         else {
           store.insert(GameDatasFact).then(function(e){console.log(e);});
         }
-        $state.go('home');
+        $state.go('game', {gameId:GameDatasFact.id});
       });
     };
 

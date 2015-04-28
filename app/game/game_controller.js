@@ -161,8 +161,8 @@ app.factory('ActionsDatasFact', function() {
         true
         );
 
-      $scope.gotoEditTab = function() {
-        $scope.gametab = 0;
+      $scope.isGameStarted = function() {
+        return (GameDatasFact.chrono.curr_period > 0);
       };
 
       // Saving current game state
@@ -226,17 +226,7 @@ app.factory('ActionsDatasFact', function() {
   app.controller('Chrono', function ($scope, $interval, GameDatasFact) {
 
     $scope.timer = null;
-    $scope.periodisrunning = GameDatasFact.chrono.curr_time>0;
-
-
-      // watch play
-      $scope.$watch(
-        function () { return GameDatasFact.chrono; },
-        function (newVal, oldVal) {
-          $scope.gamestarted = (GameDatasFact.chrono.curr_period > 0);
-        },
-        true
-        );
+    $scope.periodisrunning = GameDatasFact.chrono.curr_time>0;      
 
       $scope.nextPeriod = function() {
         GameDatasFact.chrono.curr_period += 1;

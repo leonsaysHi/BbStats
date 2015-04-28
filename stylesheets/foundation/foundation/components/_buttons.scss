@@ -11,7 +11,7 @@ $include-html-button-classes: $include-html-classes !default;
 
 // We use these to build padding for buttons.
 $button-tny: rem-calc(10) !default;
-$button-sml: rem-calc(14) !default;
+$button-sml: rem-calc(12) !default;
 $button-med: rem-calc(16) !default;
 $button-lrg: rem-calc(18) !default;
 
@@ -75,7 +75,7 @@ $button-disabled-cursor: $cursor-default-value !default;
     font-family: $button-font-family;
     font-weight: $button-font-weight;
     line-height: normal;
-    margin: 0 0 $button-margin-bottom;
+    margin: 0 0 0;
     position: relative;
     text-decoration: none;
     text-align: $button-font-align;

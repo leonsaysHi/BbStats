@@ -1,9 +1,35 @@
-<div>
-	<p><a ui-sref="gameconfig({gameId:'new'})">New game</a></p>
-	<p>List of games :</p>
+<div class="row">
+	<div class="small-12 columns">
+		<h1>BbStats</h1>
+	</div>
+</div>
+<div class="row">	
+	<div class="small-12 columns">
+		<h4>Games:</h4>
+		<div class="itemlist">
+			<div ng-repeat="game in gamesdatas"><div class="row">
+				<div class="small-8 columns">
+					<a ui-sref="game({gameId:game.id})">{{game.name}}</a>
+				</div>
+				<div class="small-4 columns">
+					<ul class="button-group">
+						<li><a ui-sref="gameconfig({gameId:game.id})" class="button secondary tiny">Edit</a></li>
+						<li><a ng-click="deleteGame(game.id)" class="button secondary tiny">&times;</a></li>
+					</ul>
+				</div>
+			</div></div>
+		</div>
+	</div>
+	<div class="small-12 columns">
+		<a ui-sref="gameconfig({gameId:'new'})" class="button">New game</a>
+	</div>
+
+	<input type="text" ng-model="search">
 	<ul>
-	    <li ng-repeat="game in gamesdatas">
-	    {{game.id}}-<a ui-sref="game({gameId:game.id})">{{game.name}}</a> - <a ui-sref="gameconfig({gameId:game.id})">Edit</a> - <a ng-click="deleteGame(game.id)">&times;</a>
-	    </li>
+		<li class="animation" ng-repeat="song in songs | filter:search">
+			{{song}}
+		</li> 
 	</ul>
+
+
 </div>
