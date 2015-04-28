@@ -165,6 +165,10 @@ app.factory('ActionsDatasFact', function() {
         return (GameDatasFact.chrono.curr_period > 0);
       };
 
+      $scope.gotoEditTab = function() {
+        $scope.gametab = 0;
+      };
+
       // Saving current game state
       $scope.saveGameDatasFact = function() {
         var gamedatas = GameDatasFact;

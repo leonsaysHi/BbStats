@@ -30,9 +30,8 @@ gulp.task('vendorJS', function(){
     gulp.src([
             './bower_components/angular/angular.js',
             './bower_components/angular-indexedDB/angular-indexed-db.js',
-            './bower_components/angular-route/angular-route.js',
-            './bower_components/angular-ui-router/release/angular-ui-router.min.js',
-            './bower_components/ngAnimate/js/angular-animate.min.js',
+            './bower_components/angular-ui-router/release/angular-ui-router.js',
+            './bower_components/angular-animate/angular-animate.js',
             './bower_components/jquery/dist/jquery.js',
             './bower_components/foundation/js/foundation.js'
         ])

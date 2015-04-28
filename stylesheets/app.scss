@@ -1,5 +1,12 @@
+
+@import "./foundation/foundation/settings";
 @import "./foundation/normalize";
 @import "./foundation/foundation";
 
 
-@import "./bbstats";
+@import "./bbstats/ng-animation";
+
+@import "./bbstats/layout";
+@import "./bbstats/footer";
+@import "./bbstats/itemlist";
+@import "./bbstats/playeditor";

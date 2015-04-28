@@ -10,21 +10,18 @@
 			<!-- Preview play -->
 			<div class="playeditor__preview" ng-show="isGameStarted()">		
 				<!-- action -->	
-				<div class="row" ng-repeat="play in recorder.play">
-					<div class="small-10 columns">{{play | playByPlayPreview}}</div>
-					<div class="small-2 columns" ng-click="resetAction()" class="button tiny secondary">&times;</div>
-					<!--<div class="small-2 columns" ng-click="removeAddAction()" ng-show="recorder.play.length===2" class="button tiny secondary">&times;</div>-->
-				</div>				
-				<div class="row">
-					<div class="small-12 columns text-center">
-							<a ng-click="resetPlay()" ng-show="recorder.play[0]" class="button tiny secondary">Cancel</a>
-							<a ng-click="savePlay()" ng-show="playIsSavable()" class="button tiny success">Save</a>
-					</div>
+				<div ng-show="showplayers()">Select a player...</div>
+				<div ng-repeat="play in recorder.play">{{play | playByPlayPreview}}</div>				
+				<div>
+					<a ng-click="removeAction()" ng-show="showactions() && recorder.ui.subaction" class="button tiny secondary">&lt;&lt;</a>
+					<a ng-click="removeAddAction()" ng-show="showaddactions()" class="button tiny secondary">&lt;&lt;</a>
+					<a ng-click="resetPlay()" ng-show="recorder.play[0]" class="button tiny secondary">Cancel</a>
+					<a ng-click="savePlay()" ng-show="playIsSavable()" class="button tiny success">Save</a>
 				</div>
 			</div>
 			
 			<!-- Players -->
-			<div class="playeditor__step playeditor__step--players slide-left" ng-show="showplayers()">
+			<div class="playeditor__step playeditor__step--players" ng-show="showplayers()">
 				<h5>Players:</h5>
 				<div class="playeditor-list">
 					<div ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="playInsert(player)" ng-class="{'item--selected':player.id==recorder.play[0].playerid}" class="item item--player">

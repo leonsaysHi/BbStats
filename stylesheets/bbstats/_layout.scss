@@ -30,35 +30,33 @@ table {
 
 
 
+  .scoreboard, .footer {
+    z-index:2;
+    display:flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%;
+
+    > * {
+      flex-grow:1;
+      padding:$padding;
+    }
+
+  }
+
   .scoreboard {
-    display:flex;
-    flex-direction: row;
-    align-items: stretch;
-    align-content: stretch;
-    justify-content: flex-start;
-    width: 100%;
-
-    > div {
-      flex-grow:1;
-      padding:$padding;
-    }
-
-  }
-  .footer {
-    display:flex;
-    flex-direction: row;
-    align-items: stretch;
-    align-content: stretch;
-    justify-content: flex-start;
-    width: 100%;
-    > a {
-      flex-grow:1;
-      /*height:50px;*/
-      padding:$padding;
+    padding:0;margin:0;
+    background-color:$smoke;
+    h1, h2, h3, h4, h5, h6 {
+        margin:0;
     }
   }
+
 
   .panels {
+    z-index:1;
     overflow:hidden;
     overflow-y:auto;
     flex: 1;
@@ -102,8 +100,7 @@ table {
     }
     .playeditor__chrono {
       flex:1;
-      padding:$padding;
-      background-color:rgba(0,0,0,.02);
+      padding:0 $padding;
     }
     @media all and (orientation:landscape) {
       flex-direction: row;

@@ -375,7 +375,7 @@ html, body {
 
 body {
   background: #fff;
-  color: #222;
+  color: #222222;
   padding: 0;
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
@@ -1699,17 +1699,17 @@ button, .button {
     padding-left: 2.25rem;
     font-size: 1.25rem; }
   button.small, .button.small {
-    padding-top: 0.75rem;
-    padding-right: 1.5rem;
-    padding-bottom: 0.8125rem;
-    padding-left: 1.5rem;
+    padding-top: 0.875rem;
+    padding-right: 1.75rem;
+    padding-bottom: 0.9375rem;
+    padding-left: 1.75rem;
     font-size: 0.8125rem; }
   button.tiny, .button.tiny {
-    padding-top: 0.625rem;
-    padding-right: 1.25rem;
-    padding-bottom: 0.6875rem;
-    padding-left: 1.25rem;
-    font-size: 0.6875rem; }
+    padding-top: 0.3125rem;
+    padding-right: 0.625rem;
+    padding-bottom: 0.375rem;
+    padding-left: 0.625rem;
+    font-size: 0.875rem; }
   button.expand, .button.expand {
     padding-right: 0;
     padding-left: 0;
@@ -4085,13 +4085,13 @@ ul.pagination {
     font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
     font-weight: normal;
     font-size: 0.875rem;
-    color: #999999; }
+    color: #222222; }
     .sub-nav dt a, .sub-nav dd a, .sub-nav li a {
       text-decoration: none;
-      color: #999999;
+      color: #222222;
       padding: 0.1875rem 1rem; }
       .sub-nav dt a:hover, .sub-nav dd a:hover, .sub-nav li a:hover {
-        color: #737373; }
+        color: #1a1a1a; }
     .sub-nav dt.active a, .sub-nav dd.active a, .sub-nav li.active a {
       border-radius: 3px;
       font-weight: normal;
@@ -5163,7 +5163,7 @@ dl dd {
 abbr, acronym {
   text-transform: uppercase;
   font-size: 90%;
-  color: #222;
+  color: #222222;
   cursor: help; }
 
 abbr {
@@ -6245,8 +6245,8 @@ th.hide-for-touch {
     transform: translateY(-60px);
     -ms-transform: translateY(-60px);
     -webkit-transform: translateY(-60px);
-    transition-duration: 250ms;
-    -webkit-transition-duration: 250ms;
+    transition-duration: 0.1s;
+    -webkit-transition-duration: 0.1s;
     opacity: 0; }
   .slide-down.ng-enter-active {
     transform: translateY(0);
@@ -6257,8 +6257,8 @@ th.hide-for-touch {
     transform: translateY(0);
     -ms-transform: translateY(0);
     -webkit-transform: translateY(0);
-    transition-duration: 250ms;
-    -webkit-transition-duration: 250ms;
+    transition-duration: 0.1s;
+    -webkit-transition-duration: 0.1s;
     opacity: 1; }
   .slide-down.ng-leave-active {
     transform: translateY(-60px);
@@ -6269,8 +6269,8 @@ th.hide-for-touch {
     transform: translateY(0);
     -ms-transform: translateY(0);
     -webkit-transform: translateY(0);
-    transition-duration: 250ms;
-    -webkit-transition-duration: 250ms;
+    transition-duration: 0.1s;
+    -webkit-transition-duration: 0.1s;
     opacity: 1; }
   .slide-down.ng-hide-add.ng-hide-add-active {
     transform: translateY(-60px);
@@ -6281,8 +6281,8 @@ th.hide-for-touch {
     transform: translateY(-60px);
     -ms-transform: translateY(-60px);
     -webkit-transform: translateY(-60px);
-    transition-duration: 250ms;
-    -webkit-transition-duration: 250ms;
+    transition-duration: 0.1s;
+    -webkit-transition-duration: 0.1s;
     display: block !important;
     opacity: 0; }
   .slide-down.ng-hide-remove.ng-hide-remove-active {
@@ -6290,6 +6290,12 @@ th.hide-for-touch {
     -ms-transform: translateY(0);
     -webkit-transform: translateY(0);
     opacity: 1; }
+  .slide-down .ng-enter-stagger {
+    /* this will have a 100ms delay between each successive leave animation */
+    transition-delay: 0.1s;
+    /* in case the stagger doesn't work then the duration value
+	   must be set to 0 to avoid an accidental CSS inheritance */
+    transition-duration: 0s; }
 
 /* ------------------------------------------- */
 /* Bouncy Slide Top 
@@ -6992,28 +6998,25 @@ table {
   justify-content: flex-start;
   align-items: stretch;
   align-content: stretch; }
+  #game-layout .scoreboard, #game-layout .footer {
+    z-index: 2;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: flex-start;
+    width: 100%; }
+    #game-layout .scoreboard > *, #game-layout .footer > * {
+      flex-grow: 1;
+      padding: 10px; }
   #game-layout .scoreboard {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    align-content: stretch;
-    justify-content: flex-start;
-    width: 100%; }
-    #game-layout .scoreboard > div {
-      flex-grow: 1;
-      padding: 10px; }
-  #game-layout .footer {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    align-content: stretch;
-    justify-content: flex-start;
-    width: 100%; }
-    #game-layout .footer > a {
-      flex-grow: 1;
-      /*height:50px;*/
-      padding: 10px; }
+    padding: 0;
+    margin: 0;
+    background-color: #EEEEEE; }
+    #game-layout .scoreboard h1, #game-layout .scoreboard h2, #game-layout .scoreboard h3, #game-layout .scoreboard h4, #game-layout .scoreboard h5, #game-layout .scoreboard h6 {
+      margin: 0; }
   #game-layout .panels {
+    z-index: 1;
     overflow: hidden;
     overflow-y: auto;
     flex: 1;
@@ -7052,8 +7055,7 @@ table {
       flex: 3; }
     #game-layout .playeditor .playeditor__chrono {
       flex: 1;
-      padding: 10px;
-      background-color: rgba(0, 0, 0, 0.02); }
+      padding: 0 10px; }
     @media all and (orientation: landscape) {
       #game-layout .playeditor {
         flex-direction: row; }
@@ -7086,22 +7088,59 @@ table {
   .itemlist .button-group, .itemlist .button-group .button {
     margin: 0; }
 
-.scoreboard {
-  background-color: #EEEEEE;
+.playeditor__chrono {
   padding: 0;
-  margin: 0; }
-
-.scoreboard h1, .scoreboard h2, .scoreboard h3, .scoreboard h4, .scoreboard h5, .scoreboard h6, .chrono h1, .chrono h2, .chrono h3, .chrono h4, .chrono h5, .chrono h6 {
-  margin: 0; }
+  margin: 0;
+  background-color: #F9F9F9;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.075); }
+  .playeditor__chrono h1, .playeditor__chrono h2, .playeditor__chrono h3, .playeditor__chrono h4, .playeditor__chrono h5, .playeditor__chrono h6 {
+    margin: 0; }
 
 .playeditor__preview {
+  position: relative;
+  z-index: 2;
   padding: 5px;
-  background-color: #F5F5F5; }
+  text-align: center;
+  background-color: #F9F9F9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.075);
+  min-height: 60px; }
 
-.playeditor__step h5 {
-  margin: 10px 0 3px;
-  padding: 5px;
-  text-align: center; }
+.playeditor__step {
+  position: relative;
+  z-index: 1; }
+  .playeditor__step h5 {
+    margin: 10px 0 3px;
+    padding: 5px;
+    text-align: center; }
+  .playeditor__step.ng-hide-add {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(0);
+    -ms-transform: translateY(0);
+    -webkit-transform: translateY(0);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    opacity: 1; }
+  .playeditor__step.ng-hide-add.ng-hide-add-active {
+    transform: translateY(-60px);
+    -ms-transform: translateY(-60px);
+    -webkit-transform: translateY(-60px);
+    opacity: 0; }
+  .playeditor__step.ng-hide-remove {
+    transform: translateY(60px);
+    -ms-transform: translateY(60px);
+    -webkit-transform: translateY(60px);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    display: block !important;
+    opacity: 0; }
+  .playeditor__step.ng-hide-remove.ng-hide-remove-active {
+    transform: translateY(0);
+    -ms-transform: translateY(0);
+    -webkit-transform: translateY(0);
+    opacity: 1; }
 
 .playeditor-list {
   margin: 0;

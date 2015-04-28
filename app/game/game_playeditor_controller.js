@@ -37,7 +37,22 @@
       GameDatasFact.teams[$scope.teamid].players[index_bp].playing = isplaying;
     };
 
-    // Action
+    // Actions
+
+    $scope.showplayers = function() {
+      return (PlaysRecordFact.play.length===0 || PlaysRecordFact.ui.edit);
+    };
+    $scope.showactions = function() {
+      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.play[0].playerid && !PlaysRecordFact.ui.subaction);
+    };
+    $scope.showsubactions = function() {
+      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.subaction && !PlaysRecordFact.ui.addaction);
+    };
+    $scope.showaddactions = function() {
+      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.addaction);
+    };
+
+
     $scope.playInsert = function(player) {
       if (PlaysRecordFact.play.length>0) {
         $scope.selectPlayer(player);
@@ -76,24 +91,11 @@
       // add action to play
       PlaysRecordFact.play[0].action = action;
     };
-    $scope.resetAction = function () {
+    $scope.removeAction = function () {
       $scope.removeAddAction();
       PlaysRecordFact.play[0].action = false;
       PlaysRecordFact.ui.subaction = false;
       PlaysRecordFact.ui.addaction = false;
-    };
-
-    $scope.showplayers = function() {
-      return (PlaysRecordFact.play.length===0 || PlaysRecordFact.ui.edit);
-    };
-    $scope.showactions = function() {
-      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.play[0].playerid && !PlaysRecordFact.ui.subaction);
-    };
-    $scope.showsubactions = function() {
-      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.subaction && !PlaysRecordFact.ui.addaction);
-    };
-    $scope.showaddactions = function() {
-      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.addaction);
     };
 
     // Subaction
