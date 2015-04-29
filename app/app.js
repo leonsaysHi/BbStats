@@ -14,7 +14,7 @@
 		}
 	})
 
-	.config(['config', '$stateProvider', '$urlRouterProvider', '$indexedDBProvider', function (config, $stateProvider, $urlRouterProvider, $indexedDBProvider) {// Routes
+	.config(['config', '$stateProvider', '$urlRouterProvider', '$indexedDBProvider', '$animateProvider', function (config, $stateProvider, $urlRouterProvider, $indexedDBProvider, $animateProvider) {// Routes
 		
 		$urlRouterProvider.otherwise('/');
 
@@ -73,6 +73,9 @@
 		    })
 	    ;
 
+	    // animate 
+	    $animateProvider.classNameFilter(/animated/);
+
 		// IndexedDB
 		$indexedDBProvider 
 			.connection('BbStats')
@@ -82,16 +85,5 @@
 			})
 		;
 	}]);
-
-	app.directive('showTab', function () {
-        return {
-            link: function (scope, element, attrs) {
-                $(element).on('click', function(e) {
-                    e.preventDefault();
-                    $(this).tab('show');
-                });
-            }
-        };
-    });
 
 })();

@@ -16,25 +16,25 @@
 	</div>
 
 	<div class="panels">
-		<div class="panels-wrapper">
+		<div class="panels-wrapper" style="margin-left:-{{gametab}}00%;">
 
 			<!-- PlayEditor -->
-			<play-editor ng-init="init(0)" ng-show="gametab===0"></play-editor>
+			<play-editor class="gametabs-anim" ng-init="init(0)"></play-editor>
 
 			<!-- PlayByPlay -->
-			<play-by-play ng-show="gametab===1"></play-by-play>
+			<play-by-play class="gametabs-anim"></play-by-play>
 			
 			<!-- ScoreBox -->
-			<score-box ng-show="gametab===2"></score-box>
+			<score-box class="gametabs-anim"></score-box>
 
 		</div>
 	</div>
 	
 	<!-- panel navigation -->
 	<footer class="footer">
-			<a ng-class="{active:(gametab==0)}" ng-click="gametab = 0">Recorder</a>
-			<a ng-class="{active:(gametab==1)}" ng-click="gametab = 1">Play-by-Play</a>
-			<a ng-class="{active:(gametab==2)}" ng-click="gametab = 2">Scorebox</a>
+			<a ng-class="{active:(gametab===0)}" ng-click="gametab=0">Recorder</a>
+			<a ng-class="{active:(gametab===1)}" ng-click="gametab=1">Play-by-Play</a>
+			<a ng-class="{active:(gametab===2)}" ng-click="gametab=2">Scorebox</a>
     </footer>
 
 </div>

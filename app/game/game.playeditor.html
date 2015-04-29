@@ -1,92 +1,98 @@
 <div class="playeditor">
 
 		<!-- Edit Play -->
-		<div class="playeditor__ui">			
-
-			<div data-alert class="alert-box secondary" ng-show="!isGameStarted() && !playersready">
-				Select 5 players from the bench
-			</div>
+		<div class="playeditor__ui">
 
 			<!-- Preview play -->
-			<div class="playeditor__preview" ng-show="isGameStarted()">		
-				<!-- action -->	
-				<div ng-show="showplayers()">Select a player...</div>
-				<div ng-repeat="play in recorder.play">{{play | playByPlayPreview}}</div>				
-				<div>
-					<a ng-click="removeAction()" ng-show="showactions() && recorder.ui.subaction" class="button tiny secondary">&lt;&lt;</a>
-					<a ng-click="removeAddAction()" ng-show="showaddactions()" class="button tiny secondary">&lt;&lt;</a>
-					<a ng-click="resetPlay()" ng-show="recorder.play[0]" class="button tiny secondary">Cancel</a>
-					<a ng-click="savePlay()" ng-show="playIsSavable()" class="button tiny success">Save</a>
-				</div>
-			</div>
-			
-			<!-- Players -->
-			<div class="playeditor__step playeditor__step--players" ng-show="showplayers()">
-				<h5>Players:</h5>
-				<div class="playeditor-list">
-					<div ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="playInsert(player)" ng-class="{'item--selected':player.id==recorder.play[0].playerid}" class="item item--player">
-						<strong>{{player.name}}</strong><span>{{player.number}}</span>
-					</div>
-					<div ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="addStarter()" class="item item--emptyplayer">
-						<span>+</span>
-					</div>
-					<div ng-click="playInsert(opponent)" ng-class="{'item--selected':recorder.play[0].playerid=='opp'}" class="item item--oppplayer">
-						<strong>Opp. scores</strong>
-					</div>
-				</div>
-			</div>
-			
-			<!-- Actions -->
-			<div class="playeditor__step playeditor__step--actions" ng-show="showactions()">
-				<h5>Actions:</h5>
-				<div class="playeditor-list">				
-					<div ng-repeat="action in actionsdata.base" ng-click="selectAction(action)" ng-class="{'item--selected':action.id===recorder.play[0].action.id}" class="item">{{actionsdata.dictio[action.id].btnlabel}}</div>
-					<div ng-show="benchplayers.length>0" ng-click="substitution()" class="item item--action">Subs</div>
-				</div>
-			</div>
-			
-			<!-- Subactions -->
-			<div class="playeditor__step playeditor__step--subactions" ng-show="showsubactions()">
-				<div ng-repeat="(code, subactions) in actionsdata.subactions" ng-show="recorder.ui.subaction===code">
-					<h5>Shot :</h5>
-					<div class="playeditor-list">
-						<div ng-repeat="action in subactions" ng-click="selectSubAction(action)" ng-class="{'item--selected':action.id===recorder.play[0].action.id}" class="item item--action">{{actionsdata.dictio[action.id].btnlabel}}</div>
+			<div class="playeditor__preview playeditor__preview--{{recorder.play.length}}" ng-show="isGameStarted()">		
+				<div class="preview">
+					<!-- action -->	
+					<div ng-repeat="(id, play) in recorder.play" class="preview__play row">
+						<div class="small-8 small-offset-2 columns">{{play | playByPlayPreview}}</div>
+						<div class="text-right small-2 columns"><a ng-show="recorder.play[0].action" ng-click="removePreview(id)" class="button tiny secondary">&#215;</a></div>
+					</div>				
+					<div>
+						<a ng-click="resetPlay()" ng-show="recorder.play[0]" class="button tiny secondary">Cancel</a>
+						<a ng-click="savePlay()" ng-show="playIsSavable()" class="button tiny success">Save</a>
 					</div>
 				</div>
 			</div>
 
-			<!-- Addactions -->
-			<div class="playeditor__step playeditor__step--addactions" ng-show="showaddactions()">
-				<div ng-repeat="(code, addactions) in actionsdata.addactions" ng-show="recorder.ui.addaction===code">
-					<div ng-repeat="action in addactions">
-						<h5>{{actionsdata.dictio[action.id].btnlabel}}?</h5>
+			<div class="playeditor__steps">
+
+				<div data-alert class="alert-box secondary" ng-show="!isGameStarted() && !playersready">
+					Select 5 players from the bench
+				</div>
+				
+				<!-- Players -->
+				<div class="playeditor__step playeditor__step--players" ng-show="showplayers()">
+					<h5>Select a player...</h5>
+					<div class="playeditor-list">
+						<div ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="playInsert(player)" ng-class="{'item--selected':player.id==recorder.play[0].playerid}" class="item item--player">
+							<strong>{{player.name}}</strong><span>{{player.number}}</span>
+						</div>
+						<div ng-repeat="i in getEmptyPlayersSpots() track by $index" ng-click="addStarter()" class="item item--emptyplayer">
+							<span>+</span>
+						</div>
+						<div ng-click="playInsert(opponent)" ng-class="{'item--selected':recorder.play[0].playerid=='opp'}" class="item item--oppplayer">
+							<strong>Opp. scores</strong>
+						</div>
+					</div>
+				</div>
+				
+				<!-- Actions -->
+				<div class="playeditor__step playeditor__step--actions" ng-show="showactions()">
+					<h5>Actions:</h5>
+					<div class="playeditor-list">				
+						<div ng-repeat="action in actionsdata.base" ng-click="selectAction(action)" ng-class="{'item--selected':action.id===recorder.play[0].action.id}" class="item">{{actionsdata.dictio[action.id].btnlabel}}</div>
+						<div ng-show="benchplayers.length>0" ng-click="substitution()" class="item item--action">Subs</div>
+					</div>
+				</div>
+				
+				<!-- Subactions -->
+				<div class="playeditor__step playeditor__step--subactions" ng-show="showsubactions()">
+					<div ng-repeat="(code, subactions) in actionsdata.subactions" ng-show="recorder.ui.subaction===code">
+						<h5>Shot :</h5>
 						<div class="playeditor-list">
-							<div ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectAddPlayerAction(player, action)" ng-hide="player==recorder.play[0].player" ng-class="{'item--selected':recorder.play[1].playerid===player.id}" class="item item--player">
-								<strong>{{player.name}}</strong><span>{{player.number}}</span>
+							<div ng-repeat="action in subactions" ng-click="selectSubAction(action)" ng-class="{'item--selected':action.id===recorder.play[0].action.id}" class="item item--action">{{actionsdata.dictio[action.id].btnlabel}}</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Addactions -->
+				<div class="playeditor__step playeditor__step--addactions" ng-show="showaddactions()">
+					<div ng-repeat="(code, addactions) in actionsdata.addactions" ng-show="recorder.ui.addaction===code">
+						<div ng-repeat="action in addactions">
+							<h5>{{actionsdata.dictio[action.id].btnlabel}}?</h5>
+							<div class="playeditor-list">
+								<div ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectAddPlayerAction(player, action)" ng-hide="player==recorder.play[0].player" ng-class="{'item--selected':recorder.play[1].playerid===player.id}" class="item item--player">
+									<strong>{{player.name}}</strong><span>{{player.number}}</span>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<!-- opponentactions -->
-			<div ng-show="recorder.ui.oppaction">
-				<h5>Opponent scores?</h5>
-				<div class="playeditor-list">
-					<div ng-repeat="action in actionsdata.opponentactions" ng-click="selectOpponentAction(action)" ng-class="{'item--selected':recorder.play[0].action.id===action.id}" class="item">{{actionsdata.dictio[action.id].btnlabel}}</div>
-				</div>
-			</div>
-
-			<!-- bench modal -->
-			<div id="bench" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-			  	<h2 id="modalTitle">Bench</h2>
-	  			<div class="playeditor-list">
-					<div ng-repeat="(index, player) in benchplayers = (team.players | getBenchPlayers)" ng-click="selectBenchPlayer(player)" class="item">
-						<strong>{{player.name}}</strong><span>{{player.number}}</span>
+				<!-- opponentactions -->
+				<div ng-show="recorder.ui.oppaction">
+					<h5>Opponent scores?</h5>
+					<div class="playeditor-list">
+						<div ng-repeat="action in actionsdata.opponentactions" ng-click="selectOpponentAction(action)" ng-class="{'item--selected':recorder.play[0].action.id===action.id}" class="item">{{actionsdata.dictio[action.id].btnlabel}}</div>
 					</div>
-					<p ng-hide="benchplayers.length">No player on the bench</p>
 				</div>
-			  	<a class="close-reveal-modal" aria-label="Close">&#215;</a>
+
+				<!-- bench modal -->
+				<div id="bench" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+				  	<h2 id="modalTitle">Bench</h2>
+		  			<div class="playeditor-list">
+						<div ng-repeat="(index, player) in benchplayers = (team.players | getBenchPlayers)" ng-click="selectBenchPlayer(player)" class="item">
+							<strong>{{player.name}}</strong><span>{{player.number}}</span>
+						</div>
+						<p ng-hide="benchplayers.length">No player on the bench</p>
+					</div>
+				  	<a class="close-reveal-modal" aria-label="Close">&#215;</a>
+				</div>
+
 			</div>
 		
 		</div>
@@ -96,20 +102,18 @@
 			<!-- Chrono -->
 			<div ng-controller="Chrono">
 
-				<a class="button success large expand" ng-click="nextPeriod()" ng-show="!isGameStarted()" ng-disabled="!playersready">Start the game</a>
+				<a class="button success expand" ng-click="nextPeriod()" ng-show="!isGameStarted()" ng-disabled="!playersready">Start the game</a>
 
 				<div ng-show="isGameStarted()" class="text-center">
-
-					<h3>
-						<small>{{gamedatas.chrono.curr_period | chronoPeriod}}</small><br><strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
-					</h3>
-					
+					{{gamedatas.chrono.curr_period | chronoPeriod}}
+					<br><strong>{{gamedatas.chrono.curr_time | chronoTime}}</strong>
+					<br>
 					<!-- between periods -->
 					<a class="btn btn-default btn-sm" ng-show="!periodisrunning" ng-click="nextPeriod()">{{gamedatas.chrono.curr_period | chronoGotoNextPeriod}}</a>
 					<!-- play / stop -->
 					<div ng-show="periodisrunning">			
-						<a class="button large expand" ng-show="!clockisrunning" ng-click="play()">Play</a>
-						<a class="button large expand" ng-show="clockisrunning" ng-click="stop()">Stop</a>
+						<a class="button expand" ng-show="!clockisrunning" ng-click="play()" >Play</a>
+						<a class="button expand" ng-show="clockisrunning" ng-click="stop()">Stop</a>
 					</div>
 				</div>
 			</div>

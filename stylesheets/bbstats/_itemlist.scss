@@ -8,4 +8,16 @@
 	.button-group {
 		&, .button { margin:0; }
 	}
+	&--play-by-play {
+		font-size:12px;
+		.time {color:$small-font-color;}
+		.scored {
+			font-weight:bold;
+			background-color:scale-color($success-color, $lightness: 90%);
+		}
+		.outscored {
+			color:$small-font-color;
+			background-color:scale-color($alert-color, $lightness: 90%);
+		}
+	}
 }

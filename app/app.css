@@ -5051,7 +5051,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5rem;
   line-height: 1.4; }
   h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
-    font-size: 60%;
+    font-size: 80%;
     color: #6f6f6f;
     line-height: 0; }
 
@@ -5097,7 +5097,7 @@ strong, b {
   line-height: inherit; }
 
 small {
-  font-size: 60%;
+  font-size: 80%;
   line-height: inherit; }
 
 code {
@@ -7028,13 +7028,28 @@ table {
     #game-layout .panels .panels-wrapper {
       flex: 1;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: stretch;
       align-content: stretch;
       justify-content: flex-start;
       overflow: hidden;
-      width: 100%; }
+      width: 300vw;
+      -webkit-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      -moz-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      -ms-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      -o-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      /* easeOutQuad */
+      -webkit-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      -moz-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      -ms-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      -o-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      /* easeOutQuad */
+      transition-duration: 0.2s;
+      -webkit-transition-duration: 0.2s; }
       #game-layout .panels .panels-wrapper > * {
+        width: 100vw;
         overflow: auto;
         display: flex;
         flex: 1;
@@ -7052,9 +7067,16 @@ table {
     justify-content: flex-start; }
     #game-layout .playeditor .playeditor__ui {
       overflow: auto;
-      flex: 3; }
-    #game-layout .playeditor .playeditor__chrono {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      align-content: stretch;
+      justify-content: flex-start; }
+      #game-layout .playeditor .playeditor__ui .playeditor__steps {
+        flex: 3; }
+    #game-layout .playeditor .playeditor__chrono {
+      flex-basis: 115px;
       padding: 0 10px; }
     @media all and (orientation: landscape) {
       #game-layout .playeditor {
@@ -7062,13 +7084,14 @@ table {
         #game-layout .playeditor .playeditor__ui {
           flex: 3; }
         #game-layout .playeditor .playeditor__chrono {
-          flex: 1; } }
+          flex-basis: 200px; } }
   #game-layout .play-by-play, #game-layout .scorebox {
     flex: 1;
     padding: 10px; }
 
 .footer {
-  background-color: #EEEEEE; }
+  background-color: #EEEEEE;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1); }
   .footer a {
     text-decoration: none;
     text-align: center; }
@@ -7087,8 +7110,20 @@ table {
     border-bottom: solid 1px #EEEEEE; }
   .itemlist .button-group, .itemlist .button-group .button {
     margin: 0; }
+  .itemlist--play-by-play {
+    font-size: 12px; }
+    .itemlist--play-by-play .time {
+      color: #6f6f6f; }
+    .itemlist--play-by-play .scored {
+      font-weight: bold;
+      background-color: #ebf7f0; }
+    .itemlist--play-by-play .outscored {
+      color: #6f6f6f;
+      background-color: #feece9; }
 
 .playeditor__chrono {
+  position: relative;
+  z-index: 1;
   padding: 0;
   margin: 0;
   background-color: #F9F9F9;
@@ -7103,7 +7138,9 @@ table {
   text-align: center;
   background-color: #F9F9F9;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.075);
-  min-height: 60px; }
+  flex-basis: 90px; }
+  .playeditor__preview .preview__play {
+    font-size: 80%; }
 
 .playeditor__step {
   position: relative;
@@ -7112,35 +7149,6 @@ table {
     margin: 10px 0 3px;
     padding: 5px;
     text-align: center; }
-  .playeditor__step.ng-hide-add {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    transform: translateY(0);
-    -ms-transform: translateY(0);
-    -webkit-transform: translateY(0);
-    transition-duration: 250ms;
-    -webkit-transition-duration: 250ms;
-    opacity: 1; }
-  .playeditor__step.ng-hide-add.ng-hide-add-active {
-    transform: translateY(-60px);
-    -ms-transform: translateY(-60px);
-    -webkit-transform: translateY(-60px);
-    opacity: 0; }
-  .playeditor__step.ng-hide-remove {
-    transform: translateY(60px);
-    -ms-transform: translateY(60px);
-    -webkit-transform: translateY(60px);
-    transition-duration: 250ms;
-    -webkit-transition-duration: 250ms;
-    display: block !important;
-    opacity: 0; }
-  .playeditor__step.ng-hide-remove.ng-hide-remove-active {
-    transform: translateY(0);
-    -ms-transform: translateY(0);
-    -webkit-transform: translateY(0);
-    opacity: 1; }
 
 .playeditor-list {
   margin: 0;

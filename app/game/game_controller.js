@@ -112,9 +112,9 @@ app.factory('ActionsDatasFact', function() {
       'fta': {btnlabel:'1pt missed', pplabel:'@: free throw missed.', addtostatsheet:0},
       'fga2': {btnlabel:'2pts missed', pplabel:'@: 2pt shot: missed.', addtostatsheet:0},
       'fga3': {btnlabel:'3pts missed', pplabel:'@: 3pt shot: missed.', addtostatsheet:0},
-      'ftm': {btnlabel:'1pt made', pplabel:'@: free throw made.', addtostatsheet:0, class:'text-bold'},
-      'fgm2': {btnlabel:'2pts made', pplabel:'@: 2pt shot: made.', addtostatsheet:0, class:'text-bold'},
-      'fgm3': {btnlabel:'3pts made', pplabel:'@: 3pt shot: made.', addtostatsheet:0, class:'text-bold'},
+      'ftm': {btnlabel:'1pt made', pplabel:'@: free throw made.', addtostatsheet:0, class:'scored'},
+      'fgm2': {btnlabel:'2pts made', pplabel:'@: 2pt shot: made.', addtostatsheet:0, class:'scored'},
+      'fgm3': {btnlabel:'3pts made', pplabel:'@: 3pt shot: made.', addtostatsheet:0, class:'scored'},
       'ast': {btnlabel:'Assist', pplabel:'Assist: @.', addtostatsheet:0},
       'rebdef': {btnlabel:'Defensive rebound', pplabel:'@: defensive rebound.', addtostatsheet:0},
       'reboff': {btnlabel:'Offensive rebound', pplabel:'Offensive rebound: @.', addtostatsheet:0},
@@ -127,9 +127,9 @@ app.factory('ActionsDatasFact', function() {
       'plusminus': {addtostatsheet:'array'},
       'out': {pplabel:'@ is removed.'},
       'in': {pplabel:'@ enters the game.'},
-      'opp1': {btnlabel:'+1', pplabel:'Opponent scores 1pt', class:'text-muted small'},
-      'opp2': {btnlabel:'+2', pplabel:'Opponent scores 2pt', class:'text-muted small'},
-      'opp3': {btnlabel:'+3', pplabel:'Opponent scores 3pt', class:'text-muted small'}
+      'opp1': {btnlabel:'+1', pplabel:'Opponent scores 1pt', class:'outscored'},
+      'opp2': {btnlabel:'+2', pplabel:'Opponent scores 2pt', class:'outscored'},
+      'opp3': {btnlabel:'+3', pplabel:'Opponent scores 3pt', class:'outscored'}
 
     }
   };
@@ -212,7 +212,6 @@ app.factory('ActionsDatasFact', function() {
     $scope.$watch(
       function () { return GameDatasFact.teams[1].score; },
       function (newVal, oldVal) {
-        console.log('new val', GameDatasFact.teams[1].score);
         $scope.opponentscore = GameDatasFact.teams[1].score;
       },
       true

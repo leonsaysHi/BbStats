@@ -16,6 +16,10 @@
       true
     );
 
+    $scope.tapPlay = function() {
+
+    };
+
     $scope.deletePlay = function(index){
       index = GameDatasFact.playbyplay.length-1-index;
       GameDatasFact.playbyplay.splice(index, 1);
@@ -31,6 +35,28 @@
 
 
   })
+
+  .directive('ngPlaybyplayItem', function() {
+    return {
+      restrict: 'A',
+      controller: ['$scope', function($scope){
+        //$scope.playid;
+        //$scope.play;
+        $scope.period = $scope.play[0].curr_period;
+        $scope.time = $scope.play[0].curr_time;
+        $scope.allowedit = false;
+        $scope.allowdelete = false;
+        $scope.tap=function(){
+          if (!($scope.time>0)) { return; }
+          if (!$scope.allowedit && !$scope.allowdelete) { $scope.allowedit = true; }
+          else if ($scope.allowedit) { $scope.allowedit = false; $scope.allowdelete = true; }
+          else if ($scope.allowdelete) { $scope.allowdelete = false; }
+        };
+      }]
+    }
+  })
+
+
   .filter('playByPlayLog', function($filter, ActionsDatasFact) {
     return function(play) {
       var output = '';

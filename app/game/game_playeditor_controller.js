@@ -51,6 +51,9 @@
     $scope.showaddactions = function() {
       return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.addaction);
     };
+    $scope.playIsSavable = function() {
+      return (PlaysRecordFact.play[0] && PlaysRecordFact.play[0].playerid && PlaysRecordFact.play[0].action && !PlaysRecordFact.play[0].action.subaction);
+    };
 
 
     $scope.playInsert = function(player) {
@@ -175,11 +178,14 @@
 
 
     // Save
-    $scope.playIsSavable = function() {
-      return (
-        PlaysRecordFact.play[0] && PlaysRecordFact.play[0].playerid && PlaysRecordFact.play[0].action && !PlaysRecordFact.play[0].action.subaction
-        );
-    };
+    $scope.removePreview = function(n) {
+      if (n==0) {
+        $scope.removeAction();
+      } 
+      else if (n==1) {
+        $scope.removeAddAction();
+      }
+    };    
     $scope.savePlay = function() {
       var play = PlaysRecordFact.play;
       //delete play.player;
