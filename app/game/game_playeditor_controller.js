@@ -38,9 +38,30 @@
     };
 
     // Actions
-
+    $scope.getStepAnim = function(step) {
+      if ($scope.showplayers()) { 
+        return 'up';
+      }
+      else if ($scope.showactions()) {
+        switch(step) {
+          case 'players' : return 'down'; break;
+          default : return 'up';
+        }
+      }
+      else if ($scope.showsubactions()) {        
+        switch(step) {
+          case 'players' :
+          case 'actions' :
+          case 'subactions' : return 'down'; break;
+          default : return 'up';
+        }
+      }
+      else if ($scope.showaddactions()) {                
+        return 'down';
+      }
+    };
     $scope.showplayers = function() {
-      return (PlaysRecordFact.play.length===0 || PlaysRecordFact.ui.edit);
+      return (PlaysRecordFact.play.length===0);
     };
     $scope.showactions = function() {
       return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.play[0].playerid && !PlaysRecordFact.ui.subaction);

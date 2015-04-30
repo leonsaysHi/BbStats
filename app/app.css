@@ -7074,7 +7074,17 @@ table {
       align-content: stretch;
       justify-content: flex-start; }
       #game-layout .playeditor .playeditor__ui .playeditor__steps {
-        flex: 3; }
+        flex: 3;
+        position: relative; }
+        #game-layout .playeditor .playeditor__ui .playeditor__steps .playeditor__step {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 100%;
+          width: 100%;
+          overflow: auto; }
     #game-layout .playeditor .playeditor__chrono {
       flex-basis: 115px;
       padding: 0 10px; }
@@ -7144,24 +7154,85 @@ table {
 
 .playeditor__step {
   position: relative;
-  z-index: 1; }
+  z-index: 1;
+  -webkit-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -moz-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -ms-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -o-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* easeOutQuad */
+  -webkit-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -moz-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -ms-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -o-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* easeOutQuad */ }
   .playeditor__step h5 {
     margin: 10px 0 3px;
     padding: 5px;
     text-align: center; }
 
+.playeditor__step--down.ng-hide-add {
+  transform: translateY(0);
+  -ms-transform: translateY(0);
+  -webkit-transform: translateY(0);
+  transition-duration: 0.25s;
+  -webkit-transition-duration: 0.25s;
+  opacity: 1; }
+.playeditor__step--down.ng-hide-add.ng-hide-add-active {
+  transform: translateY(-60px);
+  -ms-transform: translateY(-60px);
+  -webkit-transform: translateY(-60px);
+  opacity: 0; }
+.playeditor__step--down.ng-hide-remove {
+  transform: translateY(-60px);
+  -ms-transform: translateY(-60px);
+  -webkit-transform: translateY(-60px);
+  transition-duration: 0.25s;
+  -webkit-transition-duration: 0.25s;
+  display: block !important;
+  opacity: 0; }
+.playeditor__step--down.ng-hide-remove.ng-hide-remove-active {
+  transform: translateY(0);
+  -ms-transform: translateY(0);
+  -webkit-transform: translateY(0);
+  opacity: 1; }
+
+.playeditor__step--up.ng-hide-add {
+  transform: translateY(0);
+  -ms-transform: translateY(0);
+  -webkit-transform: translateY(0);
+  transition-duration: 0.25s;
+  -webkit-transition-duration: 0.25s;
+  opacity: 1; }
+.playeditor__step--up.ng-hide-add.ng-hide-add-active {
+  transform: translateY(60px);
+  -ms-transform: translateY(60px);
+  -webkit-transform: translateY(60px);
+  opacity: 0; }
+.playeditor__step--up.ng-hide-remove {
+  transform: translateY(60px);
+  -ms-transform: translateY(60px);
+  -webkit-transform: translateY(60px);
+  transition-duration: 0.25s;
+  -webkit-transition-duration: 0.25s;
+  display: block !important;
+  opacity: 0; }
+.playeditor__step--up.ng-hide-remove.ng-hide-remove-active {
+  transform: translateY(0);
+  -ms-transform: translateY(0);
+  -webkit-transform: translateY(0);
+  opacity: 1; }
+
 .playeditor-list {
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: stretch;
-  align-content: stretch;
-  justify-content: center; }
+  text-align: center;
+  font-size: 0; }
   .playeditor-list > .item {
-    flex: 1;
-    flex-basis: 33%;
+    display: inline-block;
+    vertical-align: top;
+    width: 33.33%;
     height: 80px;
     padding: 10px;
     font-size: 12px;
@@ -7174,10 +7245,9 @@ table {
       font-size: 20px; }
     .playeditor-list > .item--action {
       font-size: 16px; }
-    .playeditor-list > .item--oppplayer {
-      /*flex:1;*/ }
     .playeditor-list > .item--selected {
-      border-color: blue; }
+      background-color: #008CBA;
+      color: white; }
 
 .actions-list .item {
   flex-grow: 3;

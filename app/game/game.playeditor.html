@@ -19,15 +19,14 @@
 			</div>
 
 			<div class="playeditor__steps">
-
-				<div data-alert class="alert-box secondary" ng-show="!isGameStarted() && !playersready">
-					Select 5 players from the bench
-				</div>
 				
 				<!-- Players -->
-				<div class="playeditor__step playeditor__step--players" ng-show="showplayers()">
+				<div class="playeditor__step playeditor__step--{{getStepAnim('players')}}" ng-show="showplayers()">
 					<h5>Select a player...</h5>
-					<div class="playeditor-list">
+					<div data-alert class="alert-box secondary" ng-show="!isGameStarted() && !playersready">
+						Select 5 players from the bench
+					</div>
+					<div class="playeditor-list animated">
 						<div ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="playInsert(player)" ng-class="{'item--selected':player.id==recorder.play[0].playerid}" class="item item--player">
 							<strong>{{player.name}}</strong><span>{{player.number}}</span>
 						</div>
@@ -41,16 +40,16 @@
 				</div>
 				
 				<!-- Actions -->
-				<div class="playeditor__step playeditor__step--actions" ng-show="showactions()">
+				<div class="playeditor__step playeditor__step--{{getStepAnim('actions')}}" ng-show="showactions()">
 					<h5>Actions:</h5>
 					<div class="playeditor-list">				
-						<div ng-repeat="action in actionsdata.base" ng-click="selectAction(action)" ng-class="{'item--selected':action.id===recorder.play[0].action.id}" class="item">{{actionsdata.dictio[action.id].btnlabel}}</div>
+						<div ng-repeat="action in actionsdata.base" ng-click="selectAction(action)" ng-class="{'item--selected':action.id===recorder.play[0].action.id}" class="item item--action">{{actionsdata.dictio[action.id].btnlabel}}</div>
 						<div ng-show="benchplayers.length>0" ng-click="substitution()" class="item item--action">Subs</div>
 					</div>
 				</div>
 				
 				<!-- Subactions -->
-				<div class="playeditor__step playeditor__step--subactions" ng-show="showsubactions()">
+				<div class="playeditor__step playeditor__step--{{getStepAnim('subactions')}}" ng-show="showsubactions()">
 					<div ng-repeat="(code, subactions) in actionsdata.subactions" ng-show="recorder.ui.subaction===code">
 						<h5>Shot :</h5>
 						<div class="playeditor-list">
@@ -60,7 +59,7 @@
 				</div>
 
 				<!-- Addactions -->
-				<div class="playeditor__step playeditor__step--addactions" ng-show="showaddactions()">
+				<div class="playeditor__step playeditor__step--{{getStepAnim('addactions')}}" ng-show="showaddactions()">
 					<div ng-repeat="(code, addactions) in actionsdata.addactions" ng-show="recorder.ui.addaction===code">
 						<div ng-repeat="action in addactions">
 							<h5>{{actionsdata.dictio[action.id].btnlabel}}?</h5>
@@ -81,20 +80,20 @@
 					</div>
 				</div>
 
-				<!-- bench modal -->
-				<div id="bench" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-				  	<h2 id="modalTitle">Bench</h2>
-		  			<div class="playeditor-list">
-						<div ng-repeat="(index, player) in benchplayers = (team.players | getBenchPlayers)" ng-click="selectBenchPlayer(player)" class="item">
-							<strong>{{player.name}}</strong><span>{{player.number}}</span>
-						</div>
-						<p ng-hide="benchplayers.length">No player on the bench</p>
-					</div>
-				  	<a class="close-reveal-modal" aria-label="Close">&#215;</a>
-				</div>
-
 			</div>
 		
+		</div>		
+
+		<!-- bench modal -->
+		<div id="bench" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+		  	<h2 id="modalTitle">Bench</h2>
+  			<div class="playeditor-list">
+				<div ng-repeat="(index, player) in benchplayers = (team.players | getBenchPlayers)" ng-click="selectBenchPlayer(player)" class="item">
+					<strong>{{player.name}}</strong><span>{{player.number}}</span>
+				</div>
+				<p ng-hide="benchplayers.length">No player on the bench</p>
+			</div>
+		  	<a class="close-reveal-modal" aria-label="Close">&#215;</a>
 		</div>
 
 		<div class="playeditor__chrono">

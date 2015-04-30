@@ -30,43 +30,93 @@
         padding:5px;
         text-align: center;
     }
+    @include easingTimingFunction();
+}
+.playeditor__step--down {
+    // UP
+    // Hide
+    &.ng-hide-add {
+        @include transform(translateY(0));
+        @include transitionDuration(0.25s);
+        opacity:1;      
+    }   
+    &.ng-hide-add.ng-hide-add-active {
+        @include transform(translateY(-60px)); 
+        opacity:0;
+    }
+
+    // Show
+    &.ng-hide-remove {
+        @include transform(translateY(-60px)); 
+        @include transitionDuration(0.25s);
+        display:block!important;
+        opacity:0;
+    }
+    &.ng-hide-remove.ng-hide-remove-active {
+        @include transform(translateY(0));
+        opacity:1;
+    }
+}
+.playeditor__step--up {
+    // DOWN
+    // Hide 
+    &.ng-hide-add {
+        @include transform(translateY(0));
+        @include transitionDuration(0.25s);
+        opacity:1;      
+    }   
+    &.ng-hide-add.ng-hide-add-active {
+        @include transform(translateY(60px)); 
+        opacity:0;
+    }
+
+    // Show
+    &.ng-hide-remove {
+        @include transform(translateY(60px)); 
+        @include transitionDuration(0.25s);
+        display:block!important;
+        opacity:0;
+    }
+    &.ng-hide-remove.ng-hide-remove-active {
+        @include transform(translateY(0));
+        opacity:1;
+    }
+    
 }
 .playeditor-list {
     margin:0;
     padding:0;
-    display:flex;
-    flex-wrap:wrap;
-    flex-direction: row;
-    align-items: stretch;
-    align-content: stretch;
-    justify-content: center;
+    text-align:center;
+    font-size:0;
     > .item {
-        flex : 1;
-        flex-basis: 33%;
+        display:inline-block;
+        vertical-align:top;
+        width:33.33%;
+
         height:80px;
-    	padding:$padding;
-    	font-size:12px;
+        padding:$padding;
+        font-size:12px;
         font-weight:bold;
-    	text-align:center;
-	    border:solid 5px white;
-	    background-color:$smoke;
-		
+        text-align:center;
+        border:solid 5px white;
+        background-color:$smoke;
+        
         &--player {
             > span {
                 display:block;
                 font-size:20px;
-
             }
         }
         &--action {
             font-size:16px;
         }
-	    &--oppplayer {
-	    	/*flex:1;*/
-	    }
-		&--selected {
-			border-color:blue;
-		}
+        &--oppplayer {
+            
+        }
+        &--selected {
+            background-color:$primary-color;
+            color:white;
+        }
     }
 }
 

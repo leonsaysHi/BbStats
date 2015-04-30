@@ -74,7 +74,7 @@
 	    ;
 
 	    // animate 
-	    $animateProvider.classNameFilter(/animated/);
+	    // $animateProvider.classNameFilter(/animated/);
 
 		// IndexedDB
 		$indexedDBProvider 
