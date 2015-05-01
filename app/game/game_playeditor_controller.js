@@ -3,7 +3,7 @@
 
   var app = angular.module('bbstats');
 
-  app.controller('PlayEditor', function ($scope, $filter, GameDatasFact, ActionsDatasFact, GameUIFact, PlayFact) {
+  app.controller('PlayEditor', function ($scope, $filter, GameDatasFact, ActionsDatasFact, GameDatasManageFact, GameUIFact, PlayFact) {
 
     
       $scope.teamid = 0
@@ -22,14 +22,14 @@
       $scope.$watch(
         function () { return GameUIFact; },
         function (newVal, oldVal) {
-          console.log(GameUIFact, GameDatasFact.chrono.total_time>0, !GameUIFact.oppaction, PlayFact.play.length>0, GameUIFact.addaction);
           $scope.subaction = GameUIFact.subaction;
           $scope.addaction = GameUIFact.addaction;
+          $scope.oppaction = GameUIFact.oppaction;
           $scope.edit = GameUIFact.edit;
+          console.log('watch : oppaction', GameUIFact.oppaction);
         },
         true
       );
-
 
     // return an array of empty player spot 
     $scope.getEmptyPlayersSpots = function(){
@@ -39,13 +39,6 @@
       ;
       var n = Math.min(bp.length, (5-pp.length));
       return new Array(Math.max(0, n));
-    };
-    $scope.setPlayerPlayingStatus = function(playerid, isplaying) {   
-      var 
-      player = $filter('playerFromPid')(playerid),
-      index_bp = GameDatasFact.teams[$scope.teamid].players.indexOf(player)
-      ;
-      GameDatasFact.teams[$scope.teamid].players[index_bp].playing = isplaying;
     };
 
     // Actions
@@ -72,7 +65,7 @@
       }
     };
 
-    $scope.doAddStarter = false;
+    $scope.doAddStarter = false; // move to ui
 
     $scope.showplayers = function() {
       return (PlayFact.play.length===0);
@@ -93,11 +86,8 @@
 
     $scope.selectPlayer = function(player, isaddaction) {
       if(typeof isaddaction === 'undefined' || !isaddaction) {
-        $scope.edit = false;
-        GameUIFact.subaction = false;
-        GameUIFact.addaction = false;
-        GameUIFact.oppaction = (player.id ==='opp');
         PlayFact.init($scope.teamid, player);
+        GameUIFact.oppaction = (player.id === 'opp');
       }
     };
 
@@ -126,29 +116,27 @@
 
     // Bench
     $scope.addStarter = function() {
-      $scope.addStarter = true;
+      $scope.doAddStarter = true;
       PlayFact.init($scope.teamid);
       PlayFact.selectAction(ActionsDatasFact.hiddenactions.in);
       $scope.toggleBench(true);
     };
     $scope.substitution = function() {
-      //PlayFact.init($scope.teamid);
       PlayFact.selectAction(ActionsDatasFact.hiddenactions.out);
       $scope.toggleBench(true);
     };
     $scope.selectBenchPlayer = function(player) {
-      $scope.setPlayerPlayingStatus(player.id, true); // Todo: move to Factory
       // select starters
       if ($scope.doAddStarter) {
         PlayFact.selectPlayer(player);
+        GameDatasManageFact.savePlay();
         $scope.doAddStarter = false;
-        $scope.savePlay(); // Todo: move to Factory
       }
       else {
-        $scope.setPlayerPlayingStatus(PlayFact.play[0].playerid, false); // Todo: move to Factory
         PlayFact.initAddAction();
         PlayFact.selectPlayer(player, true);
         PlayFact.selectAction(ActionsDatasFact.hiddenactions.in, true);
+        $scope.savePlay();
       }
       $scope.toggleBench(false);
     };
@@ -182,23 +170,12 @@
       }
     };    
     $scope.savePlay = function() {
-      var play = PlayFact.play;
-      //delete play.player;
-      if(!$scope.edit) {
-        GameDatasFact.playbyplay.push(play);
-      }
-      else {
-        GameDatasFact.playbyplay[$scope.index] = play;
-      }
+      GameDatasManageFact.savePlay();
       $scope.resetPlay();
-      $scope.saveGameDatasFact();
     };
     $scope.resetPlay=function() {
       PlayFact.reset();
-      $scope.edit = false;
-      GameUIFact.subaction = false;
-      GameUIFact.addaction = false;
-      GameUIFact.oppaction = false;
+      GameUIFact.reset();
     };
 
   });
@@ -235,7 +212,8 @@ app.filter('playByPlayPreview', function($filter, ActionsDatasFact) {
     var output = '';
     if (typeof action === 'undefined') { return '';}
       //player
-      var player = $filter('playerFromPid')(action.playerid);
+      var player = $filter('playerFromPid')(action.playerid); 
+      if (!action.playerid) { return output; }
       // action
       if (action.action) {
         var ref, refs = action.action.refs ? action.action.refs : [action.action.subaction];

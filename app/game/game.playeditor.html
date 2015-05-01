@@ -38,7 +38,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- Actions -->
 				<div class="playeditor__step playeditor__step--{{getStepAnim('actions')}}" ng-show="showactions()">
 					<h5>Actions:</h5>
@@ -64,7 +64,7 @@
 						<div ng-repeat="action in addactions">
 							<h5>{{actionsdata.dictio[action.id].btnlabel}}?</h5>
 							<div class="playeditor-list">
-								<div ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectAddAction(player, action)" ng-hide="player==recorder.play[0].player" ng-class="{'item--selected':recorder.play[1].playerid===player.id}" class="item item--player">
+								<div ng-repeat="(id, player) in playingplayers = (team.players | getCourtPlayers)" ng-click="selectAddAction(player, action)" ng-hide="action.notself && player==recorder.play[0].player" ng-class="{'item--selected':recorder.play[1].playerid===player.id}" class="item item--player">
 									<strong>{{player.name}}</strong><span>{{player.number}}</span>
 								</div>
 							</div>

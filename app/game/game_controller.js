@@ -5,6 +5,26 @@
   var app = angular.module('bbstats');
  
   // Stores Game datas
+  app.factory('GameDatasManageFact', function(config, $indexedDB, GameDatasFact, PlayFact) {
+    return {
+      savePlay: function(play, index){
+        var
+          play = PlayFact.getPlay(),
+          index = PlayFact.play_index
+        ;
+        if(index === false) {
+          GameDatasFact.playbyplay.push(play);
+        }
+        else {
+          GameDatasFact.playbyplay[index] = play;
+        }
+        //save
+        $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
+          store.upsert (GameDatasFact).then(function(e){console.log('upsert');});
+        });
+      },
+    };
+  });
   app.factory('GameDatasFact', function() {
     return {
       id: null,
@@ -27,7 +47,7 @@
           curr_time: 0, // in secondes
           total_time: 0 // in secondes
         },
-      playbyplay: [], // { time, curr_period, curr_time, teamid, playerid, action}
+      playbyplay: [] // { time, curr_period, curr_time, teamid, playerid, action}
     };
   });
 
@@ -39,16 +59,15 @@
         this.addaction= false;
         this.oppaction= false;
         this.edit= false;
-        this.index= 0;
       }
     };
   });
 
-  app.factory('PlayFact', function(GameDatasFact, ActionsDatasFact, GameUIFact) {
+  app.factory('PlayFact', function($filter, GameDatasFact, ActionsDatasFact, GameUIFact) {
     return {
       play:[],
       play_index:false,
-      ui: {},
+
       init: function(teamid, player) {
         if (this.play.length>0) {
           this.selectPlayer(player);
@@ -122,8 +141,30 @@
         }
       },
       reset: function(){
-        this.play=[];
+        this.play = [];
+        this.play_index = false;
         GameUIFact.reset();
+      },
+
+      getPlay: function(){
+        var 
+          play = angular.copy(this.play), 
+          i=0, actionslength = play.length
+        ;
+        for (; i<actionslength; i++) {
+          var 
+            playerid = play[i].playerid,
+            action = play[i].action,
+            player = $filter('playerFromPid')(playerid),
+            index = GameDatasFact.teams[0].players.indexOf(player)
+          ;
+          delete play[i].player;
+          if (action.id === 'in' || action.id === 'out') {
+            GameDatasFact.teams[0].players[index].playing = (action.id === 'in');
+          }
+        }
+        this.reset();
+        return play;
       },
 
       edit: function(index){
@@ -131,6 +172,7 @@
           self = this,
           play =  angular.copy(GameDatasFact.playbyplay[index])
         ;
+        this.play_index = index;
         this.play = play;
         var action = $.grep(ActionsDatasFact.base, function(e){ return e.id == play[0].action.id; });
         if (action.length===0) {
@@ -169,8 +211,8 @@ app.factory('ActionsDatasFact', function() {
       ]
     },
     addactions: {
-      'reboff': [{id:'reboff', refs:['reboff'], subaction:false, addaction: false}],
-      'ast': [{id:'ast', refs:['ast'], subaction:false, addaction: false}]
+      'reboff': [{id:'reboff', refs:['reboff'], subaction:false, addaction: false, notself:false}],
+      'ast': [{id:'ast', refs:['ast'], subaction:false, addaction: false, notself:true}]
     },
     hiddenactions: {
       'in': {id:'in', refs:['in'], subaction:false, addaction: false},
@@ -243,14 +285,6 @@ app.factory('ActionsDatasFact', function() {
 
       $scope.gotoRecorder = function(index) {
         $scope.gametab = 0;
-      };
-
-      // Saving current game state
-      $scope.saveGameDatasFact = function() {
-        var gamedatas = GameDatasFact;
-        $indexedDB.openStore(config.indexedDb.gameStore, function(store) {
-          store.upsert (gamedatas).then(function(e){console.log('upsert');});
-        });
       };
 
     })
