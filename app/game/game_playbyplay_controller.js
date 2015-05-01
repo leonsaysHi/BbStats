@@ -4,7 +4,7 @@
   var app = angular.module('bbstats');
  
   
-  app.controller('PlayByPlay', function ($scope, $filter, GameDatasFact, PlaysRecordFact) {
+  app.controller('PlayByPlay', function ($scope, $filter, GameDatasFact, GameUIFact, PlayFact) {
 
     // watch play
     $scope.$watch(
@@ -20,16 +20,17 @@
 
     };
 
-    $scope.deletePlay = function(index){
+    $scope.clickDeletePlay = function(index){
       index = GameDatasFact.playbyplay.length-1-index;
       GameDatasFact.playbyplay.splice(index, 1);
       $scope.saveGameDatasFact();
     };
 
-    $scope.editPlay = function(index){
+    $scope.clickEditPlay = function(index){
       index = GameDatasFact.playbyplay.length-1-index;
-      PlaysRecordFact.edit(index);
-      $scope.gotoEditTab();
+      GameUIFact.edit = true;
+      PlayFact.edit(index);
+      $scope.gotoRecorder();
     };
 
 
@@ -63,6 +64,7 @@
       for (var i=0; i<play.length; i++) {
         //player
         var player = $filter('playerFromPid')(play[i].playerid);
+        if (typeof player === 'undefined') { continue; }
         // action
         if (play[i].action) {
           var ref, refs = play[i].action.refs;
@@ -80,7 +82,6 @@
         else {
           output += player.name + '... ';
         }
-
       }
       return output;
     }

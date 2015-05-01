@@ -1,12 +1,12 @@
 	
 
 	<div class="itemlist itemlist--play-by-play">
-		<div ng-playbyplay-item="{playid:playid, play:play}" ng-repeat="(playid, play) in plays | reverse" class="row {{actionsdata.dictio[play[0].action.id].class}}">
+		<div ng-playbyplay-item="{playid:playid, play:play}" ng-repeat="(index, play) in plays | reverse" class="row {{actionsdata.dictio[play[0].action.id].class}}">
 			<div class="small-9 columns" ng-click="tap()">
 				<div class="time">{{period | chronoPeriod}} - {{time | chronoTime}}</div> 
 				<div class="act">{{play | playByPlayLog}}</div> 
 			</div>
-			<div class="small-3 columns" ng-show="allowedit"><a ng-click="editPlay(playid)" class="button tiny expand secondary">edit</a></div>
-			<div class="small-3 columns" ng-show="allowdelete"><a ng-click="deletePlay(playid)" class="button tiny expand secondary">&times;</a></div>
+			<div class="small-3 columns" ng-show="allowedit"><a ng-click="clickEditPlay(index)" class="button tiny expand secondary">edit</a></div>
+			<div class="small-3 columns" ng-show="allowdelete"><a ng-click="clickDeletePlay(index)" class="button tiny expand secondary">&times;</a></div>
 		</div>
 	</div>

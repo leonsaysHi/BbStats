@@ -31,41 +31,115 @@
     };
   });
 
+  // Share UI statuses between Recorder & Playbyplay controllers
+  app.factory('GameUIFact', function() {
+    return {
+      reset: function(){
+        this.subaction= false;
+        this.addaction= false;
+        this.oppaction= false;
+        this.edit= false;
+        this.index= 0;
+      }
+    };
+  });
 
-  app.factory('PlaysRecordFact', function(GameDatasFact, ActionsDatasFact) {
+  app.factory('PlayFact', function(GameDatasFact, ActionsDatasFact, GameUIFact) {
     return {
       play:[],
+      play_index:false,
       ui: {},
-      reset:function(){
-        this.play=[];
-        this.ui= {
-          subaction:false,
-          addaction:false,
-          oppaction:false,
-          edit:false,
-          index:0
-        };
+      init: function(teamid, player) {
+        if (this.play.length>0) {
+          this.selectPlayer(player);
+          return;
+        }
+        var
+          time = GameDatasFact.chrono.total_time,
+          curr_time = GameDatasFact.chrono.curr_time,
+          curr_period = GameDatasFact.chrono.curr_period
+        ;
+        this.reset();
+
+        // create new action
+        this.play.push({
+          time: time,
+          curr_time: curr_time,
+          curr_period: curr_period,
+          teamid: teamid,
+          player: false,
+          playerid: false,
+          action: false
+        });
+        // pregame substitution ?
+        if (typeof player !== 'undefined') {
+          this.selectPlayer(player);
+        }
       },
-      edit:function(index){
+      initAddAction: function(){
+        var
+          time = this.play[0].time,
+          curr_time = this.play[0].curr_time,
+          curr_period = this.play[0].curr_period,
+          teamid = this.play[0].teamid
+        ;
+        this.play.splice(1,1);
+        this.play.push({
+          time: time,
+          curr_time: curr_time,
+          curr_period: curr_period,
+          teamid: teamid,
+          player: false,
+          playerid: false,
+          action: false
+        });
+      },
+      selectPlayer: function (player, isaddaction) {
+        if(typeof isaddaction === 'undefined' || !isaddaction) {
+          this.play[0].player = player;
+          this.play[0].playerid = player.id;
+        }
+        else {          
+          this.play[1].player = player;
+          this.play[1].playerid = player.id;
+        }
+      },
+      selectAction: function (action, isaddaction) {
+        if(typeof isaddaction === 'undefined' || !isaddaction) {
+          this.play[0].action = action;
+        }
+        else {          
+          this.play[1].action = action;
+        }
+      },
+      removeAction: function (isaddaction) {
+        if(typeof isaddaction === 'undefined' || !isaddaction) {
+          this.removeAction(true);
+          this.play[0].action = false;
+        }
+        else {
+          this.play.splice(1,1);
+        }
+      },
+      reset: function(){
+        this.play=[];
+        GameUIFact.reset();
+      },
+
+      edit: function(index){
         var 
           self = this,
           play =  angular.copy(GameDatasFact.playbyplay[index])
         ;
         this.play = play;
-        this.ui.edit = true;
-        this.ui.index = index;
-        this.ui.oppaction = (play[0].playerid==='opp');
-        // set subaction/addaction
-        this.ui.subaction = false;
         var action = $.grep(ActionsDatasFact.base, function(e){ return e.id == play[0].action.id; });
         if (action.length===0) {
           angular.forEach(ActionsDatasFact.subactions, function(subactions, id) {
             var i, subactionslength = subactions.length;
             var subaction = $.grep(ActionsDatasFact.subactions[id], function(e){ return e.id == play[0].action.id; });
             if (subaction.length===1) {
-              console.log(subaction);
-              self.ui.subaction = id;
-              self.ui.addaction = subaction[0].addaction;
+              GameUIFact.subaction = id;
+              GameUIFact.addaction = subaction[0].addaction;
               return;
             }
           });
@@ -141,7 +215,9 @@ app.factory('ActionsDatasFact', function() {
   * 
   */
   app
-  .controller('Game', function ($scope, $filter, config, $indexedDB, gameDatas, GameDatasFact, ActionsDatasFact) {
+  .controller('Game', function ($scope, $filter, config, $indexedDB, gameDatas, GameDatasFact, ActionsDatasFact, GameUIFact) {
+
+      GameUIFact.reset();
 
       // init store GameDatasFact into scope
       angular.merge(GameDatasFact, gameDatas);
@@ -165,7 +241,7 @@ app.factory('ActionsDatasFact', function() {
         return (GameDatasFact.chrono.curr_period > 0);
       };
 
-      $scope.gotoEditTab = function() {
+      $scope.gotoRecorder = function(index) {
         $scope.gametab = 0;
       };
 

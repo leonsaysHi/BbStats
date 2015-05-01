@@ -9,7 +9,7 @@
   *
   * 
   */
-  app.controller('ScoreBox', function ($scope, $filter, GameDatasFact, ActionsDatasFact, PlaysRecordFact) {
+  app.controller('ScoreBox', function ($scope, $filter, GameDatasFact, ActionsDatasFact, PlayFact) {
 
     // update $scope.stats { playerid: {action:..., action:... } }
     $scope.updateScorebox = function () {
@@ -41,7 +41,7 @@
             var ref = action.action.refs[k];
 
             // My team
-            if (playerid !== 'opp') {
+            if (playerid !== 'opp' && typeof stats[playerid] !== 'undefined') {
               // stats
               if (ref==='in') {
                 stats[playerid].playingtime.push([time]); 
@@ -72,7 +72,7 @@
             }
 
             // Opponents's team
-            else {
+            else if (playerid == 'opp') {
               switch (ref) {
                 case 'opp1' : opponentscore += 1; break;
                 case 'opp2' : opponentscore += 2; break;

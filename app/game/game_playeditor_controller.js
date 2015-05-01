@@ -3,21 +3,32 @@
 
   var app = angular.module('bbstats');
 
-  app.controller('PlayEditor', function ($scope, $filter, GameDatasFact, ActionsDatasFact, PlaysRecordFact) {
+  app.controller('PlayEditor', function ($scope, $filter, GameDatasFact, ActionsDatasFact, GameUIFact, PlayFact) {
 
-    $scope.init = function(teamid) {
-      $scope.teamid = teamid
-      $scope.team = GameDatasFact.teams[teamid];
-      $scope.opponent = GameDatasFact.teams[1].player;
-      $scope.recorder = PlaysRecordFact;
+    
+      $scope.teamid = 0
+      $scope.team = GameDatasFact.teams[0];
+      $scope.opponent = GameDatasFact.teams[1];
+      $scope.recorder = PlayFact;
+      
       $scope.$watch(
-        function () { return PlaysRecordFact; },
+        function () { return PlayFact; },
         function (newVal, oldVal) {
-          $scope.recorder = PlaysRecordFact;
+          $scope.recorder = PlayFact;
         },
         true
-        );
-    };
+      );
+
+      $scope.$watch(
+        function () { return GameUIFact; },
+        function (newVal, oldVal) {
+          console.log(GameUIFact, GameDatasFact.chrono.total_time>0, !GameUIFact.oppaction, PlayFact.play.length>0, GameUIFact.addaction);
+          $scope.subaction = GameUIFact.subaction;
+          $scope.addaction = GameUIFact.addaction;
+          $scope.edit = GameUIFact.edit;
+        },
+        true
+      );
 
 
     // return an array of empty player spot 
@@ -60,97 +71,84 @@
         return 'down';
       }
     };
+
+    $scope.doAddStarter = false;
+
     $scope.showplayers = function() {
-      return (PlaysRecordFact.play.length===0);
+      return (PlayFact.play.length===0);
     };
     $scope.showactions = function() {
-      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.play[0].playerid && !PlaysRecordFact.ui.subaction);
+      return (GameDatasFact.chrono.total_time>0 && !GameUIFact.oppaction && PlayFact.play.length>0 && PlayFact.play[0].playerid && !GameUIFact.subaction);
     };
     $scope.showsubactions = function() {
-      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.subaction && !PlaysRecordFact.ui.addaction);
+      return (GameDatasFact.chrono.total_time>0 && !GameUIFact.oppaction && PlayFact.play.length>0 && GameUIFact.subaction && !GameUIFact.addaction);
     };
     $scope.showaddactions = function() {
-      return (GameDatasFact.chrono.total_time>0 && !PlaysRecordFact.ui.oppaction && PlaysRecordFact.play.length>0 && PlaysRecordFact.ui.addaction);
+      return (GameDatasFact.chrono.total_time>0 && !GameUIFact.oppaction && PlayFact.play.length>0 && GameUIFact.addaction);
     };
     $scope.playIsSavable = function() {
-      return (PlaysRecordFact.play[0] && PlaysRecordFact.play[0].playerid && PlaysRecordFact.play[0].action && !PlaysRecordFact.play[0].action.subaction);
+      return (PlayFact.play[0] && PlayFact.play[0].playerid && PlayFact.play[0].action && !PlayFact.play[0].action.subaction);
     };
 
 
-    $scope.playInsert = function(player) {
-      if (PlaysRecordFact.play.length>0) {
-        $scope.selectPlayer(player);
-        return;
-      }
-      var
-      time = GameDatasFact.chrono.total_time,
-      curr_time = GameDatasFact.chrono.curr_time,
-      curr_period = GameDatasFact.chrono.curr_period
-      ;
-      $scope.resetPlay();
-      PlaysRecordFact.play.push({
-        time: time,
-        curr_time: curr_time,
-        curr_period: curr_period,
-        teamid: $scope.teamid,
-        player: false,
-        playerid: false,
-        action: false
-      });
-      // pregame substitution ?
-      if (typeof player !== 'undefined') {
-        $scope.selectPlayer(player);
+    $scope.selectPlayer = function(player, isaddaction) {
+      if(typeof isaddaction === 'undefined' || !isaddaction) {
+        $scope.edit = false;
+        GameUIFact.subaction = false;
+        GameUIFact.addaction = false;
+        GameUIFact.oppaction = (player.id ==='opp');
+        PlayFact.init($scope.teamid, player);
       }
     };
-    $scope.selectPlayer = function(player) {
-      PlaysRecordFact.play[0].player = player;
-      PlaysRecordFact.play[0].playerid = player.id;
-      PlaysRecordFact.ui.oppaction = (player.id ==='opp');
-    };
 
-    $scope.selectAction = function(action) {
-      // ui
-      PlaysRecordFact.ui.subaction = action.subaction;
-      PlaysRecordFact.ui.addaction = action.addaction;      
-      // add action to play
-      PlaysRecordFact.play[0].action = action;
+    $scope.selectAction = function(action, isaddaction) {
+      if(typeof isaddaction === 'undefined' || !isaddaction) {
+        GameUIFact.subaction = action.subaction;
+        GameUIFact.addaction = action.addaction; 
+        PlayFact.selectAction(action, isaddaction);        
+      }
     };
-    $scope.removeAction = function () {
-      $scope.removeAddAction();
-      PlaysRecordFact.play[0].action = false;
-      PlaysRecordFact.ui.subaction = false;
-      PlaysRecordFact.ui.addaction = false;
+    $scope.removeAction = function (isaddaction) {
+      PlayFact.removeAction(isaddaction);
+      if(typeof isaddaction === 'undefined' || !isaddaction) {
+        GameUIFact.subaction = false;
+        GameUIFact.addaction = false;
+      }
     };
 
     // Subaction
     $scope.selectSubAction = function(action) {
-      $scope.removeAddAction();
-      PlaysRecordFact.ui.addaction = action.addaction; 
+      $scope.removeAction(true);
+      GameUIFact.addaction = action.addaction; 
       // add action to play
-      PlaysRecordFact.play[0].action = action;
+      PlayFact.selectAction(action);
     };
 
     // Bench
     $scope.addStarter = function() {
-      $scope.playInsert();
-      PlaysRecordFact.play[0].action = ActionsDatasFact.hiddenactions.in;
+      $scope.addStarter = true;
+      PlayFact.init($scope.teamid);
+      PlayFact.selectAction(ActionsDatasFact.hiddenactions.in);
       $scope.toggleBench(true);
     };
     $scope.substitution = function() {
-      // add action to play
-      PlaysRecordFact.play[0].action = ActionsDatasFact.hiddenactions.out;
+      //PlayFact.init($scope.teamid);
+      PlayFact.selectAction(ActionsDatasFact.hiddenactions.out);
       $scope.toggleBench(true);
     };
     $scope.selectBenchPlayer = function(player) {
-      $scope.setPlayerPlayingStatus(player.id, true);
+      $scope.setPlayerPlayingStatus(player.id, true); // Todo: move to Factory
       // select starters
-      if (PlaysRecordFact.play[0].action.id === 'in') {
-        $scope.selectPlayer(player);
-        $scope.savePlay();
+      if ($scope.doAddStarter) {
+        PlayFact.selectPlayer(player);
+        $scope.doAddStarter = false;
+        $scope.savePlay(); // Todo: move to Factory
       }
       else {
-        $scope.setPlayerPlayingStatus(PlaysRecordFact.play[0].playerid, false);
-        $scope.selectAddPlayerAction(player, ActionsDatasFact.hiddenactions.in);
+        $scope.setPlayerPlayingStatus(PlayFact.play[0].playerid, false); // Todo: move to Factory
+        PlayFact.initAddAction();
+        PlayFact.selectPlayer(player, true);
+        PlayFact.selectAction(ActionsDatasFact.hiddenactions.in, true);
       }
       $scope.toggleBench(false);
     };
@@ -159,43 +157,19 @@
     }
 
     // Addaction    
-    $scope.insertAddAction = function() {
-      var
-      time = PlaysRecordFact.play[0].time,
-      curr_time = PlaysRecordFact.play[0].curr_time,
-      curr_period = PlaysRecordFact.play[0].curr_period
-      ;
-      $scope.removeAddAction();
-      PlaysRecordFact.play.push({
-        time: time,
-        curr_time: curr_time,
-        curr_period: curr_period,
-        teamid: $scope.teamid,
-        player: false,
-        playerid: false,
-        action: false
-      });
-    };
-    $scope.selectAddPlayerAction = function(player, action) {
-      $scope.insertAddAction();
-      PlaysRecordFact.play[1].player = player;
-      PlaysRecordFact.play[1].playerid = player.id; 
-      PlaysRecordFact.play[1].action = action;
-    };
-    $scope.removeAddAction = function() {
-      PlaysRecordFact.play.splice(1,1);
+    $scope.selectAddAction = function(player, action) {
+      PlayFact.initAddAction();
+      PlayFact.selectPlayer(player, true);
+      PlayFact.selectAction(action, true);
     };
 
     // Opponnent
     $scope.selectOpponent = function() {
-      $scope.playInsert();
-      PlaysRecordFact.play[0].player = GameDatasFact.teams[1].player;
-      PlaysRecordFact.play[0].playerid = 'opp';
-      PlaysRecordFact.ui.oppaction = true;
+      PlayFact.init($scope.teamid);
+      $scope.selectPlayer(GameDatasFact.teams[1].player);
+      GameUIFact.oppaction = true;
     };
-    $scope.selectOpponentAction = function(action) {
-      PlaysRecordFact.play[0].action = action;
-    };
+
 
 
     // Save
@@ -204,27 +178,27 @@
         $scope.removeAction();
       } 
       else if (n==1) {
-        $scope.removeAddAction();
+        PlayFact.removeAction(true);
       }
     };    
     $scope.savePlay = function() {
-      var play = PlaysRecordFact.play;
+      var play = PlayFact.play;
       //delete play.player;
-      if(!PlaysRecordFact.ui.edit) {
+      if(!$scope.edit) {
         GameDatasFact.playbyplay.push(play);
       }
       else {
-        GameDatasFact.playbyplay[PlaysRecordFact.ui.index] = play;
+        GameDatasFact.playbyplay[$scope.index] = play;
       }
       $scope.resetPlay();
       $scope.saveGameDatasFact();
     };
     $scope.resetPlay=function() {
-      PlaysRecordFact.play = [];
-      PlaysRecordFact.ui.edit = false;
-      PlaysRecordFact.ui.subaction = false;
-      PlaysRecordFact.ui.addaction = false;
-      PlaysRecordFact.ui.oppaction = false;
+      PlayFact.reset();
+      $scope.edit = false;
+      GameUIFact.subaction = false;
+      GameUIFact.addaction = false;
+      GameUIFact.oppaction = false;
     };
 
   });
