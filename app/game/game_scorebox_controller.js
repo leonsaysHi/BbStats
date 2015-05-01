@@ -11,6 +11,15 @@
   */
   app.controller('ScoreBox', function ($scope, $filter, GameDatasFact, ActionsDatasFact, PlayFact) {
 
+    $scope.$watch(
+      function () { return GameDatasFact.playbyplay; },
+      function (newVal, oldVal) {
+        $scope.updateScorebox();
+      },
+      true
+    );
+
+
     // update $scope.stats { playerid: {action:..., action:... } }
     $scope.updateScorebox = function () {
 
@@ -102,7 +111,7 @@
 
     // init 
     // 
-    $scope.updateScorebox();
+    // $scope.updateScorebox();
 
   })
 
