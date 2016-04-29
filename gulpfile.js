@@ -1,77 +1,69 @@
-var gulp = require('gulp');
-var plugins = require("gulp-load-plugins")({lazy:false});
-var sass = require('gulp-sass');
+var
+  gulp        = require('gulp'),
+  browserSync = require('browser-sync'),
+  sass        = require('gulp-sass'),
+  concat      = require('gulp-concat'),
+  templateCache = require('gulp-angular-templatecache');
+;
 
-gulp.task('scripts', function(){
-    //combine all js files of the app
-    gulp.src(['!./app/**/*_test.js','./app/**/*.js'])
-        .pipe(plugins.jshint())
-        .pipe(plugins.jshint.reporter('default'))
-        .pipe(plugins.concat('app.js'))
-        .pipe(gulp.dest('./build'));
-});
+// Static Server + watching scss/html files
+gulp.task('serve', ['sass'], function() {
 
-gulp.task('templates',function(){
-    //combine all template files of the app into a js file
-    gulp.src(['!./app/index.html',
-        './app/**/*.html'])
-        .pipe(plugins.angularTemplatecache('templates.js',{standalone:true}))
-        .pipe(gulp.dest('./build'));
-});
-
-gulp.task('css', function(){
-    gulp.src('./app/**/*.css')
-        .pipe(plugins.concat('app.css'))
-        .pipe(gulp.dest('./build'));
-});
-
-gulp.task('vendorJS', function(){
-    //concatenate vendor JS files
-    gulp.src([
-            './bower_components/angular/angular.js',
-            './bower_components/angular-indexedDB/angular-indexed-db.js',
-            './bower_components/angular-ui-router/release/angular-ui-router.js',
-            './bower_components/angular-animate/angular-animate.js',
-            './bower_components/jquery/dist/jquery.js',
-            './bower_components/foundation/js/foundation.js'
-        ])
-        .pipe(plugins.concat('lib.js'))
-        .pipe(gulp.dest('./build'));
-});
-
-gulp.task('copy-index', function() {
-    gulp.src('./app/index.html')    
-        .pipe(gulp.dest('./build'));
-});
-
-gulp.task('watch',function(){
-    gulp.watch([
-        'build/**/*.html',        
-        'build/**/*.js',
-        'build/**/*.css'        
-    ], function(event) {
-        return gulp.src(event.path)
-            .pipe(plugins.connect.reload());
+    browserSync.init({
+        server: "./build/"
     });
-    gulp.watch(['./app/**/*.js','!./app/**/*test.js'],['scripts']);
-    gulp.watch(['!./app/index.html','./app/**/*.html'],['templates']);
-    gulp.watch('./stylesheets/**/*.scss',['sass']);
-    gulp.watch('./app/**/*.css',['css']);
-    gulp.watch('./app/index.html',['copy-index']);
+
+    gulp.watch("./stylesheets/**/*.scss", ['sass']);
+    gulp.watch("./app/**/*.js", ['scripts']);
+    gulp.watch("./app/**/*.html", ['templates']);
 
 });
 
-gulp.task('sass', function () {
-    gulp.src('stylesheets/app.scss')
-        .pipe(sass()) 
-        .pipe(gulp.dest('app/'))
-    ;
+// Compile sass into CSS & auto-inject into browsers
+function handleError (error) {
+    console.log(error.toString());
+    this.emit('end');
+}
+gulp.task('sass', function() {
+    return gulp.src("./stylesheets/*.scss")
+        .pipe(sass())
+        .on('error', handleError)
+        .pipe(gulp.dest("./build/"))
+        .pipe(browserSync.stream());
 });
 
-gulp.task('connect', plugins.connect.server({
-    root: ['build'],
-    port: 9000,
-    livereload: true
-}));
+// generate ferring.js and bootstrap.js
+gulp.task('scripts', function() {
+    return gulp.src([
+        './app/angular.js',
+        './app/angular-route.js',
+        './app/angular-animate.js',
+        './app/angular-indexed-db.js',
+        './app/bbstats.js',
+        './app/templates.js',
+        './app/main/*.js',
+        './app/game/*.js',
+        './app/gameconfig/*.js'
+    ])
+    .pipe(concat('app.js'))
+    .pipe(gulp.dest('./build/'))
+    .pipe(browserSync.stream());
+});
 
-gulp.task('default',['connect','scripts','templates','sass','css','copy-index','vendorJS','watch']);
+gulp.task('templates', function(){
+  return gulp.src([
+      './app/**/*.html'
+  ])
+  .pipe(templateCache({module:'bbstats'}))
+  .pipe(gulp.dest('./add/'))
+  .pipe(browserSync.stream());
+});
+
+
+gulp.task('default', ['serve']);
+
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        proxy: "bbstats.dev"
+    });
+});

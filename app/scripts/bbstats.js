@@ -1,11 +1,10 @@
 (function(){
-	'use strict'; 
+	'use strict';
 
 	var app = angular.module( 'bbstats', [
-		'ui.router',
+		'ngRoute',
 		'ngAnimate',
-		'indexedDB',
-		'templates'
+		'indexedDB'
 	])
 
 	.constant('config', {
@@ -15,11 +14,11 @@
 	})
 
 	.config(['config', '$stateProvider', '$urlRouterProvider', '$indexedDBProvider', '$animateProvider', function (config, $stateProvider, $urlRouterProvider, $indexedDBProvider, $animateProvider) {// Routes
-		
+
 		$urlRouterProvider.otherwise('/');
 
 	    $stateProvider
-	    
+
 		    .state({
 		    	name: 'home',
 		        url: '/',
@@ -58,7 +57,7 @@
 		        controller:  'Game',
 		        resolve: {
 		          gameDatas : ['config', '$stateParams', '$q', '$indexedDB', function(config, $stateParams, $q, $indexedDB) {
-		            var 
+		            var
 			            deferred = $q.defer(),
 			            id = $stateParams.gameId
 		            ;
@@ -73,11 +72,11 @@
 		    })
 	    ;
 
-	    // animate 
+	    // animate
 	    // $animateProvider.classNameFilter(/animated/);
 
 		// IndexedDB
-		$indexedDBProvider 
+		$indexedDBProvider
 			.connection('BbStats')
 			.upgradeDatabase(1, function(event, db, tx){
 				var objStore = db.createObjectStore(config.indexedDb.gameStore, {keyPath: 'id', autoIncrement:true});
