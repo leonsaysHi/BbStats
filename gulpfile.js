@@ -3,67 +3,50 @@ var
   browserSync = require('browser-sync'),
   sass        = require('gulp-sass'),
   concat      = require('gulp-concat'),
-  templateCache = require('gulp-angular-templatecache');
+  templateCache = require('gulp-angular-templatecache'),
+  useref = require('gulp-useref')
 ;
 
-// Static Server + watching scss/html files
-gulp.task('serve', ['sass'], function() {
-
-    browserSync.init({
-        server: "./build/"
-    });
-
-    gulp.watch("./stylesheets/**/*.scss", ['sass']);
-    gulp.watch("./app/**/*.js", ['scripts']);
-    gulp.watch("./app/**/*.html", ['templates']);
-
-});
-
-// Compile sass into CSS & auto-inject into browsers
 function handleError (error) {
     console.log(error.toString());
     this.emit('end');
 }
+
+// build
+
+gulp.task('copy', function() {
+  return gulp.src('./app/*.html')
+      .pipe(useref())
+      .pipe(gulp.dest('./build'))
+});
+
+// Dev
+
+gulp.task('serve', ['sass'], function() {
+    browserSync.init({
+        server: "./build"
+    })
+    gulp.watch("./stylesheets/**/*.scss", ['sass']).on('change', browserSync.reload)
+    gulp.watch("./app/**/*.js").on('change', browserSync.reload)
+    gulp.watch("./app/**/*.html", ['templates']).on('change', browserSync.reload)
+
+})
 gulp.task('sass', function() {
     return gulp.src("./stylesheets/*.scss")
         .pipe(sass())
         .on('error', handleError)
-        .pipe(gulp.dest("./build/"))
-        .pipe(browserSync.stream());
-});
-
-// generate ferring.js and bootstrap.js
-gulp.task('scripts', function() {
-    return gulp.src([
-        './app/angular.js',
-        './app/angular-route.js',
-        './app/angular-animate.js',
-        './app/angular-indexed-db.js',
-        './app/bbstats.js',
-        './app/templates.js',
-        './app/main/*.js',
-        './app/game/*.js',
-        './app/gameconfig/*.js'
-    ])
-    .pipe(concat('app.js'))
-    .pipe(gulp.dest('./build/'))
-    .pipe(browserSync.stream());
-});
-
+        .pipe(gulp.dest("./app/cs/"))
+})
 gulp.task('templates', function(){
   return gulp.src([
-      './app/**/*.html'
+      './app/scripts/**/*.tpl.html'
   ])
-  .pipe(templateCache({module:'bbstats'}))
-  .pipe(gulp.dest('./add/'))
+  .pipe(templateCache({module:'bbstats', standalone:true}))
+  .pipe(gulp.dest('./app/scripts'))
   .pipe(browserSync.stream());
 });
 
+// Tasks
 
-gulp.task('default', ['serve']);
-
-gulp.task('browser-sync', function() {
-    browserSync.init({
-        proxy: "bbstats.dev"
-    });
-});
+gulp.task('dev', ['sass', 'templates']);
+gulp.task('default', ['dev', 'serve']);

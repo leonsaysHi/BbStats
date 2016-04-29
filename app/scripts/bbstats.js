@@ -2,7 +2,7 @@
 	'use strict';
 
 	var app = angular.module( 'bbstats', [
-		'ngRoute',
+		'ui.router',
 		'ngAnimate',
 		'indexedDB'
 	])
