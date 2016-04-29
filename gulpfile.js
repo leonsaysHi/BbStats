@@ -24,24 +24,24 @@ gulp.task('copy', function() {
 
 gulp.task('serve', ['sass'], function() {
     browserSync.init({
-        server: "./build"
+        server: "./app"
     })
-    gulp.watch("./stylesheets/**/*.scss", ['sass']).on('change', browserSync.reload)
+    gulp.watch("./app/sass/**/*.scss", ['sass']).on('change', browserSync.reload)
     gulp.watch("./app/**/*.js").on('change', browserSync.reload)
     gulp.watch("./app/**/*.html", ['templates']).on('change', browserSync.reload)
 
 })
 gulp.task('sass', function() {
-    return gulp.src("./stylesheets/*.scss")
+    return gulp.src("./app/sass/*.scss")
         .pipe(sass())
         .on('error', handleError)
-        .pipe(gulp.dest("./app/cs/"))
+        .pipe(gulp.dest("./app/css/"))
 })
 gulp.task('templates', function(){
   return gulp.src([
-      './app/scripts/**/*.tpl.html'
+      './app/scripts/**/*.html'
   ])
-  .pipe(templateCache({module:'bbstats', standalone:true}))
+  .pipe(templateCache({module:'templates', standalone:true}))
   .pipe(gulp.dest('./app/scripts'))
   .pipe(browserSync.stream());
 });

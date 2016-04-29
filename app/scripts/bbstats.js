@@ -1,11 +1,15 @@
 (function(){
 	'use strict';
 
-	var app = angular.module( 'bbstats', [
-		'ui.router',
-		'ngAnimate',
-		'indexedDB'
-	])
+	var app = angular.module(
+		'bbstats',
+		[
+			'templates',
+			'ui.router',
+			'ngAnimate',
+			'indexedDB'
+		]
+	)
 
 	.constant('config', {
 		indexedDb : {
